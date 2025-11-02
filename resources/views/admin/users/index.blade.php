@@ -1,40 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>User Management - {{ config('app.name') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen">
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-gray-800">Admin Panel</a>
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="{{ route('admin.users.index') }}" class="text-blue-600 font-semibold">Users</a>
-                    <a href="{{ route('admin.settings.index') }}" class="text-gray-600 hover:text-gray-900">Settings</a>
-                    <a href="{{ route('admin.reports.index') }}" class="text-gray-600 hover:text-gray-900">Reports</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button 
-                            type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200"
-                        >
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+<x-layout>
 
+    <x-slot:title>
+        Users - Unelma
+    </x-slot:title>
+    <!-- Navigation Bar -->
+    <x-header />
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
@@ -43,12 +13,12 @@
                 <h1 class="text-3xl font-bold text-gray-800">User Management</h1>
                 <p class="text-gray-600 mt-1">Manage all users in the system</p>
             </div>
-            <a 
-                href="{{ route('admin.users.create') }}"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center space-x-2"
-            >
+            <a href="{{ route('admin.users.create') }}"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center space-x-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                    </path>
                 </svg>
                 <span>Add New User</span>
             </a>
@@ -72,13 +42,22 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin Role</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin
+                            Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Created
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -88,14 +67,12 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
-                                        @if($user->profile_picture)
-                                            <img 
-                                                src="{{ asset('storage/' . $user->profile_picture) }}" 
-                                                alt="{{ $user->name }}" 
-                                                class="h-10 w-10 rounded-full object-cover"
-                                            >
+                                        @if ($user->profile_picture)
+                                            <img src="{{ asset('storage/' . $user->profile_picture) }}"
+                                                alt="{{ $user->name }}" class="h-10 w-10 rounded-full object-cover">
                                         @else
-                                            <div class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                            <div
+                                                class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                                             </div>
                                         @endif
@@ -108,18 +85,21 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $user->email }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if ($user->is_admin)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                         Admin
                                     </span>
                                 @else
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
                                         User
                                     </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if ($user->is_admin)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                                         {{ ucwords(str_replace('_', ' ', $user->role ?? 'admin')) }}
                                     </span>
                                 @else
@@ -130,27 +110,21 @@
                                 {{ $user->created_at->format('M d, Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                <a 
-                                    href="{{ route('admin.users.edit', $user) }}" 
-                                    class="text-blue-600 hover:text-blue-900"
-                                >
+                                <a href="{{ route('admin.users.edit', $user) }}"
+                                    class="text-blue-600 hover:text-blue-900">
                                     Edit
                                 </a>
                                 @if ($user->is_admin)
-                                    <button 
+                                    <button
                                         onclick="openRoleModal({{ $user->id }}, '{{ $user->role ?? 'admin' }}')"
-                                        class="text-purple-600 hover:text-purple-900"
-                                    >
+                                        class="text-purple-600 hover:text-purple-900">
                                         Assign Role
                                     </button>
                                 @endif
                                 @if ($user->id !== auth()->id() && !$user->is_admin)
-                                    <form 
-                                        action="{{ route('admin.users.destroy', $user) }}" 
-                                        method="POST" 
+                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
                                         class="inline"
-                                        onsubmit="return confirm('Are you sure you want to delete this user?');"
-                                    >
+                                        onsubmit="return confirm('Are you sure you want to delete this user?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900">
@@ -158,7 +132,8 @@
                                         </button>
                                     </form>
                                 @elseif ($user->is_admin && $user->id !== auth()->id())
-                                    <span class="text-gray-400 cursor-not-allowed" title="Admin users cannot be deleted">
+                                    <span class="text-gray-400 cursor-not-allowed"
+                                        title="Admin users cannot be deleted">
                                         Delete
                                     </span>
                                 @endif
@@ -190,7 +165,8 @@
                     @csrf
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">Select Role</label>
-                        <select name="role" id="roleSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select name="role" id="roleSelect"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="super_admin">Super Admin</option>
                             <option value="admin">Admin</option>
                             <option value="moderator">Moderator</option>
@@ -199,10 +175,12 @@
                         </select>
                     </div>
                     <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeRoleModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                        <button type="button" onclick="closeRoleModal()"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+                        <button type="submit"
+                            class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
                             Assign Role
                         </button>
                     </div>
@@ -216,13 +194,13 @@
             const modal = document.getElementById('roleModal');
             const form = document.getElementById('roleForm');
             const select = document.getElementById('roleSelect');
-            
+
             // Set form action
             form.action = `/admin/users/${userId}/update-role`;
-            
+
             // Set current role as selected
             select.value = currentRole || 'admin';
-            
+
             // Show modal
             modal.classList.remove('hidden');
         }
@@ -239,6 +217,4 @@
             }
         });
     </script>
-</body>
-</html>
-
+</x-layout>

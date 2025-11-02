@@ -28,19 +28,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-        
+
         // User Management
         Route::resource('users', UserController::class)->except(['show']);
         Route::post('users/{user}/update-role', [UserController::class, 'updateRole'])->name('users.update-role');
-        
+
         // Settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
-        
+
         // Reports
         Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportsController::class, 'export'])->name('reports.export');
-        
+
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::post('/contact-messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');
