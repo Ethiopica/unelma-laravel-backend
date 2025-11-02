@@ -28,7 +28,11 @@
                 <tbody>
                     @foreach ($messages as $message)
                         <tr>
-                            <td>{{ $message->id }}</td>
+                            <td>{{ $message->id }}
+                                @if (!$message->is_read)
+                                    <span class="badge rounded-pill text-bg-primary">new</span>
+                                @endif
+                            </td>
                             <td>{{ $message->name }}</td>
                             <td>{{ $message->email }}</td>
                             <td><button type="button" class="btn btn-primary  btn-sm" data-bs-toggle="modal"
@@ -88,7 +92,7 @@
                                 <h5>To: <span class='to-model'></span></h5>
                                 <strong class='receiver-name'></strong>
                                 <p class='message-sender'></p>
-                                <form action="{{ route('admin.mail') }}" method="POST">
+                                <form action="{{ route('admin.contact-messages.reply') }}" method="POST">
                                     @csrf
                                     <div class="form-floating">
                                         <input type="email" hidden class='email-receiver' name='email' />

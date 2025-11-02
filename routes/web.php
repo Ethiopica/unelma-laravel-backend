@@ -43,6 +43,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+        Route::post('/sendMail', [ContactMessageController::class, 'sendMail'])->name('contact-messages.reply');
         Route::post('/contact-messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');
         Route::delete('/contact-messages/{message}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
     });
@@ -51,5 +52,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 //Only for testing Frontend Part. Remove a tthe end 
 Route::view('/sendmessage', 'TestApi.index');
-Route::post('/sendMail', [ContactMessageController::class, 'sendMail'])->name('admin.mail');
 Route::view('/mail', 'mail.mail'); //Just for mail template
