@@ -16,22 +16,26 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        // return "So far so good";
+        // $validated = $request->validate([
+        //     'name' => ['required', 'string', 'max:255'],
+        //     'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        //     'password' => ['required', 'confirmed', Password::defaults()],
+        // ]);
+        //My way to validate SImple no strict rules;
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|confirmed',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'is_admin' => false,
             'email_verified_at' => now(),
         ]);
-
-        // Create token
-        $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'message' => 'User registered successfully',
@@ -41,8 +45,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
                 'created_at' => $user->created_at,
-            ],
-            'token' => $token,
+            ]
         ], 201);
     }
 
@@ -57,6 +60,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
+        // return $user;
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -89,7 +93,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         // Delete current token
-        $request->user()->currentAccessToken()->delete();
+        $request->user()->tokens()->delete();
 
         return response()->json([
             'message' => 'Logout successful',
@@ -115,5 +119,3 @@ class AuthController extends Controller
         ]);
     }
 }
-
-

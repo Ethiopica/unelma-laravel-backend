@@ -21,6 +21,7 @@ class UserProfileController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'image' => $user->profile_picture,
                 'is_admin' => $user->is_admin,
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
@@ -140,5 +141,3 @@ class UserProfileController extends Controller
         ]);
     }
 }
-
-

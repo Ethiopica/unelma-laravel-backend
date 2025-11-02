@@ -25,7 +25,6 @@
             <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data"
                 class="space-y-6">
                 @csrf
-
                 <!-- Name Field -->
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">

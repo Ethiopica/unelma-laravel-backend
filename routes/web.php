@@ -14,7 +14,7 @@ Route::get('/', function () {
 });
 
 // Contact Form Submission
-Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
+
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -47,3 +47,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/contact-messages/{message}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
     });
 });
+
+
+//Only for testing Frontend Part. Remove a tthe end 
+Route::view('/sendmessage', 'TestApi.index');
+Route::post('/sendMail', [ContactMessageController::class, 'sendMail'])->name('admin.mail');
+Route::view('/mail', 'mail.mail'); //Just for mail template

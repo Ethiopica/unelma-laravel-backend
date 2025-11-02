@@ -26,6 +26,9 @@ class ContactController extends Controller
             'ip_address' => $request->ip(),
         ]);
 
-        return back()->with('success', 'Thank you for contacting us! We will get back to you soon.');
+        return response()->json(
+            'Thank you for contacting us! We will get back to you soon.',
+            200
+        );
     }
 }

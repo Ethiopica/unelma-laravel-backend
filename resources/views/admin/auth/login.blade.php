@@ -5,7 +5,7 @@
     </x-slot:title>
     <!-- Navigation Bar -->
 
-    <div class="bg-gray-100 min-h-screen flex items-center justify-center border-4 border-indigo-600 ">
+    <div class="bg-gray-100 min-h-screen flex items-center justify-center">
         <div class="w-full max-w-md">
             <div class="bg-white rounded-lg shadow-lg p-8">
                 <!-- Logo/Header -->
