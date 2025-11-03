@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,7 +13,6 @@ Route::get('/', function () {
 });
 
 // Contact Form Submission
-
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -49,7 +47,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-
-//Only for testing Frontend Part. Remove a tthe end 
+// Only for testing Frontend Part. Remove a tthe end
 Route::view('/sendmessage', 'TestApi.index');
-Route::view('/mail', 'mail.mail'); //Just for mail template
+Route::view('/mail', 'mail.mail'); // Just for mail template

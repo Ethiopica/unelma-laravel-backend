@@ -22,7 +22,7 @@ class AuthController extends Controller
         //     'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
         //     'password' => ['required', 'confirmed', Password::defaults()],
         // ]);
-        //My way to validate SImple no strict rules;
+        // My way to validate SImple no strict rules;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -45,7 +45,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
                 'created_at' => $user->created_at,
-            ]
+            ],
         ], 201);
     }
 
@@ -62,7 +62,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         // return $user;
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);

@@ -16,13 +16,13 @@ class ReportsController extends Controller
     {
         // Get user registration statistics
         $userStats = $this->getUserStatistics();
-        
+
         // Get activity data
         $recentUsers = User::latest()->take(10)->get();
-        
+
         // Get monthly user growth
         $monthlyGrowth = $this->getMonthlyUserGrowth();
-        
+
         return view('admin.reports.index', compact('userStats', 'recentUsers', 'monthlyGrowth'));
     }
 
@@ -52,11 +52,11 @@ class ReportsController extends Controller
             DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
             DB::raw('COUNT(*) as count')
         )
-        ->groupBy('month')
-        ->orderBy('month', 'desc')
-        ->take(12)
-        ->get()
-        ->reverse();
+            ->groupBy('month')
+            ->orderBy('month', 'desc')
+            ->take(12)
+            ->get()
+            ->reverse();
     }
 
     /**

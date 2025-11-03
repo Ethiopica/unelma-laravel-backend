@@ -14,6 +14,7 @@ class ContactMessageObserver
         $contactMessage->is_read = true;
         $contactMessage->save();
     }
+
     public function created(ContactMessage $contactMessage): void
     {
         //

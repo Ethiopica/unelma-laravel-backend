@@ -3,14 +3,13 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\ContactController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public routes (no authentication required)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-//COntact form submisstion
+// COntact form submisstion
 Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
 
 // Protected routes (authentication required)

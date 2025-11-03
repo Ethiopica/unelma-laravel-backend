@@ -43,7 +43,7 @@ class ContactMessageController extends Controller
             ->with('success', 'Message deleted successfully');
     }
 
-    //Send Mail here to that Email 
+    // Send Mail here to that Email
     public function sendMail(Request $request)
     {
 
