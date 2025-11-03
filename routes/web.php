@@ -50,3 +50,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Only for testing Frontend Part. Remove a tthe end
 Route::view('/sendmessage', 'TestApi.index');
 Route::view('/mail', 'mail.mail'); // Just for mail template
+Route::view('/mailuser', 'mail.user'); // Just for mail template
