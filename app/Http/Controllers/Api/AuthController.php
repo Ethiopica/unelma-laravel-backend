@@ -36,6 +36,9 @@ class AuthController extends Controller
             'is_admin' => false,
             'email_verified_at' => now(),
         ]);
+        if ($user) {
+            // Call Unelma Mail API here
+        }
 
         return response()->json([
             'message' => 'User registered successfully',
@@ -61,7 +64,6 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
         // return $user;
-
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
