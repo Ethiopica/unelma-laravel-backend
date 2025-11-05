@@ -26,16 +26,16 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 422);
             }
         });
-        
+
         // Format other API exceptions as JSON
         $exceptions->render(function (\Exception $e, $request) {
             if ($request->is('api/*')) {
-                \Log::error('API Error: ' . $e->getMessage(), [
+                \Log::error('API Error: '.$e->getMessage(), [
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
                     'trace' => $e->getTraceAsString(),
                 ]);
-                
+
                 return response()->json([
                     'error' => 'An error occurred',
                     'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',

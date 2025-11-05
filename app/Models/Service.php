@@ -31,13 +31,15 @@ class Service extends Model
     public function getImageUrlAttribute()
     {
         try {
-            if (!$this->image) {
+            if (! $this->image) {
                 return null;
             }
+
             return Storage::url($this->image);
         } catch (\Exception $e) {
-            \Log::warning('Failed to generate image URL for service: ' . $e->getMessage());
-            return $this->image ? asset('storage/' . $this->image) : null;
+            \Log::warning('Failed to generate image URL for service: '.$e->getMessage());
+
+            return $this->image ? asset('storage/'.$this->image) : null;
         }
     }
 }

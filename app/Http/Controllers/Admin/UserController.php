@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Mail\UserCreatedSuccessfully;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -19,16 +19,16 @@ class UserController extends Controller
     public function index()
     {
         $users = User::latest()->paginate(10);
-        
+
         $stats = [
             'total_users' => User::count(),
             'admin_users' => User::where('is_admin', true)->count(),
-            'regular_users' => User::where(function($query) {
+            'regular_users' => User::where(function ($query) {
                 $query->where('is_admin', false)
-                      ->orWhereNull('is_admin');
+                    ->orWhereNull('is_admin');
             })->count(),
         ];
-        
+
         return view('admin.users.index', compact('users', 'stats'));
     }
 
@@ -72,16 +72,16 @@ class UserController extends Controller
             Mail::to($user->email)->send(new UserCreatedSuccessfully($user));
         } catch (\Exception $e) {
             // Log error but don't fail the user creation
-            \Log::error('Failed to send user creation email: ' . $e->getMessage());
+            \Log::error('Failed to send user creation email: '.$e->getMessage());
         }
 
         // Trigger email verification notification
         try {
-            if (method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail()) {
+            if (method_exists($user, 'hasVerifiedEmail') && ! $user->hasVerifiedEmail()) {
                 $user->sendEmailVerificationNotification();
             }
         } catch (\Exception $e) {
-            \Log::error('Failed to send verification email: ' . $e->getMessage());
+            \Log::error('Failed to send verification email: '.$e->getMessage());
         }
 
         return redirect()
@@ -104,7 +104,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'password' => ['nullable', 'confirmed', Password::defaults()],
             'is_admin' => ['boolean'],
             'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
@@ -162,4 +162,3 @@ class UserController extends Controller
             ->with('success', 'User deleted successfully!');
     }
 }
-

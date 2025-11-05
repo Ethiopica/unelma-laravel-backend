@@ -29,8 +29,8 @@ class BlogController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
-                      ->orWhere('content', 'like', "%{$search}%")
-                      ->orWhere('excerpt', 'like', "%{$search}%");
+                        ->orWhere('content', 'like', "%{$search}%")
+                        ->orWhere('excerpt', 'like', "%{$search}%");
                 });
             }
 
@@ -49,9 +49,10 @@ class BlogController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Blogs API Error: ' . $e->getMessage(), [
+            \Log::error('Blogs API Error: '.$e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to fetch blogs',
@@ -103,7 +104,7 @@ class BlogController extends Controller
     public function recent(Request $request)
     {
         $limit = $request->get('limit', 5);
-        
+
         $blogs = Blog::where('is_published', true)
             ->with('author:id,name,email,profile_picture')
             ->orderBy('published_at', 'desc')
@@ -122,7 +123,7 @@ class BlogController extends Controller
     public function popular(Request $request)
     {
         $limit = $request->get('limit', 5);
-        
+
         $blogs = Blog::where('is_published', true)
             ->with('author:id,name,email,profile_picture')
             ->orderBy('views', 'desc')

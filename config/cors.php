@@ -37,13 +37,3 @@ return [
     'supports_credentials' => true,
 
 ];
-
-
-
-
-
-
-
-
-
-

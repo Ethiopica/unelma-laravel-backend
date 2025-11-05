@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ContactMessage;
 use App\Mail\ContactFormSubmitted;
+use App\Models\ContactMessage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -38,7 +38,7 @@ class ContactController extends Controller
                 Mail::to($adminEmail)->send(new ContactFormSubmitted($message));
             } catch (\Exception $e) {
                 // Log email error but don't fail the request
-                Log::error('Failed to send contact form email: ' . $e->getMessage());
+                Log::error('Failed to send contact form email: '.$e->getMessage());
             }
 
             return response()->json([
@@ -58,7 +58,8 @@ class ContactController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Contact form submission error: ' . $e->getMessage());
+            Log::error('Contact form submission error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while submitting your message. Please try again.',
@@ -66,8 +67,3 @@ class ContactController extends Controller
         }
     }
 }
-
-
-
-
-

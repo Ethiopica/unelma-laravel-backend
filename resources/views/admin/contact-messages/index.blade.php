@@ -19,7 +19,9 @@
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
                     </svg>
                     {{ session('success') }}
                 </div>
@@ -44,33 +46,47 @@
             </div>
             <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
                 <p class="text-gray-600 text-sm font-medium uppercase">Read Messages</p>
-                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $stats['total_messages'] - $stats['unread_messages'] }}</p>
+                <p class="text-2xl font-bold text-gray-800 mt-1">
+                    {{ $stats['total_messages'] - $stats['unread_messages'] }}</p>
             </div>
         </div>
 
         <!-- Messages Table -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            @if($messages->count() > 0)
+            @if ($messages->count() > 0)
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ID</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Name</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Email</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Date</th>
+                                <th
+                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($messages as $message)
+                            @foreach ($messages as $message)
                                 <tr class="hover:bg-gray-50 {{ !$message->is_read ? 'bg-blue-50' : '' }}">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <span class="text-sm font-medium text-gray-900">#{{ $message->id }}</span>
                                             @if (!$message->is_read)
-                                                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <span
+                                                    class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                     New
                                                 </span>
                                             @endif
@@ -83,12 +99,14 @@
                                         <div class="text-sm text-gray-500">{{ $message->email }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($message->is_read)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        @if ($message->is_read)
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 Read
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                 Unread
                                             </span>
                                         @endif
@@ -96,36 +114,36 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $message->created_at->format('M d, Y') }}
                                         <br>
-                                        <span class="text-xs text-gray-400">{{ $message->created_at->format('h:i A') }}</span>
+                                        <span
+                                            class="text-xs text-gray-400">{{ $message->created_at->format('h:i A') }}</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center justify-end space-x-2">
-                                            <button 
-                                                type="button" 
-                                                onclick="openMessageModal({{ $message->id }})"
-                                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm"
-                                            >
+                                            <button type="button" onclick="openMessageModal({{ $message->id }})"
+                                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
                                                 View
                                             </button>
-                                            <button 
-                                                type="button" 
-                                                onclick="openReplyModal({{ $message->id }})"
-                                                class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm"
-                                            >
+                                            <button type="button" onclick="openReplyModal({{ $message->id }})"
+                                                class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
                                                 Reply
                                             </button>
                                             @if (!$message->is_read)
-                                                <form action="{{ route('admin.contact-messages.read', $message->id) }}" method="POST" class="inline">
+                                                <form action="{{ route('admin.contact-messages.read', $message->id) }}"
+                                                    method="POST" class="inline">
                                                     @csrf
-                                                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
+                                                    <button type="submit"
+                                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
                                                         Mark as Read
                                                     </button>
                                                 </form>
                                             @endif
-                                            <form action="{{ route('admin.contact-messages.destroy', $message->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this message?');">
+                                            <form action="{{ route('admin.contact-messages.destroy', $message->id) }}"
+                                                method="POST" class="inline"
+                                                onsubmit="return confirm('Are you sure you want to delete this message?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
+                                                <button type="submit"
+                                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
                                                     Delete
                                                 </button>
                                             </form>
@@ -136,15 +154,18 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <!-- Pagination -->
                 <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
                     {{ $messages->links() }}
                 </div>
             @else
                 <div class="text-center py-12">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                        </path>
                     </svg>
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No messages</h3>
                     <p class="mt-1 text-sm text-gray-500">No contact messages have been received yet.</p>
@@ -160,7 +181,8 @@
                 <h3 class="text-lg font-semibold text-gray-900">Message Details</h3>
                 <button onclick="closeMessageModal()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -180,20 +202,21 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Date</label>
-                        <p id="modalDate" class="mt-1 text-sm text-gray-900"></p>
+                        <p id="modalDate" class="mt-1 text-sm text-gray-900 inline"></p>
+                        <span id="modalDateTimeDiff"
+                            class='ml-2 text-sm text-lime-500 bg-yellow-300 p-2 rounded-3xl'></span>
                     </div>
                 </div>
             </div>
             <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
-                <button 
-                    onclick="closeMessageModal()" 
-                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200"
-                >
+                <button onclick="closeMessageModal()"
+                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200">
                     Close
                 </button>
                 <form id="markAsReadForm" action="" method="POST" class="inline" style="display: none;">
                     @csrf
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
+                    <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
                         Mark as Read
                     </button>
                 </form>
@@ -208,11 +231,13 @@
                 <h3 class="text-lg font-semibold text-gray-900">Send Reply</h3>
                 <button onclick="closeReplyModal()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
-            <form id="replyForm" action="{{ route('admin.contact-messages.reply') }}" method="POST" class="mt-4">
+            <form id="replyForm" action="{{ route('admin.contact-messages.reply') }}" method="POST"
+                class="mt-4">
                 @csrf
                 <input type="hidden" id="replyEmail" name="email" />
                 <div class="space-y-4">
@@ -222,18 +247,17 @@
                     </div>
                     <div>
                         <label for="replyText" class="block text-sm font-medium text-gray-700">Your Reply</label>
-                        <textarea id="replyText" name="reply" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        <textarea id="replyText" name="reply" rows="5"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
-                    <button 
-                        type="button"
-                        onclick="closeReplyModal()" 
-                        class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200"
-                    >
+                    <button type="button" onclick="closeReplyModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200">
                         Cancel
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition duration-200">
+                    <button type="submit"
+                        class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition duration-200">
                         Send Reply
                     </button>
                 </div>
@@ -243,23 +267,60 @@
 
     <script>
         const messages = @json($messages->items());
-        
+
         function openMessageModal(messageId) {
             const message = messages.find(m => m.id === messageId);
             if (!message) {
                 alert('Message not found in current page');
                 return;
             }
-            
+
             displayMessage(message);
         }
-        
+
         function displayMessage(message) {
             document.getElementById('modalEmail').textContent = message.email;
             document.getElementById('modalName').textContent = message.name;
             document.getElementById('modalMessage').textContent = message.message;
-            document.getElementById('modalDate').textContent = new Date(message.created_at).toLocaleString();
-            
+            let messagedDate = new Date(message.created_at);
+            let todaysDate = new Date();
+            let dateElementHTML = document.getElementById('modalDate');
+            let modalDateTimeDiff = document.getElementById('modalDateTimeDiff');
+            const diffMs = todaysDate - messagedDate; // Milliseconds here
+            const diffSec = diffMs / 1000;
+            const diffMin = diffSec / 60;
+            const diffHours = diffMin / 60;
+            const diffDays = diffHours / 24;
+            const diffMonths = diffDays / 30;
+            const diffYears = diffDays / 365;
+            if (diffYears < 1) {
+                if (diffMonths < 1) {
+                    if (diffDays > 1) {
+                        dateElementHTML.textContent = messagedDate.toLocaleString();
+                        modalDateTimeDiff.textContent = Math.floor(diffDays) + " days ago";
+                    } else {
+                        if (diffHours > 1) {
+                            dateElementHTML.textContent = messagedDate.toLocaleString();
+                            modalDateTimeDiff.textContent = Math.floor(diffMin) + " minutes ago";
+                        } else {
+
+                            dateElementHTML.textContent = messagedDate.toLocaleString();
+                            modalDateTimeDiff.textContent = Math.floor(diffHours) + "hours ago";
+                        }
+                    }
+                } else {
+                    dateElementHTML.textContent = messagedDate.toLocaleString();
+                    modalDateTimeDiff.textContent = Math.floor(diffMonths) + "months ago";
+                }
+            } else {
+                dateElementHTML.textContent = messagedDate.toLocaleString();
+                modalDateTimeDiff.textContent = Math.floor(diffYears) + "year ago";
+
+            }
+
+
+
+
             // Show/hide mark as read button
             const markAsReadForm = document.getElementById('markAsReadForm');
             if (!message.is_read) {
@@ -268,10 +329,10 @@
             } else {
                 markAsReadForm.style.display = 'none';
             }
-            
+
             document.getElementById('messageModal').classList.remove('hidden');
         }
-        
+
         function closeMessageModal() {
             document.getElementById('messageModal').classList.add('hidden');
         }
@@ -291,7 +352,7 @@
         function closeReplyModal() {
             document.getElementById('replyModal').classList.add('hidden');
         }
-        
+
         // Close modal when clicking outside
         document.getElementById('messageModal').addEventListener('click', function(e) {
             if (e.target === this) {
@@ -303,7 +364,7 @@
                 closeReplyModal();
             }
         });
-        
+
         // Close modal with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {

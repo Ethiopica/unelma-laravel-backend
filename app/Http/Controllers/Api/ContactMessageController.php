@@ -14,7 +14,7 @@ class ContactMessageController extends Controller
     public function index(Request $request)
     {
         // Ensure user is admin
-        if (!auth()->user()->is_admin) {
+        if (! auth()->user()->is_admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized. Admin access required.',
@@ -37,8 +37,8 @@ class ContactMessageController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('message', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('message', 'like', "%{$search}%");
             });
         }
 
@@ -65,7 +65,7 @@ class ContactMessageController extends Controller
     public function show(ContactMessage $message)
     {
         // Ensure user is admin
-        if (!auth()->user()->is_admin) {
+        if (! auth()->user()->is_admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized. Admin access required.',
@@ -84,7 +84,7 @@ class ContactMessageController extends Controller
     public function markAsRead(ContactMessage $message)
     {
         // Ensure user is admin
-        if (!auth()->user()->is_admin) {
+        if (! auth()->user()->is_admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized. Admin access required.',
@@ -106,7 +106,7 @@ class ContactMessageController extends Controller
     public function destroy(ContactMessage $message)
     {
         // Ensure user is admin
-        if (!auth()->user()->is_admin) {
+        if (! auth()->user()->is_admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized. Admin access required.',
@@ -127,7 +127,7 @@ class ContactMessageController extends Controller
     public function stats()
     {
         // Ensure user is admin
-        if (!auth()->user()->is_admin) {
+        if (! auth()->user()->is_admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized. Admin access required.',
@@ -144,9 +144,3 @@ class ContactMessageController extends Controller
         ]);
     }
 }
-
-
-
-
-
-

@@ -19,6 +19,8 @@
                      class="{{ request()->routeIs('admin.products.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Products</a>
                  <a href="{{ route('admin.blogs.index') }}"
                      class="{{ request()->routeIs('admin.blogs.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Blogs</a>
+                 <a href="{{ route('admin.services.index') }}"
+                     class="{{ request()->routeIs('admin.services.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Services</a>
              </div>
              <div class="flex items-center space-x-4">
                  <div class="flex items-center space-x-3">

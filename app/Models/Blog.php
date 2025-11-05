@@ -49,13 +49,13 @@ class Blog extends Model
             if (empty($blog->slug)) {
                 $blog->slug = Str::slug($blog->title);
             }
-            if ($blog->is_published && !$blog->published_at) {
+            if ($blog->is_published && ! $blog->published_at) {
                 $blog->published_at = now();
             }
         });
 
         static::updating(function ($blog) {
-            if ($blog->is_published && !$blog->published_at) {
+            if ($blog->is_published && ! $blog->published_at) {
                 $blog->published_at = now();
             }
         });
@@ -91,12 +91,14 @@ class Blog extends Model
     public function getFeaturedImageUrlAttribute(): ?string
     {
         try {
-            if (!$this->featured_image) {
+            if (! $this->featured_image) {
                 return null;
             }
-            return asset('storage/' . $this->featured_image);
+
+            return asset('storage/'.$this->featured_image);
         } catch (\Exception $e) {
-            \Log::warning('Failed to generate featured image URL for blog: ' . $e->getMessage());
+            \Log::warning('Failed to generate featured image URL for blog: '.$e->getMessage());
+
             return null;
         }
     }

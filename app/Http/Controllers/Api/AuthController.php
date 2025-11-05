@@ -49,9 +49,10 @@ class AuthController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            \Log::error('Registration error: ' . $e->getMessage(), [
+            \Log::error('Registration error: '.$e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json([
                 'error' => 'Registration failed',
                 'message' => config('app.debug') ? $e->getMessage() : 'An error occurred during registration',
@@ -71,7 +72,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -139,12 +140,13 @@ class AuthController extends Controller
                 ->stateless()
                 ->redirect()
                 ->getTargetUrl();
-            
+
             return response()->json([
                 'url' => $url,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Google OAuth redirect error: ' . $e->getMessage());
+            \Log::error('Google OAuth redirect error: '.$e->getMessage());
+
             return response()->json([
                 'error' => 'Failed to generate Google OAuth URL',
                 'message' => $e->getMessage(),
@@ -166,7 +168,7 @@ class AuthController extends Controller
 
             if ($user) {
                 // User exists - update Google ID if not set
-                if (!$user->google_id) {
+                if (! $user->google_id) {
                     $user->update(['google_id' => $googleUser->getId()]);
                 }
             } else {
@@ -198,26 +200,17 @@ class AuthController extends Controller
                 'created_at' => $user->created_at->toISOString(),
             ];
 
-            return redirect("{$frontendUrl}/auth/callback?" . http_build_query([
+            return redirect("{$frontendUrl}/auth/callback?".http_build_query([
                 'token' => $token,
                 'user' => json_encode($userData),
             ]));
         } catch (\Exception $e) {
             // Redirect to frontend with error
             $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
-            return redirect("{$frontendUrl}/auth/callback?" . http_build_query([
+
+            return redirect("{$frontendUrl}/auth/callback?".http_build_query([
                 'error' => $e->getMessage(),
             ]));
         }
     }
 }
-
-
-
-
-
-
-
-
-
-

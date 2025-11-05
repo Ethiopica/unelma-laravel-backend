@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ReplyToMessage;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ReplyToMessage;
 
 class ContactMessageController extends Controller
 {
@@ -16,14 +16,14 @@ class ContactMessageController extends Controller
     public function index()
     {
         $messages = ContactMessage::latest()->paginate(20);
-        
+
         $stats = [
             'total_messages' => ContactMessage::count(),
-            'unread_messages' => ContactMessage::where(function($q) {
+            'unread_messages' => ContactMessage::where(function ($q) {
                 $q->where('is_read', false)->orWhereNull('is_read');
             })->count(),
         ];
-        
+
         return view('admin.contact-messages.index', compact('messages', 'stats'));
     }
 
@@ -33,7 +33,7 @@ class ContactMessageController extends Controller
     public function markAsRead(ContactMessage $message)
     {
         $message->update(['is_read' => true]);
-        
+
         return back()->with('success', 'Message marked as read');
     }
 
@@ -43,7 +43,7 @@ class ContactMessageController extends Controller
     public function destroy(ContactMessage $message)
     {
         $message->delete();
-        
+
         return redirect()
             ->route('admin.contact-messages.index')
             ->with('success', 'Message deleted successfully');
@@ -55,8 +55,8 @@ class ContactMessageController extends Controller
     public function reply(Request $request)
     {
         $validated = $request->validate([
-            'email' => ['required','email'],
-            'reply' => ['required','string'],
+            'email' => ['required', 'email'],
+            'reply' => ['required', 'string'],
         ]);
 
         Mail::to($validated['email'])->send(new ReplyToMessage($validated['reply']));

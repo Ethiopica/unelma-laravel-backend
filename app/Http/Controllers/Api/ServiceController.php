@@ -28,7 +28,7 @@ class ServiceController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             }
 
@@ -47,9 +47,10 @@ class ServiceController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Services API Error: ' . $e->getMessage(), [
+            \Log::error('Services API Error: '.$e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to fetch services',
@@ -79,7 +80,7 @@ class ServiceController extends Controller
     public function featured(Request $request)
     {
         $limit = $request->get('limit', 5);
-        
+
         $services = Service::where('is_active', true)
             ->where('is_featured', true)
             ->orderBy('order')
@@ -93,10 +94,3 @@ class ServiceController extends Controller
         ]);
     }
 }
-
-
-
-
-
-
-

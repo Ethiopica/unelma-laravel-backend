@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
 use App\Http\Controllers\Api\UserProfileController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public routes (no authentication required)
@@ -49,14 +48,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Authentication
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
-    
+
     // User Profile Management
     Route::get('/profile', [UserProfileController::class, 'show']);
     Route::put('/profile', [UserProfileController::class, 'update']);
     Route::post('/profile/change-password', [UserProfileController::class, 'changePassword']);
     Route::delete('/profile', [UserProfileController::class, 'destroy']);
     Route::get('/profile/activity', [UserProfileController::class, 'activity']);
-    
+
     // Contact Messages Management (Admin only)
     Route::prefix('contact-messages')->group(function () {
         Route::get('/', [ApiContactMessageController::class, 'index']);

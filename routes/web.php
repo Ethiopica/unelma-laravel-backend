@@ -1,18 +1,18 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ContactController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,11 +26,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
+
         return redirect()->intended('/');
     })->middleware(['signed'])->name('verification.verify');
 
     Route::post('/email/verification-notification', function (Request $request) {
         $request->user()->sendEmailVerificationNotification();
+
         return back()->with('success', 'Verification link sent!');
     })->middleware(['throttle:6,1'])->name('verification.send');
 });
@@ -60,6 +62,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             if (is_numeric($value)) {
                 return \App\Models\Blog::where('id', $value)->firstOrFail();
             }
+
             // Fallback to slug for non-numeric values
             return \App\Models\Blog::where('slug', $value)->firstOrFail();
         });
