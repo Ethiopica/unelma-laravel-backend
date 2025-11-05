@@ -31,6 +31,14 @@ class Product extends Model
      */
     public function getImageUrlAttribute()
     {
-        return $this->image ? Storage::url($this->image) : null;
+        try {
+            if (!$this->image) {
+                return null;
+            }
+            return Storage::url($this->image);
+        } catch (\Exception $e) {
+            \Log::warning('Failed to generate image URL for product: ' . $e->getMessage());
+            return $this->image ? asset('storage/' . $this->image) : null;
+        }
     }
 }

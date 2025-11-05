@@ -17,34 +17,46 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'confirmed', Password::defaults()],
+            ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'is_admin' => false,
-            'email_verified_at' => now(),
-        ]);
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'is_admin' => false,
+                'email_verified_at' => now(),
+            ]);
 
-        // Create token
-        $token = $user->createToken('auth-token')->plainTextToken;
+            // Create token
+            $token = $user->createToken('auth-token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'is_admin' => $user->is_admin,
-                'created_at' => $user->created_at,
-            ],
-            'token' => $token,
-        ], 201);
+            return response()->json([
+                'message' => 'User registered successfully',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'is_admin' => $user->is_admin,
+                    'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
+                ],
+                'token' => $token,
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Registration error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'error' => 'Registration failed',
+                'message' => config('app.debug') ? $e->getMessage() : 'An error occurred during registration',
+            ], 500);
+        }
     }
 
     /**
@@ -78,7 +90,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
-                'created_at' => $user->created_at,
+                'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
             ],
             'token' => $token,
         ]);
@@ -110,8 +122,8 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
+                'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
+                'updated_at' => $user->updated_at?->toISOString() ?? $user->updated_at,
             ],
         ]);
     }
@@ -122,12 +134,22 @@ class AuthController extends Controller
      */
     public function redirectToGoogle()
     {
-        return response()->json([
-            'url' => Socialite::driver('google')
+        try {
+            $url = Socialite::driver('google')
                 ->stateless()
                 ->redirect()
-                ->getTargetUrl(),
-        ]);
+                ->getTargetUrl();
+            
+            return response()->json([
+                'url' => $url,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Google OAuth redirect error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to generate Google OAuth URL',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

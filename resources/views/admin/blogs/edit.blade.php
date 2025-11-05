@@ -61,7 +61,7 @@
 
         <!-- Form Card -->
         <div class="bg-white rounded-lg shadow-md p-8">
-            <form method="POST" action="{{ route('admin.blogs.update', $blog) }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('admin.blogs.update', $blog->id) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -202,7 +202,7 @@
                             type="text" 
                             id="tags" 
                             name="tags" 
-                            value="{{ old('tags', $blog->tags ? implode(', ', $blog->tags) : '') }}"
+                            value="{{ old('tags', $formattedTags ?? '') }}"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('tags') border-red-500 @enderror"
                             placeholder="e.g., cloud, aws, tutorial (comma-separated)"
                         >

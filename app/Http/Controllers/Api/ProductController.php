@@ -13,38 +13,53 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::where('is_active', true)
-            ->orderBy('order')
-            ->orderBy('created_at', 'desc');
+        try {
+            $query = Product::where('is_active', true)
+                ->orderBy('order', 'asc')
+                ->orderBy('created_at', 'desc');
 
-        // Filter by featured if provided
-        if ($request->has('featured') && $request->boolean('featured')) {
-            $query->where('is_featured', true);
+            // Filter by featured if provided
+            if ($request->has('featured') && $request->boolean('featured')) {
+                $query->where('is_featured', true);
+            }
+
+            // Search by name or description
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            // Pagination
+            $perPage = $request->get('per_page', 10);
+            $products = $query->paginate($perPage);
+
+            return response()->json([
+                'success' => true,
+                'data' => $products->items(),
+                'meta' => [
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage(),
+                    'per_page' => $products->perPage(),
+                    'total' => $products->total(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Products API Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to fetch products',
+                'message' => config('app.debug') ? $e->getMessage() : 'An error occurred',
+                'file' => config('app.debug') ? $e->getFile() : null,
+                'line' => config('app.debug') ? $e->getLine() : null,
+            ], 500);
         }
-
-        // Search by name or description
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Pagination
-        $perPage = $request->get('per_page', 10);
-        $products = $query->paginate($perPage);
-
-        return response()->json([
-            'success' => true,
-            'data' => $products->items(),
-            'meta' => [
-                'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage(),
-                'per_page' => $products->perPage(),
-                'total' => $products->total(),
-            ],
-        ]);
     }
 
     /**

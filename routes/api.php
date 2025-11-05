@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController as ApiBlogController;
+use App\Http\Controllers\Api\ContactController as ApiContactController;
+use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageController;
 use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
@@ -14,8 +16,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Google OAuth routes
-Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('api.auth.google');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('api.auth.google.callback');
 
 // Public Blog Routes
 Route::get('/blogs', [ApiBlogController::class, 'index']);
@@ -39,6 +41,9 @@ Route::get('/services', [ApiServiceController::class, 'index']);
 Route::get('/services/{id}', [ApiServiceController::class, 'show']);
 Route::get('/services/featured/list', [ApiServiceController::class, 'featured']);
 
+// Public Contact Form Route
+Route::post('/contact/submit', [ApiContactController::class, 'submit']);
+
 // Protected routes (authentication required)
 Route::middleware('auth:sanctum')->group(function () {
     // Authentication
@@ -51,4 +56,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/change-password', [UserProfileController::class, 'changePassword']);
     Route::delete('/profile', [UserProfileController::class, 'destroy']);
     Route::get('/profile/activity', [UserProfileController::class, 'activity']);
+    
+    // Contact Messages Management (Admin only)
+    Route::prefix('contact-messages')->group(function () {
+        Route::get('/', [ApiContactMessageController::class, 'index']);
+        Route::get('/stats', [ApiContactMessageController::class, 'stats']);
+        Route::get('/{message}', [ApiContactMessageController::class, 'show']);
+        Route::post('/{message}/read', [ApiContactMessageController::class, 'markAsRead']);
+        Route::delete('/{message}', [ApiContactMessageController::class, 'destroy']);
+    });
 });

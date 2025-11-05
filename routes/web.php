@@ -11,9 +11,28 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+// Email Verification Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->intended('/');
+    })->middleware(['signed'])->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('success', 'Verification link sent!');
+    })->middleware(['throttle:6,1'])->name('verification.send');
 });
 
 // Contact Form Submission
@@ -35,7 +54,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // User Management
         Route::resource('users', UserController::class)->except(['show']);
         
-        // Blog Management
+        // Blog Management - Use ID binding for admin routes (numeric = ID, otherwise slug)
+        Route::bind('blog', function ($value) {
+            // For admin routes, try ID first if value is numeric
+            if (is_numeric($value)) {
+                return \App\Models\Blog::where('id', $value)->firstOrFail();
+            }
+            // Fallback to slug for non-numeric values
+            return \App\Models\Blog::where('slug', $value)->firstOrFail();
+        });
         Route::resource('blogs', BlogController::class)->except(['show']);
         
         // Product Management
@@ -44,6 +71,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Services Management
         Route::resource('services', ServicesController::class)->except(['show']);
         
+        // Contact Messages
+        Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+        Route::post('/contact-messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');
+        Route::delete('/contact-messages/{message}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
+        Route::post('/contact-messages/reply', [ContactMessageController::class, 'reply'])->name('contact-messages.reply');
+
         // Settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');

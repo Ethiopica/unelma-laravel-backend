@@ -13,40 +13,51 @@ class BlogController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Blog::where('is_published', true)
-            ->with('author:id,name,email,profile_picture')
-            ->orderBy('order')
-            ->orderBy('published_at', 'desc');
+        try {
+            $query = Blog::where('is_published', true)
+                ->with('author:id,name,email,profile_picture')
+                ->orderBy('order', 'asc')
+                ->orderBy('published_at', 'desc');
 
-        // Filter by category if provided
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
+            // Filter by category if provided
+            if ($request->has('category')) {
+                $query->where('category', $request->category);
+            }
+
+            // Search by title or content
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('content', 'like', "%{$search}%")
+                      ->orWhere('excerpt', 'like', "%{$search}%");
+                });
+            }
+
+            // Pagination
+            $perPage = $request->get('per_page', 10);
+            $blogs = $query->paginate($perPage);
+
+            return response()->json([
+                'success' => true,
+                'data' => $blogs->items(),
+                'meta' => [
+                    'current_page' => $blogs->currentPage(),
+                    'last_page' => $blogs->lastPage(),
+                    'per_page' => $blogs->perPage(),
+                    'total' => $blogs->total(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Blogs API Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to fetch blogs',
+                'message' => config('app.debug') ? $e->getMessage() : 'An error occurred',
+            ], 500);
         }
-
-        // Search by title or content
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%")
-                  ->orWhere('excerpt', 'like', "%{$search}%");
-            });
-        }
-
-        // Pagination
-        $perPage = $request->get('per_page', 10);
-        $blogs = $query->paginate($perPage);
-
-        return response()->json([
-            'success' => true,
-            'data' => $blogs->items(),
-            'meta' => [
-                'current_page' => $blogs->currentPage(),
-                'last_page' => $blogs->lastPage(),
-                'per_page' => $blogs->perPage(),
-                'total' => $blogs->total(),
-            ],
-        ]);
     }
 
     /**

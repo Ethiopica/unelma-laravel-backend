@@ -90,6 +90,14 @@ class Blog extends Model
      */
     public function getFeaturedImageUrlAttribute(): ?string
     {
-        return $this->featured_image ? asset('storage/' . $this->featured_image) : null;
+        try {
+            if (!$this->featured_image) {
+                return null;
+            }
+            return asset('storage/' . $this->featured_image);
+        } catch (\Exception $e) {
+            \Log::warning('Failed to generate featured image URL for blog: ' . $e->getMessage());
+            return null;
+        }
     }
 }

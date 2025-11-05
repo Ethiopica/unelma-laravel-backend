@@ -85,11 +85,17 @@ class BlogController extends Controller
      */
     public function edit(Blog $blog)
     {
-        // Convert tags array to comma-separated string for form
-        if ($blog->tags) {
-            $blog->tags = implode(', ', $blog->tags);
+        // Ensure blog has all relationships loaded
+        $blog->load('author');
+        
+        // Convert tags array to comma-separated string for form display
+        // Don't modify the model directly to avoid issues with array casting
+        $formattedTags = '';
+        if ($blog->tags && is_array($blog->tags)) {
+            $formattedTags = implode(', ', $blog->tags);
         }
-        return view('admin.blogs.edit', compact('blog'));
+        
+        return view('admin.blogs.edit', compact('blog', 'formattedTags'));
     }
 
     /**
@@ -119,8 +125,15 @@ class BlogController extends Controller
         }
 
         // Handle tags (comma-separated string to array)
-        if (isset($validated['tags']) && is_string($validated['tags'])) {
-            $validated['tags'] = array_map('trim', explode(',', $validated['tags']));
+        if (isset($validated['tags'])) {
+            if (empty(trim($validated['tags']))) {
+                $validated['tags'] = [];
+            } elseif (is_string($validated['tags'])) {
+                $tags = array_map('trim', explode(',', $validated['tags']));
+                $validated['tags'] = array_values(array_filter($tags)); // Remove empty values and reindex
+            }
+        } else {
+            $validated['tags'] = [];
         }
 
         // Handle featured image upload

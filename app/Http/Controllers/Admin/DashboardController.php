@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ContactMessage;
 
 class DashboardController extends Controller
 {
@@ -18,6 +19,9 @@ class DashboardController extends Controller
             'regular_users' => User::where(function($query) {
                 $query->where('is_admin', false)
                       ->orWhereNull('is_admin');
+            })->count(),
+            'unread_messages' => ContactMessage::where(function($query) {
+                $query->where('is_read', false)->orWhereNull('is_read');
             })->count(),
         ];
 

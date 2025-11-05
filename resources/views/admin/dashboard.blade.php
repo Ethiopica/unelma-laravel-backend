@@ -1,72 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-layout>
+    <x-slot:title>
+        Admin Dashboard - {{ config('app.name') }}
+    </x-slot:title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin Dashboard - {{ config('app.name') }}</title>
-    @if (!isset($tailwindLoaded))
-        <script src="https://cdn.tailwindcss.com"></script>
-        @php $tailwindLoaded = true; @endphp
-    @endif
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Gruppo&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
-    <style>
-        body {
-            font-family: "Montserrat", sans-serif;
-        }
-    </style>
-</head>
+    <x-header />
 
-<body class="bg-gray-100 min-h-screen">
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <h1 class="text-xl font-bold text-gray-800">ADMIN PANEL</h1>
-                    <a href="{{ route('admin.dashboard') }}" class="text-blue-600 font-semibold">Dashboard</a>
-                    <a href="{{ route('admin.users.index') }}" class="text-gray-600 hover:text-gray-900">Users</a>
-                    <a href="{{ route('admin.blogs.index') }}" class="text-gray-600 hover:text-gray-900">Blog</a>
-                    <a href="{{ route('admin.products.index') }}" class="text-gray-600 hover:text-gray-900">Products</a>
-                    <a href="{{ route('admin.services.index') }}" class="text-gray-600 hover:text-gray-900">Services</a>
-                    <a href="{{ route('admin.settings.index') }}" class="text-gray-600 hover:text-gray-900">Settings</a>
-                    <a href="{{ route('admin.reports.index') }}" class="text-gray-600 hover:text-gray-900">Reports</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-3">
-                        @if (auth()->user()->profile_picture)
-                            <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
-                                alt="{{ auth()->user()->name }}"
-                                class="h-10 w-10 rounded-full object-cover border-2 border-gray-300">
-                        @else
-                            <div
-                                class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                            </div>
-                        @endif
-                        <span class="text-gray-700">{{ auth()->user()->name }}</span>
-                    </div>
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Welcome Message -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -160,8 +98,6 @@
                     <p class="text-sm text-gray-600">Create, edit, and publish blog posts to keep our audience engaged
                         and informed.</p>
                 </a>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
                 <a href="{{ route('admin.products.index') }}"
                     class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
                     <div
@@ -181,6 +117,21 @@
                     <h4 class="text-lg font-bold text-gray-800 mb-2">Manage Services</h4>
                     <p class="text-sm text-gray-600">Showcase our services with detailed information and pricing to
                         attract customers.</p>
+                </a>
+                <a href="{{ route('admin.contact-messages.index') }}"
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center relative">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-pink-300 bg-gradient-to-br from-pink-500 via-rose-500 to-red-500 flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-envelope text-white text-2xl"></i>
+                    </div>
+                    @if($stats['unread_messages'] > 0)
+                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                            {{ $stats['unread_messages'] }}
+                        </span>
+                    @endif
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">Manage Messages</h4>
+                    <p class="text-sm text-gray-600">View and manage customer contact messages and inquiries
+                        {{ $stats['unread_messages'] > 0 ? '(' . $stats['unread_messages'] . ' unread)' : '' }}</p>
                 </a>
                 <a href="{{ route('admin.reports.index') }}"
                     class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
@@ -209,6 +160,5 @@
             </div>
         </div>
     </div>
-</body>
 
-</html>
+</x-layout>

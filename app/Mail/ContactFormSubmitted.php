@@ -2,25 +2,25 @@
 
 namespace App\Mail;
 
+use App\Models\ContactMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
 
-class UserCreatedSuccessfully extends Mailable
+class ContactFormSubmitted extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
+    public $contactMessage;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $user)
+    public function __construct(ContactMessage $contactMessage)
     {
-        $this->user = $user;
+        $this->contactMessage = $contactMessage;
     }
 
     /**
@@ -29,7 +29,7 @@ class UserCreatedSuccessfully extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'User Created Successfully',
+            subject: 'New Contact Form Submission - ' . $this->contactMessage->name,
         );
     }
 
@@ -39,7 +39,7 @@ class UserCreatedSuccessfully extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.user',
+            view: 'mail.mail',
         );
     }
 
@@ -53,3 +53,4 @@ class UserCreatedSuccessfully extends Mailable
         return [];
     }
 }
+

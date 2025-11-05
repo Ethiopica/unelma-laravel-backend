@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Mail\UserCreatedSuccessfully;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
@@ -63,8 +65,24 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
             'is_admin' => $request->boolean('is_admin'),
             'profile_picture' => $profilePicturePath,
-            'email_verified_at' => now(),
         ]);
+
+        // Send login details email (existing)
+        try {
+            Mail::to($user->email)->send(new UserCreatedSuccessfully($user));
+        } catch (\Exception $e) {
+            // Log error but don't fail the user creation
+            \Log::error('Failed to send user creation email: ' . $e->getMessage());
+        }
+
+        // Trigger email verification notification
+        try {
+            if (method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send verification email: ' . $e->getMessage());
+        }
 
         return redirect()
             ->route('admin.users.index')
