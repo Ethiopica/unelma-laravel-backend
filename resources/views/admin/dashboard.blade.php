@@ -1,16 +1,15 @@
 <x-layout>
-    {{-- Title of the page Placeholder Fill --}}
     <x-slot:title>
-        Dashboard- Unelma
+        Admin Dashboard - {{ config('app.name') }}
     </x-slot:title>
-    <!-- Navigation Bar -->
+
     <x-header />
-    <!-- Main Content -->
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Welcome Message -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome back, {{ auth()->user()->name }}!</h2>
-            <p class="text-gray-600">Here's what's happening with your platform today.</p>
+            <p class="text-gray-600">Here's what's happening with this platform today.</p>
         </div>
 
         <!-- Stats Grid -->
@@ -69,59 +68,97 @@
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Quick Actions</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <a href="{{ route('admin.users.create') }}"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center justify-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    <span>Add User</span>
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-blue-300 bg-gradient-to-br from-blue-500 via-blue-600 to-cyan-500 flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-user-plus text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">Add User</h4>
+                    <p class="text-sm text-gray-600">Create a new user account with specific roles and permissions.</p>
                 </a>
                 <a href="{{ route('admin.users.index') }}"
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center justify-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                        </path>
-                    </svg>
-                    <span>Manage Users</span>
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-emerald-300 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500 flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-users text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">Manage Users</h4>
+                    <p class="text-sm text-gray-600">View, edit, and manage all user accounts
+                        comprehensive controls.</p>
                 </a>
-                <a href="{{ route('admin.settings.index') }}"
-                    class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center justify-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-                        </path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                    <span>Settings</span>
+                <a href="{{ route('admin.blogs.index') }}"
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-teal-300 bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-blog text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">Manage Blog</h4>
+                    <p class="text-sm text-gray-600">Create, edit, and publish blog posts to keep our audience engaged
+                        and informed.</p>
                 </a>
-                <a href="{{ route('admin.reports.index') }}"
-                    class="text-white px-6 py-3 rounded-lg transition duration-200 flex items-center justify-center space-x-2"
-                    style="background-color: #313F2C;" onmouseover="this.style.backgroundColor='#253322'"
-                    onmouseout="this.style.backgroundColor='#313F2C'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                    <span>View Reports </span>
+                <a href="{{ route('admin.products.index') }}"
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-orange-300 bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fab fa-product-hunt text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">Manage Products</h4>
+                    <p class="text-sm text-gray-600">Add, update, and organize product catalog with images and
+                        detailed descriptions.</p>
+                </a>
+                <a href="{{ route('admin.services.index') }}"
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-violet-300 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-briefcase text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">Manage Services</h4>
+                    <p class="text-sm text-gray-600">Showcase our services with detailed information and pricing to
+                        attract customers.</p>
                 </a>
                 <a href="{{ route('admin.contact-messages.index') }}"
-                    class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center justify-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
-                    </svg>
-
-                    <span>User Messages<span
-                            class="inline-flex items-center rounded-md bg-red-400/10 px-2 py-1 text-xs font-medium text-red-400 inset-ring inset-ring-red-400/20">New</span>
-                    </span>
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center relative">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-pink-300 bg-gradient-to-br from-pink-500 via-rose-500 to-red-500 flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-envelope text-white text-2xl"></i>
+                    </div>
+                    @if($stats['unread_messages'] > 0)
+                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                            {{ $stats['unread_messages'] }}
+                        </span>
+                    @endif
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">Manage Messages</h4>
+                    <p class="text-sm text-gray-600">View and manage customer contact messages and inquiries
+                        {{ $stats['unread_messages'] > 0 ? '(' . $stats['unread_messages'] . ' unread)' : '' }}</p>
+                </a>
+                <a href="{{ route('admin.reports.index') }}"
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-slate-300 bg-gradient-to-br from-slate-600 via-gray-600 to-zinc-600 flex items-center justify-center mb-4 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">View Reports</h4>
+                    <p class="text-sm text-gray-600">Access comprehensive analytics and reports to track our system's
+                        performance and usage.</p>
+                </a>
+                <a href="{{ route('admin.settings.index') }}"
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200 flex flex-col items-center text-center">
+                    <div
+                        class="w-20 h-20 rounded-full border-2 border-purple-300 bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600 flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-gear text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">Settings</h4>
+                    <p class="text-sm text-gray-600">Configure system settings, preferences, and customize our admin
+                        panel experience.</p>
                 </a>
             </div>
         </div>
     </div>
+
 </x-layout>

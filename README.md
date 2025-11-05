@@ -17,6 +17,7 @@ Built with **Laravel 11**, it provides secure RESTful APIs, admin dashboard, use
 - ✅ **User Management** - Complete CRUD operations for users
 - ✅ **Profile Pictures** - Image upload and management system
 - ✅ **Settings & Reports** - Configuration management and analytics dashboard
+- ✅ **Content Management System (CMS)** - Manage pages (Home, About, Services, Products, Contact)
 - ✅ **RESTful API** - Secure endpoints for frontend integration
 - ✅ **Dual Authentication** - Session-based (web) + Token-based (API)
 - ✅ **Customer Portal** - Self-service API for user account management
@@ -73,7 +74,7 @@ php artisan key:generate
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_DATABASE=laravel
-DB_USERNAME=laravel
+DB_USERNAME=root
 DB_PASSWORD=your_password
 
 # 5. Run migrations and seed admin user
@@ -97,8 +98,8 @@ php artisan serve
 ### Default Admin Credentials
 
 ```
-Email: example@unelma.com
-Password: 12345678
+Email: admin@example.com
+Password: password
 ```
 
 ⚠️ **Change these credentials immediately after first login!**
@@ -118,6 +119,7 @@ Password: 12345678
 | User Management | [USER_MANAGEMENT_SETUP.md](./USER_MANAGEMENT_SETUP.md) | CRUD operations for user management |
 | Profile Pictures | [PROFILE_PICTURE_FEATURE.md](./PROFILE_PICTURE_FEATURE.md) | Image upload & management system |
 | Settings & Reports | [SETTINGS_AND_REPORTS_SETUP.md](./SETTINGS_AND_REPORTS_SETUP.md) | Admin settings & analytics dashboard |
+| Content Management | [CMS_DOCUMENTATION.md](./CMS_DOCUMENTATION.md) | Page management system (Home, About, etc.) |
 | API Authentication | [API_AUTHENTICATION_SETUP.md](./API_AUTHENTICATION_SETUP.md) | Sanctum setup & API auth guide |
 | Customer API | [CUSTOMER_API_DOCUMENTATION.md](./CUSTOMER_API_DOCUMENTATION.md) | Self-service customer endpoints |
 | Welcome Page | [WELCOME_PAGE_SETUP.md](./WELCOME_PAGE_SETUP.md) | Landing page customization guide |
@@ -409,4 +411,62 @@ Business College Helsinki
 
 ---
 
+## 📞 Support & Resources
 
+### Documentation
+- [Complete System Documentation](./COMPLETE_SYSTEM_DOCUMENTATION.md)
+- [API Authentication Guide](./API_AUTHENTICATION_SETUP.md)
+- [Admin Dashboard Setup](./ADMIN_DASHBOARD_SETUP.md)
+
+### Laravel Resources
+- [Laravel Documentation](https://laravel.com/docs)
+- [Laravel Sanctum](https://laravel.com/docs/sanctum)
+- [Laravel API Resources](https://laravel.com/docs/eloquent-resources)
+
+### Community
+- [Laravel Forums](https://laracasts.com/discuss)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/laravel)
+
+---
+
+## 🎯 Getting Started Paths
+
+### For Frontend Developers
+1. Read [API_AUTHENTICATION_SETUP.md](./API_AUTHENTICATION_SETUP.md)
+2. Review API endpoints section above
+3. Check CORS configuration
+4. Use provided API examples
+
+### For Backend Developers
+1. Review [COMPLETE_SYSTEM_DOCUMENTATION.md](./COMPLETE_SYSTEM_DOCUMENTATION.md)
+2. Study the file structure
+3. Explore controllers and models
+4. Review middleware implementation
+
+### For Designers
+1. Check [WELCOME_PAGE_SETUP.md](./WELCOME_PAGE_SETUP.md)
+2. Review Blade templates in `resources/views/`
+3. Customize Tailwind CSS styling
+
+### For System Admins
+1. Read deployment section above
+2. Review security configurations
+3. Follow production checklist
+4. Set up proper permissions
+
+---
+
+## ✨ Highlights
+
+- 🚀 **Production-Ready**: Complete authentication and authorization
+- 🎨 **Modern UI**: Beautiful admin dashboard with Tailwind CSS
+- 🔐 **Secure**: Industry-standard security practices
+- 📱 **API-First**: RESTful API for React frontend integration
+- 📚 **Well-Documented**: Comprehensive guides for every feature
+- 🧪 **Tested**: Ready for production deployment
+
+---
+
+**Built with ❤️ by React25K@Team 3**
+
+For detailed information on any feature, please refer to the comprehensive documentation files listed above.

@@ -32,11 +32,10 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
-
+            
             // Check if user is admin
             if ($user->is_admin) {
                 $request->session()->regenerate();
-
                 return redirect()->intended(route('admin.dashboard'));
             }
 
@@ -65,3 +64,11 @@ class AuthController extends Controller
         return redirect()->route('admin.login');
     }
 }
+
+
+
+
+
+
+
+

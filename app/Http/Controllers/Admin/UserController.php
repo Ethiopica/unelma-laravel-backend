@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Mail\UserCreatedSuccessfully;
 use App\Models\User;
+use App\Mail\UserCreatedSuccessfully;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -19,8 +19,17 @@ class UserController extends Controller
     public function index()
     {
         $users = User::latest()->paginate(10);
-
-        return view('admin.users.index', compact('users'));
+        
+        $stats = [
+            'total_users' => User::count(),
+            'admin_users' => User::where('is_admin', true)->count(),
+            'regular_users' => User::where(function($query) {
+                $query->where('is_admin', false)
+                      ->orWhereNull('is_admin');
+            })->count(),
+        ];
+        
+        return view('admin.users.index', compact('users', 'stats'));
     }
 
     /**
@@ -56,10 +65,23 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
             'is_admin' => $request->boolean('is_admin'),
             'profile_picture' => $profilePicturePath,
-            'email_verified_at' => now(),
         ]);
-        if ($user) {
-            $data = Mail::to($request->email)->send(new UserCreatedSuccessfully);
+
+        // Send login details email (existing)
+        try {
+            Mail::to($user->email)->send(new UserCreatedSuccessfully($user));
+        } catch (\Exception $e) {
+            // Log error but don't fail the user creation
+            \Log::error('Failed to send user creation email: ' . $e->getMessage());
+        }
+
+        // Trigger email verification notification
+        try {
+            if (method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send verification email: ' . $e->getMessage());
         }
 
         return redirect()
@@ -82,7 +104,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'password' => ['nullable', 'confirmed', Password::defaults()],
             'is_admin' => ['boolean'],
             'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
@@ -128,13 +150,6 @@ class UserController extends Controller
                 ->with('error', 'You cannot delete your own account!');
         }
 
-        // Prevent admins from deleting other admin users
-        if ($user->is_admin) {
-            return redirect()
-                ->route('admin.users.index')
-                ->with('error', 'You cannot delete admin users!');
-        }
-
         // Delete profile picture if exists
         if ($user->profile_picture) {
             Storage::disk('public')->delete($user->profile_picture);
@@ -146,22 +161,5 @@ class UserController extends Controller
             ->route('admin.users.index')
             ->with('success', 'User deleted successfully!');
     }
-
-    /**
-     * Update user role
-     */
-    public function updateRole(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'role' => ['required', 'string', 'in:super_admin,admin,moderator,editor,viewer'],
-        ]);
-
-        $user->update([
-            'role' => $validated['role'],
-        ]);
-
-        return redirect()
-            ->route('admin.users.index')
-            ->with('success', 'User role updated successfully!');
-    }
 }
+

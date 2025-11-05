@@ -21,12 +21,11 @@ class UserProfileController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'image' => $user->profile_picture,
                 'is_admin' => $user->is_admin,
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
                 'member_since' => $user->created_at->diffForHumans(),
-            ],
+            ]
         ]);
     }
 
@@ -39,7 +38,7 @@ class UserProfileController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
         ]);
 
         $user->update([
@@ -56,7 +55,7 @@ class UserProfileController extends Controller
                 'is_admin' => $user->is_admin,
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
-            ],
+            ]
         ]);
     }
 
@@ -73,12 +72,12 @@ class UserProfileController extends Controller
         ]);
 
         // Check if current password is correct
-        if (! Hash::check($validated['current_password'], $user->password)) {
+        if (!Hash::check($validated['current_password'], $user->password)) {
             return response()->json([
                 'message' => 'Current password is incorrect',
                 'errors' => [
-                    'current_password' => ['The current password is incorrect.'],
-                ],
+                    'current_password' => ['The current password is incorrect.']
+                ]
             ], 422);
         }
 
@@ -104,12 +103,12 @@ class UserProfileController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! Hash::check($request->password, $user->password)) {
+        if (!Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Password is incorrect',
                 'errors' => [
-                    'password' => ['The password is incorrect.'],
-                ],
+                    'password' => ['The password is incorrect.']
+                ]
             ], 422);
         }
 
@@ -137,7 +136,17 @@ class UserProfileController extends Controller
                 'account_age_days' => $user->created_at->diffInDays(now()),
                 'last_login' => $user->tokens()->latest()->first()?->created_at?->format('Y-m-d H:i:s'),
                 'account_status' => 'active',
-            ],
+            ]
         ]);
     }
 }
+
+
+
+
+
+
+
+
+
+

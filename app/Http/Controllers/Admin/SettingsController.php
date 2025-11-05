@@ -30,7 +30,7 @@ class SettingsController extends Controller
 
         // Here you would typically save to a settings table or config file
         // For now, we'll just show a success message
-
+        
         return redirect()
             ->route('admin.settings.index')
             ->with('success', 'Settings updated successfully!');
