@@ -15,6 +15,10 @@
                      class="{{ request()->routeIs('admin.reports.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Reports</a>
                  <a href="{{ route('admin.contact-messages.index') }}"
                      class="{{ request()->routeIs('admin.contact-messages.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Messages</a>
+                 <a href="{{ route('admin.products.index') }}"
+                     class="{{ request()->routeIs('admin.products.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Products</a>
+                 <a href="{{ route('admin.blogs.index') }}"
+                     class="{{ request()->routeIs('admin.blogs.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Blogs</a>
              </div>
              <div class="flex items-center space-x-4">
                  <div class="flex items-center space-x-3">

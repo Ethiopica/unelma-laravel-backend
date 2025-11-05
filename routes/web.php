@@ -50,10 +50,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-        
+
         // User Management
         Route::resource('users', UserController::class)->except(['show']);
-        
+
         // Blog Management - Use ID binding for admin routes (numeric = ID, otherwise slug)
         Route::bind('blog', function ($value) {
             // For admin routes, try ID first if value is numeric
@@ -64,13 +64,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             return \App\Models\Blog::where('slug', $value)->firstOrFail();
         });
         Route::resource('blogs', BlogController::class)->except(['show']);
-        
         // Product Management
         Route::resource('products', AdminProductController::class)->except(['show']);
-        
+
         // Services Management
         Route::resource('services', ServicesController::class)->except(['show']);
-        
+
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::post('/contact-messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');
@@ -80,11 +79,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
-        
+
         // Reports
         Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportsController::class, 'export'])->name('reports.export');
-        
+
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::post('/contact-messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');

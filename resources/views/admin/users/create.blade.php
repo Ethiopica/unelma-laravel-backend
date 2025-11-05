@@ -119,7 +119,6 @@
                     @enderror
                     <p class="mt-1 text-sm text-gray-500">Must be at least 8 characters</p>
                 </div>
-
                 <!-- Confirm Password Field -->
                 <div>
                     <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
