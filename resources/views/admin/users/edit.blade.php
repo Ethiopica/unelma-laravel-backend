@@ -1,47 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Edit User - {{ config('app.name') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gruppo&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: "Montserrat", sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 min-h-screen">
+<x-layout>
+
+    <x-slot:title>Edit User User - {{ config('app.name') }}</x-slot:title>
     <!-- Navigation Bar -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-gray-800">Admin Panel</a>
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="{{ route('admin.users.index') }}" class="text-gray-600 hover:text-gray-900">Users</a>
-                    <a href="{{ route('admin.settings.index') }}" class="text-gray-600 hover:text-gray-900">Settings</a>
-                    <a href="{{ route('admin.reports.index') }}" class="text-gray-600 hover:text-gray-900">Reports</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button 
-                            type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200"
-                        >
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <x-header />
 
     <!-- Main Content -->
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -60,7 +21,8 @@
 
         <!-- Form Card -->
         <div class="bg-white rounded-lg shadow-md p-8">
-            <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data"
+                class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -69,16 +31,10 @@
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                         Full Name <span class="text-red-500">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        value="{{ old('name', $user->name) }}"
-                        required 
+                    <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required
                         autofocus
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('name') border-red-500 @enderror"
-                        placeholder="John Doe"
-                    >
+                        placeholder="John Doe">
                     @error('name')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -89,15 +45,10 @@
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                         Email Address <span class="text-red-500">*</span>
                     </label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        value="{{ old('email', $user->email) }}"
+                    <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
                         required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('email') border-red-500 @enderror"
-                        placeholder="john@example.com"
-                    >
+                        placeholder="john@example.com">
                     @error('email')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -108,25 +59,19 @@
                     <label for="profile_picture" class="block text-sm font-medium text-gray-700 mb-2">
                         Profile Picture
                     </label>
-                    
-                    @if($user->profile_picture)
+
+                    @if ($user->profile_picture)
                         <div class="mb-4">
                             <p class="text-sm text-gray-600 mb-2">Current Profile Picture:</p>
-                            <img 
-                                src="{{ asset('storage/' . $user->profile_picture) }}" 
-                                alt="{{ $user->name }}'s profile picture" 
-                                class="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
-                            >
+                            <img src="{{ asset('storage/' . $user->profile_picture) }}"
+                                alt="{{ $user->name }}'s profile picture"
+                                class="w-24 h-24 rounded-full object-cover border-2 border-gray-300">
                         </div>
                     @endif
-                    
-                    <input 
-                        type="file" 
-                        id="profile_picture" 
-                        name="profile_picture"
+
+                    <input type="file" id="profile_picture" name="profile_picture"
                         accept="image/jpeg,image/png,image/jpg,image/gif"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('profile_picture') border-red-500 @enderror"
-                    >
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('profile_picture') border-red-500 @enderror">
                     @error('profile_picture')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -146,13 +91,9 @@
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                             New Password
                         </label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password"
+                        <input type="password" id="password" name="password"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('password') border-red-500 @enderror"
-                            placeholder="••••••••"
-                        >
+                            placeholder="••••••••">
                         @error('password')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -164,13 +105,9 @@
                         <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
                             Confirm New Password
                         </label>
-                        <input 
-                            type="password" 
-                            id="password_confirmation" 
-                            name="password_confirmation"
+                        <input type="password" id="password_confirmation" name="password_confirmation"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="••••••••"
-                        >
+                            placeholder="••••••••">
                     </div>
                 </div>
 
@@ -178,14 +115,9 @@
                 <div class="border-t pt-6">
                     <div class="flex items-start">
                         <div class="flex items-center h-5">
-                            <input 
-                                type="checkbox" 
-                                id="is_admin" 
-                                name="is_admin"
-                                value="1"
+                            <input type="checkbox" id="is_admin" name="is_admin" value="1"
                                 {{ old('is_admin', $user->is_admin) ? 'checked' : '' }}
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            >
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                         </div>
                         <div class="ml-3">
                             <label for="is_admin" class="font-medium text-gray-700">
@@ -207,22 +139,16 @@
 
                 <!-- Form Actions -->
                 <div class="flex items-center justify-end space-x-4 pt-6 border-t">
-                    <a 
-                        href="{{ route('admin.users.index') }}"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200"
-                    >
+                    <a href="{{ route('admin.users.index') }}"
+                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
                         Cancel
                     </a>
-                    <button 
-                        type="submit"
-                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200"
-                    >
+                    <button type="submit"
+                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200">
                         Update User
                     </button>
                 </div>
             </form>
         </div>
     </div>
-</body>
-</html>
-
+</x-layout>

@@ -1,49 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Edit Service - {{ config('app.name') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gruppo&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: "Montserrat", sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 min-h-screen">
+<x-layout>
+    <x-slot:title>Edit Service - {{ config('app.name') }}</x-slot:title>
     <!-- Navigation Bar -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-gray-800">Admin Panel</a>
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="{{ route('admin.users.index') }}" class="text-gray-600 hover:text-gray-900">Users</a>
-                    <a href="{{ route('admin.services.index') }}" class="text-blue-600 font-semibold">Services</a>
-                    <a href="{{ route('admin.settings.index') }}" class="text-gray-600 hover:text-gray-900">Settings</a>
-                    <a href="{{ route('admin.reports.index') }}" class="text-gray-600 hover:text-gray-900">Reports</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button 
-                            type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200"
-                        >
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-
+    <x-header />
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
@@ -70,15 +28,10 @@
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                         Service Name <span class="text-red-500">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        value="{{ old('name', $service->name) }}"
+                    <input type="text" id="name" name="name" value="{{ old('name', $service->name) }}"
                         required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('name') border-red-500 @enderror"
-                        placeholder="e.g., Cloud Server Pro"
-                    >
+                        placeholder="e.g., Cloud Server Pro">
                     @error('name')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -89,13 +42,9 @@
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
                         Description
                     </label>
-                    <textarea 
-                        id="description" 
-                        name="description" 
-                        rows="4"
+                    <textarea id="description" name="description" rows="4"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
-                        placeholder="Describe your service features and benefits..."
-                    >{{ old('description', $service->description) }}</textarea>
+                        placeholder="Describe your service features and benefits...">{{ old('description', $service->description) }}</textarea>
                     @error('description')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -106,18 +55,14 @@
                     <label for="icon" class="block text-sm font-medium text-gray-700 mb-2">
                         Icon (Emoji or Icon Class)
                     </label>
-                    <input 
-                        type="text" 
-                        id="icon" 
-                        name="icon" 
-                        value="{{ old('icon', $service->icon) }}"
+                    <input type="text" id="icon" name="icon" value="{{ old('icon', $service->icon) }}"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('icon') border-red-500 @enderror"
-                        placeholder="e.g., ☁️ or fa-cloud"
-                    >
+                        placeholder="e.g., ☁️ or fa-cloud">
                     @error('icon')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
-                    <p class="mt-1 text-sm text-gray-500">You can use emoji or icon class names (e.g., Font Awesome classes)</p>
+                    <p class="mt-1 text-sm text-gray-500">You can use emoji or icon class names (e.g., Font Awesome
+                        classes)</p>
                 </div>
 
                 <!-- Service Image -->
@@ -126,24 +71,17 @@
                         Service Image
                     </label>
 
-                    @if($service->image)
+                    @if ($service->image)
                         <div class="mb-4">
                             <p class="text-sm text-gray-600 mb-2">Current Image:</p>
-                            <img 
-                                src="{{ asset('storage/' . $service->image) }}" 
-                                alt="{{ $service->name }}" 
-                                class="w-48 h-32 object-cover rounded border-2 border-gray-300"
-                            >
+                            <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->name }}"
+                                class="w-48 h-32 object-cover rounded border-2 border-gray-300">
                         </div>
                     @endif
 
-                    <input 
-                        type="file" 
-                        id="image" 
-                        name="image"
+                    <input type="file" id="image" name="image"
                         accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image') border-red-500 @enderror"
-                    >
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image') border-red-500 @enderror">
                     @error('image')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -162,15 +100,10 @@
                         <label for="order" class="block text-sm font-medium text-gray-700 mb-2">
                             Display Order
                         </label>
-                        <input 
-                            type="number" 
-                            id="order" 
-                            name="order" 
-                            value="{{ old('order', $service->order) }}"
+                        <input type="number" id="order" name="order" value="{{ old('order', $service->order) }}"
                             min="0"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('order') border-red-500 @enderror"
-                            placeholder="0"
-                        >
+                            placeholder="0">
                         @error('order')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -182,14 +115,9 @@
                         <!-- Featured -->
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
-                                <input 
-                                    type="checkbox" 
-                                    id="is_featured" 
-                                    name="is_featured"
-                                    value="1"
+                                <input type="checkbox" id="is_featured" name="is_featured" value="1"
                                     {{ old('is_featured', $service->is_featured) ? 'checked' : '' }}
-                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                >
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             </div>
                             <div class="ml-3">
                                 <label for="is_featured" class="font-medium text-gray-700">
@@ -204,14 +132,9 @@
                         <!-- Active Status -->
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
-                                <input 
-                                    type="checkbox" 
-                                    id="is_active" 
-                                    name="is_active"
-                                    value="1"
+                                <input type="checkbox" id="is_active" name="is_active" value="1"
                                     {{ old('is_active', $service->is_active) ? 'checked' : '' }}
-                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                >
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             </div>
                             <div class="ml-3">
                                 <label for="is_active" class="font-medium text-gray-700">
@@ -230,29 +153,28 @@
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
                             <p class="text-gray-600">Created:</p>
-                            <p class="font-medium text-gray-900">{{ $service->created_at->format('M d, Y \a\t h:i A') }}</p>
+                            <p class="font-medium text-gray-900">
+                                {{ $service->created_at->format('M d, Y \a\t h:i A') }}</p>
                         </div>
                         <div>
                             <p class="text-gray-600">Last Updated:</p>
-                            <p class="font-medium text-gray-900">{{ $service->updated_at->format('M d, Y \a\t h:i A') }}</p>
+                            <p class="font-medium text-gray-900">
+                                {{ $service->updated_at->format('M d, Y \a\t h:i A') }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form Actions -->
                 <div class="flex items-center justify-between pt-6 border-t">
-                    <a 
-                        href="{{ route('admin.services.index') }}"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200"
-                    >
+                    <a href="{{ route('admin.services.index') }}"
+                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
                         Cancel
                     </a>
-                    <button 
-                        type="submit"
-                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center space-x-2"
-                    >
+                    <button type="submit"
+                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
                         </svg>
                         <span>Update Service</span>
                     </button>
@@ -260,9 +182,4 @@
             </form>
         </div>
     </div>
-</body>
-</html>
-
-
-
-
+</x-layout>

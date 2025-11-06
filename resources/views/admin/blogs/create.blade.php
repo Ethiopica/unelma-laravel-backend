@@ -1,48 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Create Blog Post - {{ config('app.name') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gruppo&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: "Montserrat", sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 min-h-screen">
+<x-layout>
+    <x-slot:title>Create blog Post - {{ config('app.name') }}</x-slot:title>
     <!-- Navigation Bar -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-gray-800">Admin Panel</a>
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="{{ route('admin.users.index') }}" class="text-gray-600 hover:text-gray-900">Users</a>
-                    <a href="{{ route('admin.blogs.index') }}" class="text-blue-600 font-semibold">Blog</a>
-                    <a href="{{ route('admin.products.index') }}" class="text-gray-600 hover:text-gray-900">Products</a>
-                    <a href="{{ route('admin.settings.index') }}" class="text-gray-600 hover:text-gray-900">Settings</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button 
-                            type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200"
-                        >
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <x-header />
 
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -69,15 +28,9 @@
                     <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                         Blog Title <span class="text-red-500">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="title" 
-                        name="title" 
-                        value="{{ old('title') }}"
-                        required
+                    <input type="text" id="title" name="title" value="{{ old('title') }}" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('title') border-red-500 @enderror"
-                        placeholder="e.g., Getting Started with Cloud Computing"
-                    >
+                        placeholder="e.g., Getting Started with Cloud Computing">
                     @error('title')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -88,14 +41,9 @@
                     <label for="slug" class="block text-sm font-medium text-gray-700 mb-2">
                         Slug (URL)
                     </label>
-                    <input 
-                        type="text" 
-                        id="slug" 
-                        name="slug" 
-                        value="{{ old('slug') }}"
+                    <input type="text" id="slug" name="slug" value="{{ old('slug') }}"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('slug') border-red-500 @enderror"
-                        placeholder="e.g., getting-started-with-cloud-computing"
-                    >
+                        placeholder="e.g., getting-started-with-cloud-computing">
                     @error('slug')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -107,13 +55,9 @@
                     <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-2">
                         Excerpt (Short Description)
                     </label>
-                    <textarea 
-                        id="excerpt" 
-                        name="excerpt" 
-                        rows="3"
+                    <textarea id="excerpt" name="excerpt" rows="3"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('excerpt') border-red-500 @enderror"
-                        placeholder="A brief summary of your blog post (max 500 characters)..."
-                    >{{ old('excerpt') }}</textarea>
+                        placeholder="A brief summary of your blog post (max 500 characters)...">{{ old('excerpt') }}</textarea>
                     @error('excerpt')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -125,14 +69,9 @@
                     <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
                         Content <span class="text-red-500">*</span>
                     </label>
-                    <textarea 
-                        id="content" 
-                        name="content" 
-                        rows="15"
-                        required
+                    <textarea id="content" name="content" rows="15" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('content') border-red-500 @enderror"
-                        placeholder="Write your blog post content here... (HTML supported)"
-                    >{{ old('content') }}</textarea>
+                        placeholder="Write your blog post content here... (HTML supported)">{{ old('content') }}</textarea>
                     @error('content')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -144,13 +83,9 @@
                     <label for="featured_image" class="block text-sm font-medium text-gray-700 mb-2">
                         Featured Image
                     </label>
-                    <input 
-                        type="file" 
-                        id="featured_image" 
-                        name="featured_image"
+                    <input type="file" id="featured_image" name="featured_image"
                         accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('featured_image') border-red-500 @enderror"
-                    >
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('featured_image') border-red-500 @enderror">
                     @error('featured_image')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -164,14 +99,9 @@
                         <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
                             Category
                         </label>
-                        <input 
-                            type="text" 
-                            id="category" 
-                            name="category" 
-                            value="{{ old('category') }}"
+                        <input type="text" id="category" name="category" value="{{ old('category') }}"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category') border-red-500 @enderror"
-                            placeholder="e.g., Technology, Cloud, Tutorial"
-                        >
+                            placeholder="e.g., Technology, Cloud, Tutorial">
                         @error('category')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -182,14 +112,9 @@
                         <label for="tags" class="block text-sm font-medium text-gray-700 mb-2">
                             Tags
                         </label>
-                        <input 
-                            type="text" 
-                            id="tags" 
-                            name="tags" 
-                            value="{{ old('tags') }}"
+                        <input type="text" id="tags" name="tags" value="{{ old('tags') }}"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('tags') border-red-500 @enderror"
-                            placeholder="e.g., cloud, aws, tutorial (comma-separated)"
-                        >
+                            placeholder="e.g., cloud, aws, tutorial (comma-separated)">
                         @error('tags')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -206,14 +131,9 @@
                         <label for="meta_title" class="block text-sm font-medium text-gray-700 mb-2">
                             Meta Title
                         </label>
-                        <input 
-                            type="text" 
-                            id="meta_title" 
-                            name="meta_title" 
-                            value="{{ old('meta_title') }}"
+                        <input type="text" id="meta_title" name="meta_title" value="{{ old('meta_title') }}"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('meta_title') border-red-500 @enderror"
-                            placeholder="SEO title (if different from blog title)"
-                        >
+                            placeholder="SEO title (if different from blog title)">
                         @error('meta_title')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -224,13 +144,9 @@
                         <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-2">
                             Meta Description
                         </label>
-                        <textarea 
-                            id="meta_description" 
-                            name="meta_description" 
-                            rows="3"
+                        <textarea id="meta_description" name="meta_description" rows="3"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('meta_description') border-red-500 @enderror"
-                            placeholder="Brief description for search engines (150-160 characters recommended)"
-                        >{{ old('meta_description') }}</textarea>
+                            placeholder="Brief description for search engines (150-160 characters recommended)">{{ old('meta_description') }}</textarea>
                         @error('meta_description')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -241,14 +157,10 @@
                         <label for="meta_keywords" class="block text-sm font-medium text-gray-700 mb-2">
                             Meta Keywords
                         </label>
-                        <input 
-                            type="text" 
-                            id="meta_keywords" 
-                            name="meta_keywords" 
+                        <input type="text" id="meta_keywords" name="meta_keywords"
                             value="{{ old('meta_keywords') }}"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('meta_keywords') border-red-500 @enderror"
-                            placeholder="e.g., keyword1, keyword2, keyword3"
-                        >
+                            placeholder="e.g., keyword1, keyword2, keyword3">
                         @error('meta_keywords')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -265,15 +177,10 @@
                         <label for="order" class="block text-sm font-medium text-gray-700 mb-2">
                             Display Order
                         </label>
-                        <input 
-                            type="number" 
-                            id="order" 
-                            name="order" 
-                            value="{{ old('order', 0) }}"
+                        <input type="number" id="order" name="order" value="{{ old('order', 0) }}"
                             min="0"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('order') border-red-500 @enderror"
-                            placeholder="0"
-                        >
+                            placeholder="0">
                         @error('order')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -284,14 +191,9 @@
                     <div class="mb-6">
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
-                                <input 
-                                    type="checkbox" 
-                                    id="is_published" 
-                                    name="is_published"
-                                    value="1"
+                                <input type="checkbox" id="is_published" name="is_published" value="1"
                                     {{ old('is_published', false) ? 'checked' : '' }}
-                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                >
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             </div>
                             <div class="ml-3">
                                 <label for="is_published" class="font-medium text-gray-700">
@@ -307,18 +209,15 @@
 
                 <!-- Form Actions -->
                 <div class="flex items-center justify-end space-x-4 pt-6 border-t">
-                    <a 
-                        href="{{ route('admin.blogs.index') }}"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200"
-                    >
+                    <a href="{{ route('admin.blogs.index') }}"
+                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
                         Cancel
                     </a>
-                    <button 
-                        type="submit"
-                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center space-x-2"
-                    >
+                    <button type="submit"
+                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
                         </svg>
                         <span>Create Blog Post</span>
                     </button>
@@ -326,11 +225,4 @@
             </form>
         </div>
     </div>
-</body>
-</html>
-
-
-
-
-
-
+</x-layout>

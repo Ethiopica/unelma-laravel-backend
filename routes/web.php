@@ -93,3 +93,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/contact-messages/{message}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
     });
 });
+
+// Delete at end not at beginning just to see
+Route::view('/user-register-email', 'mail.user');
+Route::view('/reply-message-mail', 'mail.mail');
