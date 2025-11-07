@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\CarrerController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -73,6 +74,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Services Management
         Route::resource('services', ServicesController::class)->except(['show']);
 
+        //Job Management
+        Route::resource('carrers', CarrerController::class)->except(['show']);
+
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::post('/contact-messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');
@@ -96,4 +100,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Delete at end not at beginning just to see
 Route::view('/user-register-email', 'mail.user');
+Route::view('/contactmessage-frontend', 'TestApi.index');
 Route::view('/reply-message-mail', 'mail.mail');

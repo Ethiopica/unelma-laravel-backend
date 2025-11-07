@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController as ApiBlogController;
+use App\Http\Controllers\Api\CarrerController as ApiCarrerController;
 use App\Http\Controllers\Api\ContactController as ApiContactController;
 use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageController;
 use App\Http\Controllers\Api\PageController as ApiPageController;
@@ -13,10 +14,6 @@ use Illuminate\Support\Facades\Route;
 // Public routes (no authentication required)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
-// Google OAuth routes
-Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('api.auth.google');
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('api.auth.google.callback');
 
 // Public Blog Routes
 Route::get('/blogs', [ApiBlogController::class, 'index']);
@@ -42,6 +39,9 @@ Route::get('/services/featured/list', [ApiServiceController::class, 'featured'])
 
 // Public Contact Form Route
 Route::post('/contact/submit', [ApiContactController::class, 'submit']);
+
+//Public Vacancy Routes
+Route::get('/vacancies', [ApiCarrerController::class, 'index']);
 
 // Protected routes (authentication required)
 Route::middleware('auth:sanctum')->group(function () {

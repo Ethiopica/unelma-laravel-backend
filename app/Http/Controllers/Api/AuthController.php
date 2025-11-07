@@ -49,7 +49,7 @@ class AuthController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            \Log::error('Registration error: '.$e->getMessage(), [
+            \Log::error('Registration error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -127,90 +127,5 @@ class AuthController extends Controller
                 'updated_at' => $user->updated_at?->toISOString() ?? $user->updated_at,
             ],
         ]);
-    }
-
-    /**
-     * Redirect to Google OAuth
-     * Returns the Google OAuth URL for the frontend to redirect to
-     */
-    public function redirectToGoogle()
-    {
-        try {
-            $url = Socialite::driver('google')
-                ->stateless()
-                ->redirect()
-                ->getTargetUrl();
-
-            return response()->json([
-                'url' => $url,
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Google OAuth redirect error: '.$e->getMessage());
-
-            return response()->json([
-                'error' => 'Failed to generate Google OAuth URL',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Handle Google OAuth callback
-     * Creates or updates user and returns authentication token
-     */
-    public function handleGoogleCallback(Request $request)
-    {
-        try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
-
-            // Check if user exists by email
-            $user = User::where('email', $googleUser->getEmail())->first();
-
-            if ($user) {
-                // User exists - update Google ID if not set
-                if (! $user->google_id) {
-                    $user->update(['google_id' => $googleUser->getId()]);
-                }
-            } else {
-                // Create new user
-                $user = User::create([
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'google_id' => $googleUser->getId(),
-                    'password' => null, // OAuth users don't need password
-                    'is_admin' => false,
-                    'email_verified_at' => now(), // Google emails are verified
-                ]);
-            }
-
-            // Delete old tokens
-            $user->tokens()->delete();
-
-            // Create new token
-            $token = $user->createToken('auth-token')->plainTextToken;
-
-            // Redirect to frontend with token and user data
-            // Frontend should handle the token from the URL
-            $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
-            $userData = [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'is_admin' => $user->is_admin,
-                'created_at' => $user->created_at->toISOString(),
-            ];
-
-            return redirect("{$frontendUrl}/auth/callback?".http_build_query([
-                'token' => $token,
-                'user' => json_encode($userData),
-            ]));
-        } catch (\Exception $e) {
-            // Redirect to frontend with error
-            $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
-
-            return redirect("{$frontendUrl}/auth/callback?".http_build_query([
-                'error' => $e->getMessage(),
-            ]));
-        }
     }
 }
