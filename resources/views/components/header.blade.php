@@ -50,7 +50,7 @@
                          <span class="text-gray-700 ">{{ auth()->user()->name }}</span>
                      </div>
                      <a href="{{ route('admin.carrers.index') }}"
-                         class="{{ 'text-white' . request()->routeIs('admin.carrers.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Vacancies|Carrers</a>
+                         class="{{ request()->routeIs('admin.carrers.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">Vacancies|Carrers</a>
                      <form method="POST" action="{{ route('admin.logout') }}">
                          @csrf
                          <button type="submit"
