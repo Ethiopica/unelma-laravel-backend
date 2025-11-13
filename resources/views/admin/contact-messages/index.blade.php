@@ -6,7 +6,8 @@
         <!-- Header -->
         <div class="mb-6">
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Contact Messages</h1>
-            <p class="text-gray-600 mt-1 text-sm sm:text-base">View and manage customer contact messages and inquiries</p>
+            <p class="text-gray-600 mt-1 text-sm sm:text-base">View and manage customer contact messages and inquiries
+            </p>
         </div>
 
         <!-- Success/Error Messages -->
@@ -156,11 +157,13 @@
                                 <div>
                                     <p class="text-sm font-semibold text-gray-900">#{{ $message->id }}</p>
                                     <p class="text-xs text-gray-500">
-                                        {{ $message->created_at->format('M d, Y') }} · <span class="text-gray-400">{{ $message->created_at->format('h:i A') }}</span>
+                                        {{ $message->created_at->format('M d, Y') }} · <span
+                                            class="text-gray-400">{{ $message->created_at->format('h:i A') }}</span>
                                     </p>
                                 </div>
                                 @if (!$message->is_read)
-                                    <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
+                                    <span
+                                        class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
                                         New
                                     </span>
                                 @endif
@@ -178,11 +181,13 @@
                                 <div>
                                     <p class="text-gray-500">Status</p>
                                     @if ($message->is_read)
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                                        <span
+                                            class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
                                             Read
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">
+                                        <span
+                                            class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">
                                             Unread
                                         </span>
                                     @endif
@@ -249,7 +254,8 @@
                 <h3 class="text-lg font-semibold text-gray-900">Message Details</h3>
                 <button onclick="closeMessageModal()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12">
                         </path>
                     </svg>
                 </button>
@@ -342,7 +348,6 @@
                 alert('Message not found in current page');
                 return;
             }
-
             displayMessage(message);
         }
 

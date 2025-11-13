@@ -22,7 +22,11 @@
     @php
         $routeName = optional(request()->route())->getName();
         $adminSidebarExclusions = ['admin.login'];
-        $shouldUseAdminShell = request()->is('admin/*') && ! request()->is('admin/login') && ! request()->is('admin/password*') && ! in_array($routeName, $adminSidebarExclusions, true);
+        $shouldUseAdminShell =
+            request()->is('admin/*') &&
+            !request()->is('admin/login') &&
+            !request()->is('admin/password*') &&
+            !in_array($routeName, $adminSidebarExclusions, true);
     @endphp
 
     @if ($shouldUseAdminShell)
@@ -35,7 +39,8 @@
                 </div>
 
                 <div class="flex-1 flex flex-col min-h-screen">
-                    <header class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 shadow-sm lg:hidden">
+                    <header
+                        class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 shadow-sm lg:hidden">
                         <div class="flex items-center gap-3">
                             <button type="button" id="admin-sidebar-open"
                                 class="rounded-md border border-gray-300 bg-white p-2 text-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -66,7 +71,8 @@
                 </div>
             </div>
 
-            <div id="admin-sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-gray-900/50 backdrop-blur-sm lg:hidden"></div>
+            <div id="admin-sidebar-backdrop"
+                class="fixed inset-0 z-30 hidden bg-gray-900/50 backdrop-blur-sm lg:hidden"></div>
         </div>
     @else
         {{ $slot }}
@@ -74,7 +80,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
     <script>
-        (function () {
+        (function() {
             const sidebar = document.getElementById('admin-sidebar');
             const backdrop = document.getElementById('admin-sidebar-backdrop');
             const openButton = document.getElementById('admin-sidebar-open');
