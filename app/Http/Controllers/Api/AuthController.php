@@ -50,7 +50,7 @@ class AuthController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            \Log::error('Registration error: ' . $e->getMessage(), [
+            \Log::error('Registration error: '.$e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
 

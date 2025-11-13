@@ -156,7 +156,7 @@
             <div>
                 <div class='flex '>
                     <p class="text-sm font-semibold text-gray-900 ">{{ $user?->name }}</p>
-                    @if ($user->created_at)
+                    @if ($user->email_verified_at)
                         <span
                             class="inline-flex justify-center items-center px-2 rounded-full bg-green-100 text-[8px] text-green-800">
                             Verified

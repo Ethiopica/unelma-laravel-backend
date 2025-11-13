@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('excerpt')->nullable();
             $table->longText('content');
             $table->string('featured_image')->nullable();
+            $table->string('featured_image_url')->nullable();
             $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
             $table->string('category')->nullable();
             $table->json('tags')->nullable();

@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class CarrerController extends Controller
 {
-
     /**
      * Display a listing of services
      */
@@ -62,7 +61,6 @@ class CarrerController extends Controller
             'description' => ['required', 'string'],
         ]);
 
-
         $carrer->update($validated);
 
         return redirect()
@@ -76,6 +74,7 @@ class CarrerController extends Controller
     public function destroy(Carrer $carrer)
     {
         $carrer->delete();
+
         return redirect()
             ->route('admin.carrers.index')
             ->with('success', 'Job deleted successfully!');

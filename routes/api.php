@@ -45,7 +45,7 @@ Route::get('/services/featured/list', [ApiServiceController::class, 'featured'])
 // Public Contact Form Route
 Route::post('/contact/submit', [ApiContactController::class, 'submit']);
 
-//Public Vacancy Routes
+// Public Vacancy Routes
 Route::get('/vacancies', [ApiCarrerController::class, 'index']);
 
 // Protected routes (authentication required)
@@ -63,13 +63,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile/subscriptions', [UserProfileController::class, 'subscriptions']);
     // Handle successful checkout
     Route::get('/checkout/success', function () {
-        return "Subscription successful!";
+        return 'Subscription successful!';
     })->name('checkout.success');
 
     Route::get('/checkout/cancel', function () {
-        return "Subscription canceled.";
+        return 'Subscription canceled.';
     })->name('checkout.cancel');
-
 
     // Contact Messages Management (Admin only)
     Route::prefix('contact-messages')->group(function () {

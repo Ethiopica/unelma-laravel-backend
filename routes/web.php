@@ -5,15 +5,15 @@ use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\CarrerController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -84,7 +84,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
 
-        //Job Management
+        // Job Management
         Route::resource('carrers', CarrerController::class)->except(['show']);
 
         // Contact Messages
@@ -113,11 +113,11 @@ Route::view('/user-register-email', 'mail.user');
 Route::view('/contactmessage-frontend', 'TestApi.index');
 Route::view('/reply-message-mail', 'mail.mail');
 Route::get('/checkout/success', function () {
-    return "Subscription successful!";
+    return 'Subscription successful!';
 })->name('checkout.success');
 
 Route::get('/checkout/cancel', function () {
-    return "Subscription canceled.";
+    return 'Subscription canceled.';
 })->name('checkout.cancel');
 // Stripe webhook - excluded from CSRF protection in bootstrap/app.php
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
