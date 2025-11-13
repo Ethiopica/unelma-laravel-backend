@@ -378,16 +378,16 @@
                         } else {
 
                             dateElementHTML.textContent = messagedDate.toLocaleString();
-                            modalDateTimeDiff.textContent = Math.floor(diffHours) + "hours ago";
+                            modalDateTimeDiff.textContent = Math.floor(diffHours) + " hours ago";
                         }
                     }
                 } else {
                     dateElementHTML.textContent = messagedDate.toLocaleString();
-                    modalDateTimeDiff.textContent = Math.floor(diffMonths) + "months ago";
+                    modalDateTimeDiff.textContent = Math.floor(diffMonths) + " months ago";
                 }
             } else {
                 dateElementHTML.textContent = messagedDate.toLocaleString();
-                modalDateTimeDiff.textContent = Math.floor(diffYears) + "year ago";
+                modalDateTimeDiff.textContent = Math.floor(diffYears) + " years ago";
 
             }
 
