@@ -3,8 +3,6 @@
         Admin Dashboard - {{ config('app.name') }}
     </x-slot:title>
 
-    <x-header />
-
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Welcome Message -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -48,12 +46,12 @@
                 </div>
             </div>
 
-            <!-- Regular Users Card -->
+            <!-- Customers Card -->
             <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-600 text-sm font-medium uppercase">Regular Users</p>
-                        <p class="text-3xl font-bold text-gray-800 mt-2">{{ $stats['regular_users'] }}</p>
+                        <p class="text-gray-600 text-sm font-medium uppercase">Customers</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">{{ $stats['customers'] }}</p>
                     </div>
                     <div class="bg-purple-100 rounded-full p-3">
                         <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

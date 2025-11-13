@@ -16,20 +16,33 @@ class UserController extends Controller
     /**
      * Display a listing of users
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->paginate(10);
+        $filter = $request->query('filter', 'all');
+
+        $usersQuery = User::query()->latest();
+
+        if ($filter === 'admin') {
+            $usersQuery->where('is_admin', true);
+        } elseif ($filter === 'customer') {
+            $usersQuery->where(function ($query) {
+                $query->where('is_admin', false)
+                    ->orWhereNull('is_admin');
+            });
+        }
+
+        $users = $usersQuery->paginate(10)->withQueryString();
 
         $stats = [
             'total_users' => User::count(),
             'admin_users' => User::where('is_admin', true)->count(),
-            'regular_users' => User::where(function ($query) {
+            'customers' => User::where(function ($query) {
                 $query->where('is_admin', false)
                     ->orWhereNull('is_admin');
             })->count(),
         ];
 
-        return view('admin.users.index', compact('users', 'stats'));
+        return view('admin.users.index', compact('users', 'stats', 'filter'));
     }
 
     /**

@@ -2,16 +2,11 @@
     <x-slot:title>
         Contact Messages - {{ config('app.name') }}
     </x-slot:title>
-
-    <x-header />
-
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">Contact Messages</h1>
-                <p class="text-gray-600 mt-1">View and manage customer contact messages and inquiries</p>
-            </div>
+        <div class="mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Contact Messages</h1>
+            <p class="text-gray-600 mt-1 text-sm sm:text-base">View and manage customer contact messages and inquiries</p>
         </div>
 
         <!-- Success/Error Messages -->
@@ -52,9 +47,9 @@
         </div>
 
         <!-- Messages Table -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-white rounded-lg shadow-md">
             @if ($messages->count() > 0)
-                <div class="overflow-x-auto">
+                <div class="hidden sm:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -153,6 +148,79 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="sm:hidden divide-y divide-gray-200">
+                    @foreach ($messages as $message)
+                        <div class="p-4 space-y-4 {{ !$message->is_read ? 'bg-blue-50' : '' }}">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900">#{{ $message->id }}</p>
+                                    <p class="text-xs text-gray-500">
+                                        {{ $message->created_at->format('M d, Y') }} · <span class="text-gray-400">{{ $message->created_at->format('h:i A') }}</span>
+                                    </p>
+                                </div>
+                                @if (!$message->is_read)
+                                    <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
+                                        New
+                                    </span>
+                                @endif
+                            </div>
+
+                            <div class="space-y-2 text-sm">
+                                <div>
+                                    <p class="text-gray-500">From</p>
+                                    <p class="font-medium text-gray-900">{{ $message->name }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Email</p>
+                                    <p class="text-gray-900 break-all">{{ $message->email }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Status</p>
+                                    @if ($message->is_read)
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                                            Read
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">
+                                            Unread
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <button type="button" onclick="openMessageModal({{ $message->id }})"
+                                    class="inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
+                                    View
+                                </button>
+                                <button type="button" onclick="openReplyModal({{ $message->id }})"
+                                    class="inline-flex w-full items-center justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                                    Reply
+                                </button>
+                                @if (!$message->is_read)
+                                    <form action="{{ route('admin.contact-messages.read', $message->id) }}"
+                                        method="POST" class="w-full">
+                                        @csrf
+                                        <button type="submit"
+                                            class="inline-flex w-full items-center justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-green-700">
+                                            Mark as Read
+                                        </button>
+                                    </form>
+                                @endif
+                                <form action="{{ route('admin.contact-messages.destroy', $message->id) }}"
+                                    method="POST" class="w-full"
+                                    onsubmit="return confirm('Are you sure you want to delete this message?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="inline-flex w-full items-center justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-700">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
 
                 <!-- Pagination -->

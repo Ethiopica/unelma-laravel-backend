@@ -2,23 +2,23 @@
     <x-slot:title>
         Blog Management - {{ config('app.name') }}
     </x-slot:title>
-    <x-header />
-
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="mb-6 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">Blog Management</h1>
-                <p class="text-gray-600 mt-1">Manage blog posts and articles</p>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Blog Management</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">Manage blog posts and articles</p>
             </div>
-            <a href="{{ route('admin.blogs.create') }}"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                <span>Create Blog Post</span>
-            </a>
+            <div class="flex justify-start sm:justify-end">
+                <a href="{{ route('admin.blogs.create') }}"
+                    class="inline-flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v12m6-6H6"></path>
+                    </svg>
+                    <span>Create Blog Post</span>
+                </a>
+            </div>
         </div>
         <!-- Success Message -->
         @if (session('success'))
@@ -28,9 +28,9 @@
         @endif
 
         <!-- Blog Posts Table -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-white rounded-lg shadow-md">
             @if ($blogs->count() > 0)
-                <div class="overflow-x-auto">
+                <div class="hidden sm:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -137,6 +137,77 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="sm:hidden divide-y divide-gray-200">
+                    @foreach ($blogs as $blog)
+                        <div class="p-4 space-y-4">
+                            <div class="flex items-start space-x-3">
+                                @if ($blog->featured_image)
+                                    <img src="{{ asset('storage/' . $blog->featured_image) }}"
+                                        alt="{{ $blog->title }}"
+                                        class="h-16 w-16 rounded object-cover">
+                                @endif
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-900">
+                                        {{ Str::limit($blog->title, 60) }}
+                                    </h3>
+                                    <p class="text-sm text-gray-500">
+                                        {{ Str::limit($blog->excerpt ?? 'No excerpt', 80) }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Author</p>
+                                    <p class="font-medium text-gray-900">{{ $blog->author->name }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Category</p>
+                                    <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800">
+                                        {{ $blog->category ?? 'Uncategorized' }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Status</p>
+                                    @if ($blog->is_published)
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                                            Published
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">
+                                            Draft
+                                        </span>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Views</p>
+                                    <p class="font-medium text-gray-900">{{ number_format($blog->views) }}</p>
+                                </div>
+                                <div class="col-span-2">
+                                    <p class="text-gray-500">Published</p>
+                                    <p class="text-gray-900">{{ $blog->published_at ? $blog->published_at->format('M d, Y') : '-' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3">
+                                <a href="{{ route('admin.blogs.edit', $blog->id) }}"
+                                    class="inline-flex items-center justify-center rounded-md border border-blue-600 px-3 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white">
+                                    Edit
+                                </a>
+                                <form method="POST" action="{{ route('admin.blogs.destroy', $blog->id) }}"
+                                    class="inline-flex"
+                                    onsubmit="return confirm('Are you sure you want to delete this blog post?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="inline-flex items-center justify-center rounded-md border border-red-600 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-600 hover:text-white">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             @else
                 <div class="text-center py-12">

@@ -1,7 +1,6 @@
 <x-layout>
     <x-slot:title>Edit Blog Post - {{ config('app.name') }}</x-slot:title>
-    <!-- Navigation Bar -->
-    <x-header />
+    
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->

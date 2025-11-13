@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
+        
+        // Exclude Stripe webhook from CSRF protection
+        $middleware->validateCsrfTokens(except: [
+            'stripe/webhook',
+            'stripe/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Format API validation errors as JSON
