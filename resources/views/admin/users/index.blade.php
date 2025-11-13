@@ -13,10 +13,8 @@
                 <p class="text-gray-600 mt-1 text-sm sm:text-base">Manage all users in the system</p>
             </div>
             <div class="flex justify-start sm:justify-end">
-                <a 
-                    href="{{ route('admin.users.create') }}"
-                    class="inline-flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
+                <a href="{{ route('admin.users.create') }}"
+                    class="inline-flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"></path>
                     </svg>
@@ -56,7 +54,8 @@
 
         @if ($filter !== 'all')
             <div class="mb-6">
-                <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                <span
+                    class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
                     Showing: {{ $filter === 'admin' ? 'Admin Users' : 'Customers' }}
                 </span>
             </div>
@@ -68,12 +67,18 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ID</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Name</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Role</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Created</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -83,14 +88,13 @@
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
-                                            @if($user->profile_picture)
-                                                <img 
-                                                    src="{{ asset('storage/' . $user->profile_picture) }}" 
-                                                    alt="{{ $user->name }}" 
-                                                    class="h-10 w-10 rounded-full object-cover"
-                                                >
+                                            @if ($user->profile_picture)
+                                                <img src="{{ asset('storage/' . $user->profile_picture) }}"
+                                                    alt="{{ $user->name }}"
+                                                    class="h-10 w-10 rounded-full object-cover">
                                             @else
-                                                <div class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                                <div
+                                                    class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                                                     {{ strtoupper(substr($user->name, 0, 1)) }}
                                                 </div>
                                             @endif
@@ -103,11 +107,13 @@
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $user->email }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     @if ($user->is_admin)
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                                        <span
+                                            class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
                                             Admin
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">
+                                        <span
+                                            class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">
                                             Customer
                                         </span>
                                     @endif
@@ -116,19 +122,14 @@
                                     {{ $user->created_at->format('M d, Y') }}
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-2">
-                                    <a 
-                                        href="{{ route('admin.users.edit', $user) }}" 
-                                        class="text-blue-600 hover:text-blue-900"
-                                    >
+                                    <a href="{{ route('admin.users.edit', $user) }}"
+                                        class="text-blue-600 hover:text-blue-900">
                                         Edit
                                     </a>
                                     @if ($user->id !== auth()->id())
-                                        <form 
-                                            action="{{ route('admin.users.destroy', $user) }}" 
-                                            method="POST" 
+                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
                                             class="inline"
-                                            onsubmit="return confirm('Are you sure you want to delete this user?');"
-                                        >
+                                            onsubmit="return confirm('Are you sure you want to delete this user?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900">
@@ -153,14 +154,12 @@
                     @foreach ($users as $user)
                         <div class="p-4 space-y-4">
                             <div class="flex items-center space-x-4">
-                                @if($user->profile_picture)
-                                    <img 
-                                        src="{{ asset('storage/' . $user->profile_picture) }}" 
-                                        alt="{{ $user->name }}" 
-                                        class="h-12 w-12 rounded-full object-cover"
-                                    >
+                                @if ($user->profile_picture)
+                                    <img src="{{ asset('storage/' . $user->profile_picture) }}"
+                                        alt="{{ $user->name }}" class="h-12 w-12 rounded-full object-cover">
                                 @else
-                                    <div class="h-12 w-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                    <div
+                                        class="h-12 w-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                                         {{ strtoupper(substr($user->name, 0, 1)) }}
                                     </div>
                                 @endif
@@ -178,11 +177,13 @@
                                 <div>
                                     <p class="text-gray-500">Role</p>
                                     @if ($user->is_admin)
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                                        <span
+                                            class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
                                             Admin
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">
+                                        <span
+                                            class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">
                                             Customer
                                         </span>
                                     @endif
@@ -228,4 +229,3 @@
     </div>
 
 </x-layout>
-

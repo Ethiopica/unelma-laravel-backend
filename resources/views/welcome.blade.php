@@ -265,10 +265,15 @@
         <p class="subtitle">
             Powerful API • Secure Authentication • Scalable Infrastructure
         </p>
-
-        <a href="{{ route('admin.users.index') }}" class="cta-button">
-            Manage Users Dashboard
-        </a>
+        @auth
+            <a href="{{ route('admin.users.index') }}" class="cta-button">
+                Manage Users Dashboard
+            </a>
+        @else
+            <a href="{{ route('admin.login') }}" class="cta-button">
+                Manage Users Dashboard
+            </a>
+        @endauth
     </div>
 
     <!-- Footer -->
