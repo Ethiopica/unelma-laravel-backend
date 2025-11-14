@@ -212,7 +212,10 @@
                 @endif
                 <div>
                     <h2><strong>Name: </strong>{{ $user->name }}</h2>
-                    <h2><strong>Email: </strong>{{ $user->email }}</h2>
+                    <div>
+                        <h2><strong>Email: </strong>{{ $user->email }}</h2>
+                        <a href="{{ route('verify.user') }}">Verify Your email</a>
+                    </div>
                     <h2><strong>role: </strong>{{ $user->role }}</h2>
                 </div>
             </div>

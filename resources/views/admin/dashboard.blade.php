@@ -10,6 +10,18 @@
             <p class="text-gray-600">Here's what's happening with this platform today.</p>
         </div>
 
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    {{ session('success') }}
+                </div>
+            </div>
+        @endif
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- Total Users Card -->
@@ -122,8 +134,9 @@
                         class="w-20 h-20 rounded-full border-2 border-pink-300 bg-gradient-to-br from-pink-500 via-rose-500 to-red-500 flex items-center justify-center mb-4 shadow-lg">
                         <i class="fas fa-envelope text-white text-2xl"></i>
                     </div>
-                    @if($stats['unread_messages'] > 0)
-                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                    @if ($stats['unread_messages'] > 0)
+                        <span
+                            class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
                             {{ $stats['unread_messages'] }}
                         </span>
                     @endif

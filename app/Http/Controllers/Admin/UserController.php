@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\UserCreatedSuccessfully;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -81,12 +82,13 @@ class UserController extends Controller
             'profile_picture' => $profilePicturePath,
         ]);
 
+
         // Send login details email (existing)
         try {
             Mail::to($user->email)->send(new UserCreatedSuccessfully($user));
         } catch (\Exception $e) {
             // Log error but don't fail the user creation
-            \Log::error('Failed to send user creation email: '.$e->getMessage());
+            \Log::error('Failed to send user creation email: ' . $e->getMessage());
         }
 
         // Trigger email verification notification
@@ -95,7 +97,7 @@ class UserController extends Controller
                 $user->sendEmailVerificationNotification();
             }
         } catch (\Exception $e) {
-            \Log::error('Failed to send verification email: '.$e->getMessage());
+            \Log::error('Failed to send verification email: ' . $e->getMessage());
         }
 
         return redirect()
@@ -118,7 +120,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'password' => ['nullable', 'confirmed', Password::defaults()],
             'is_admin' => ['boolean'],
             'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],

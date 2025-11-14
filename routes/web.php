@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VerifyUserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
@@ -24,21 +25,8 @@ Route::get('/', function () {
 
 // Email Verification Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/email/verify', function () {
-        return view('auth.verify-email');
-    })->name('verification.notice');
-
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-
-        return redirect()->intended('/');
-    })->middleware(['signed'])->name('verification.verify');
-
-    Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-
-        return back()->with('success', 'Verification link sent!');
-    })->middleware(['throttle:6,1'])->name('verification.send');
+    Route::get('verify-user/{link?}', [VerifyUserController::class, 'verifyUser'])->name('verify.user');
+    Route::get('verify-user/{link}/confirm', [VerifyUserController::class, 'confirmUser'])->name('verify.user');
 
     Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
 });
