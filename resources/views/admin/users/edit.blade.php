@@ -1,8 +1,7 @@
 <x-layout>
-
-    <x-slot:title>Edit User User - {{ config('app.name') }}</x-slot:title>
+    <x-slot:title>Edit User - {{ config('app.name') }}</x-slot:title>
     <!-- Main Content -->
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <!-- Header -->
         <div class="mb-6">
             <div class="flex items-center space-x-2 text-sm text-gray-600 mb-2">
@@ -12,12 +11,12 @@
                 <span>/</span>
                 <span class="text-gray-900">Edit</span>
             </div>
-            <h1 class="text-3xl font-bold text-gray-800">Edit User</h1>
-            <p class="text-gray-600 mt-1">Update user account information</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Edit User</h1>
+            <p class="text-sm sm:text-base text-gray-600 mt-1">Update user account information</p>
         </div>
 
         <!-- Form Card -->
-        <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
             <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data"
                 class="space-y-6">
                 @csrf
@@ -135,14 +134,15 @@
                 </div>
 
                 <!-- Form Actions -->
-                <div class="flex items-center justify-end space-x-4 pt-6 border-t">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-4 pt-6 border-t">
                     <a href="{{ route('admin.users.index') }}"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
+                        class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                         Cancel
                     </a>
                     <button type="submit"
-                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200">
-                        Update User
+                        class="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <i class="fa-solid fa-check text-xs"></i>
+                        <span>Update User</span>
                     </button>
                 </div>
             </form>

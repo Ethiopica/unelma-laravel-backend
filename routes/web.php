@@ -11,8 +11,6 @@ use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\SubscriptionController;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -39,12 +37,7 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('success', 'Verification link sent!');
     })->middleware(['throttle:6,1'])->name('verification.send');
-
-    Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
 });
-
-// Contact Form Submission
-Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
 
 Route::view('/checkout/success', 'checkout.success')->name('checkout.success');
 Route::view('/checkout/cancel', 'checkout.cancel')->name('checkout.cancel');
@@ -83,6 +76,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('services', ServicesController::class)->except(['show']);
 
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
 
         //Job Management
         Route::resource('carrers', CarrerController::class)->except(['show']);
@@ -100,25 +94,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Reports
         Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportsController::class, 'export'])->name('reports.export');
-
-        // Contact Messages
-        Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
-        Route::post('/contact-messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');
-        Route::delete('/contact-messages/{message}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
     });
 });
 
-// Delete at end not at beginning just to see
+// Email preview routes (for development/testing)
 Route::view('/user-register-email', 'mail.user');
-Route::view('/contactmessage-frontend', 'TestApi.index');
 Route::view('/reply-message-mail', 'mail.mail');
-Route::get('/checkout/success', function () {
-    return "Subscription successful!";
-})->name('checkout.success');
 
-Route::get('/checkout/cancel', function () {
-    return "Subscription canceled.";
-})->name('checkout.cancel');
 // Stripe webhook - excluded from CSRF protection in bootstrap/app.php
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
     ->name('stripe.webhook');

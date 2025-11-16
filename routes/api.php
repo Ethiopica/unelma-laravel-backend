@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\StripeController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -42,8 +43,9 @@ Route::get('/services', [ApiServiceController::class, 'index']);
 Route::get('/services/{id}', [ApiServiceController::class, 'show']);
 Route::get('/services/featured/list', [ApiServiceController::class, 'featured']);
 
-// Public Contact Form Route
+// Public Contact Form Routes
 Route::post('/contact/submit', [ApiContactController::class, 'submit']);
+Route::post('/contact', [ApiContactController::class, 'submit']); // Alias for frontend compatibility
 
 //Public Vacancy Routes
 Route::get('/vacancies', [ApiCarrerController::class, 'index']);
@@ -61,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/profile', [UserProfileController::class, 'destroy']);
     Route::get('/profile/activity', [UserProfileController::class, 'activity']);
     Route::get('/profile/subscriptions', [UserProfileController::class, 'subscriptions']);
+
     // Handle successful checkout
     Route::get('/checkout/success', function () {
         return "Subscription successful!";
@@ -69,6 +72,34 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/checkout/cancel', function () {
         return "Subscription canceled.";
     })->name('checkout.cancel');
+
+    // Subscription Management
+    Route::get('/subscriptions', function (Request $request) {
+        $subscriptions = $request->user()->subscriptions()->orderByDesc('created_at')->get()->map(function ($subscription) {
+            return [
+                'id' => $subscription->id,
+                'name' => $subscription->name,
+                'stripe_id' => $subscription->stripe_id,
+                'status' => $subscription->stripe_status,
+                'price_id' => $subscription->stripe_price,
+                'quantity' => $subscription->quantity,
+                'trial_ends_at' => $subscription->trial_ends_at?->toISOString(),
+                'ends_at' => $subscription->ends_at?->toISOString(),
+                'created_at' => $subscription->created_at->toISOString(),
+                'updated_at' => $subscription->updated_at->toISOString(),
+            ];
+        });
+        return response()->json([
+            'subscriptions' => $subscriptions,
+            'has_active_subscription' => $request->user()->subscriptions()->whereIn('stripe_status', ['active', 'trialing'])->exists(),
+        ]);
+    });
+
+    Route::delete('/subscriptions/{id}', function (Request $request, $id) {
+        $subscription = $request->user()->subscriptions()->findOrFail($id);
+        $subscription->cancel();
+        return response()->json(['message' => 'Subscription canceled successfully']);
+    });
 
 
     // Contact Messages Management (Admin only)

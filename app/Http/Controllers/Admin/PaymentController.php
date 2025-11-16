@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Subscription;
 
 class PaymentController extends Controller
@@ -38,6 +39,48 @@ class PaymentController extends Controller
             'subscriptions' => $subscriptions,
             'summary' => $summary,
         ]);
+    }
+
+    /**
+     * Delete a subscription.
+     */
+    public function destroy($id)
+    {
+        try {
+            $subscription = Subscription::findOrFail($id);
+
+            // Cancel the subscription in Stripe if it's still active
+            if ($subscription->user && in_array($subscription->stripe_status, ['active', 'trialing', 'past_due'])) {
+                try {
+                    $subscription->cancel();
+                    Log::info('Subscription canceled in Stripe', [
+                        'subscription_id' => $subscription->id,
+                        'stripe_id' => $subscription->stripe_id,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to cancel subscription in Stripe, deleting locally anyway', [
+                        'subscription_id' => $subscription->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            // Delete the local subscription record
+            $subscription->delete();
+
+            return redirect()
+                ->route('admin.payments.index')
+                ->with('success', 'Subscription deleted successfully.');
+        } catch (\Exception $e) {
+            Log::error('Failed to delete subscription', [
+                'subscription_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('admin.payments.index')
+                ->with('error', 'Failed to delete subscription. Please try again.');
+        }
     }
 }
 

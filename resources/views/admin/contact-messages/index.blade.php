@@ -2,16 +2,18 @@
     <x-slot:title>
         Contact Messages - {{ config('app.name') }}
     </x-slot:title>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Contact Messages</h1>
-            <p class="text-gray-600 mt-1 text-sm sm:text-base">View and manage customer contact messages and inquiries</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
+        <!-- Header Section - Mobile First -->
+        <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Contact Messages</h1>
+                <p class="text-sm sm:text-base text-gray-600 mt-1">View and manage customer contact messages and inquiries</p>
+            </div>
         </div>
 
         <!-- Success/Error Messages -->
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -24,111 +26,110 @@
         @endif
 
         @if (session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 {{ session('error') }}
             </div>
         @endif
 
-        <!-- Statistics -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500">
-                <p class="text-gray-600 text-sm font-medium uppercase">Total Messages</p>
-                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $stats['total_messages'] }}</p>
+        <!-- Summary Cards - Mobile First Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5">
+                <p class="text-xs font-semibold uppercase text-gray-500">Total Messages</p>
+                <p class="mt-2 sm:mt-3 text-2xl sm:text-3xl font-bold text-gray-900">{{ number_format($stats['total_messages']) }}</p>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-500">
-                <p class="text-gray-600 text-sm font-medium uppercase">Unread Messages</p>
-                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $stats['unread_messages'] }}</p>
+            <div class="bg-white rounded-lg shadow-sm border border-red-200 p-4 sm:p-5">
+                <p class="text-xs font-semibold uppercase text-gray-500">Unread</p>
+                <p class="mt-2 sm:mt-3 text-2xl sm:text-3xl font-bold text-red-600">{{ number_format($stats['unread_messages']) }}</p>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
-                <p class="text-gray-600 text-sm font-medium uppercase">Read Messages</p>
-                <p class="text-2xl font-bold text-gray-800 mt-1">
-                    {{ $stats['total_messages'] - $stats['unread_messages'] }}</p>
+            <div class="bg-white rounded-lg shadow-sm border border-green-200 p-4 sm:p-5 col-span-2 md:col-span-1">
+                <p class="text-xs font-semibold uppercase text-gray-500">Read</p>
+                <p class="mt-2 sm:mt-3 text-2xl sm:text-3xl font-bold text-green-600">{{ number_format($stats['total_messages'] - $stats['unread_messages']) }}</p>
             </div>
         </div>
 
         <!-- Messages Table -->
-        <div class="bg-white rounded-lg shadow-md">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
             @if ($messages->count() > 0)
-                <div class="hidden sm:block overflow-x-auto">
+                <!-- Header with Icon - Mobile First -->
+                <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 px-4 sm:px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-600 w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
+                            <i class="fa-solid fa-envelope text-sm sm:text-base"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-900">All Messages</h2>
+                            <p class="text-xs sm:text-sm text-gray-500 hidden sm:block">Customer inquiries and contact form submissions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ID</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date</th>
-                                <th
-                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions</th>
+                                <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
+                                <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+                                <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
+                                <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                                <th scope="col" class="px-4 lg:px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($messages as $message)
-                                <tr class="hover:bg-gray-50 {{ !$message->is_read ? 'bg-blue-50' : '' }}">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
+                                <tr class="hover:bg-gray-50 transition {{ !$message->is_read ? 'bg-blue-50' : '' }}">
+                                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center gap-2">
                                             <span class="text-sm font-medium text-gray-900">#{{ $message->id }}</span>
                                             @if (!$message->is_read)
-                                                <span
-                                                    class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-700">
                                                     New
                                                 </span>
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $message->name }}</div>
+                                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-semibold text-gray-900">{{ $message->name }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-500">{{ $message->email }}</div>
+                                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 truncate max-w-xs">{{ $message->email }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                         @if ($message->is_read)
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-green-100 text-green-700">
                                                 Read
                                             </span>
                                         @else
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-red-100 text-red-700">
                                                 Unread
                                             </span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $message->created_at->format('M d, Y') }}
-                                        <br>
-                                        <span
-                                            class="text-xs text-gray-400">{{ $message->created_at->format('h:i A') }}</span>
+                                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span class="hidden lg:inline">{{ $message->created_at->format('M j, Y H:i') }}</span>
+                                        <span class="lg:hidden">{{ $message->created_at->format('M j') }}</span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end space-x-2">
+                                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm">
+                                        <div class="flex items-center justify-end gap-2">
                                             <button type="button" onclick="openMessageModal({{ $message->id }})"
-                                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
-                                                View
+                                                class="inline-flex items-center rounded-lg border border-blue-200 px-2 lg:px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-50 whitespace-nowrap">
+                                                <span class="hidden lg:inline">View</span>
+                                                <span class="lg:hidden">View</span>
                                             </button>
                                             <button type="button" onclick="openReplyModal({{ $message->id }})"
-                                                class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
-                                                Reply
+                                                class="inline-flex items-center rounded-lg border border-emerald-200 px-2 lg:px-3 py-1.5 text-xs font-semibold text-emerald-600 transition hover:bg-emerald-50 whitespace-nowrap">
+                                                <span class="hidden lg:inline">Reply</span>
+                                                <span class="lg:hidden">Reply</span>
                                             </button>
                                             @if (!$message->is_read)
                                                 <form action="{{ route('admin.contact-messages.read', $message->id) }}"
                                                     method="POST" class="inline">
                                                     @csrf
                                                     <button type="submit"
-                                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
-                                                        Mark as Read
+                                                        class="inline-flex items-center rounded-lg border border-green-200 px-2 lg:px-3 py-1.5 text-xs font-semibold text-green-600 transition hover:bg-green-50 whitespace-nowrap">
+                                                        <span class="hidden lg:inline">Mark Read</span>
+                                                        <span class="lg:hidden">Read</span>
                                                     </button>
                                                 </form>
                                             @endif
@@ -138,8 +139,9 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
-                                                    Delete
+                                                    class="inline-flex items-center rounded-lg border border-red-200 px-2 lg:px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 whitespace-nowrap">
+                                                    <span class="hidden lg:inline">Delete</span>
+                                                    <span class="lg:hidden">Delete</span>
                                                 </button>
                                             </form>
                                         </div>
@@ -149,53 +151,59 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="sm:hidden divide-y divide-gray-200">
+
+                <!-- Mobile Card View -->
+                <div class="md:hidden divide-y divide-gray-200">
                     @foreach ($messages as $message)
-                        <div class="p-4 space-y-4 {{ !$message->is_read ? 'bg-blue-50' : '' }}">
+                        <div class="p-4 space-y-3 {{ !$message->is_read ? 'bg-blue-50' : '' }}">
+                            <!-- Message Info -->
                             <div class="flex items-start justify-between">
-                                <div>
-                                    <p class="text-sm font-semibold text-gray-900">#{{ $message->id }}</p>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <p class="text-sm font-semibold text-gray-900">#{{ $message->id }}</p>
+                                        @if (!$message->is_read)
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-700">
+                                                New
+                                            </span>
+                                        @endif
+                                    </div>
                                     <p class="text-xs text-gray-500">
-                                        {{ $message->created_at->format('M d, Y') }} · <span class="text-gray-400">{{ $message->created_at->format('h:i A') }}</span>
+                                        {{ $message->created_at->format('M j, Y') }} · <span class="text-gray-400">{{ $message->created_at->format('h:i A') }}</span>
                                     </p>
                                 </div>
-                                @if (!$message->is_read)
-                                    <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
-                                        New
+                                @if ($message->is_read)
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-green-100 text-green-700 flex-shrink-0">
+                                        Read
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-red-100 text-red-700 flex-shrink-0">
+                                        Unread
                                     </span>
                                 @endif
                             </div>
 
+                            <!-- Details -->
                             <div class="space-y-2 text-sm">
                                 <div>
-                                    <p class="text-gray-500">From</p>
+                                    <p class="text-xs text-gray-500 mb-1">From</p>
                                     <p class="font-medium text-gray-900">{{ $message->name }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-gray-500">Email</p>
+                                    <p class="text-xs text-gray-500 mb-1">Email</p>
                                     <p class="text-gray-900 break-all">{{ $message->email }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-500">Status</p>
-                                    @if ($message->is_read)
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-                                            Read
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">
-                                            Unread
-                                        </span>
-                                    @endif
                                 </div>
                             </div>
 
-                            <div class="flex flex-col gap-2">
+                            <!-- Actions -->
+                            <div class="flex flex-col gap-2 pt-2">
                                 <button type="button" onclick="openMessageModal({{ $message->id }})"
-                                    class="inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
-                                    View
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-50">
+                                    <i class="fa-solid fa-eye"></i>
+                                    View Message
                                 </button>
                                 <button type="button" onclick="openReplyModal({{ $message->id }})"
-                                    class="inline-flex w-full items-center justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-600 transition hover:bg-emerald-50">
+                                    <i class="fa-solid fa-reply"></i>
                                     Reply
                                 </button>
                                 @if (!$message->is_read)
@@ -203,7 +211,8 @@
                                         method="POST" class="w-full">
                                         @csrf
                                         <button type="submit"
-                                            class="inline-flex w-full items-center justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-green-700">
+                                            class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-green-200 px-3 py-2 text-xs font-semibold text-green-600 transition hover:bg-green-50">
+                                            <i class="fa-solid fa-check"></i>
                                             Mark as Read
                                         </button>
                                     </form>
@@ -214,7 +223,8 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="inline-flex w-full items-center justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-700">
+                                        class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50">
+                                        <i class="fa-solid fa-trash"></i>
                                         Delete
                                     </button>
                                 </form>
@@ -224,19 +234,20 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-                    {{ $messages->links() }}
+                <div class="px-4 sm:px-6 py-4 border-t border-gray-100">
+                    {{ $messages->withQueryString()->links() }}
                 </div>
             @else
-                <div class="text-center py-12">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
-                        </path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">No messages</h3>
-                    <p class="mt-1 text-sm text-gray-500">No contact messages have been received yet.</p>
+                <div class="px-4 sm:px-6 py-10 text-center text-sm text-gray-500">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                            <i class="fa-solid fa-envelope text-xl"></i>
+                        </div>
+                        <p class="font-semibold text-gray-700">No messages</p>
+                        <p class="text-sm text-gray-500 max-w-sm px-4">
+                            No contact messages have been received yet.
+                        </p>
+                    </div>
                 </div>
             @endif
         </div>

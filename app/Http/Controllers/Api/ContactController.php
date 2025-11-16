@@ -17,6 +17,11 @@ class ContactController extends Controller
     public function submit(Request $request)
     {
         try {
+            Log::info('Contact form submission received', [
+                'ip' => $request->ip(),
+                'data' => $request->except(['password', '_token']),
+            ]);
+
             $validated = $request->validate([
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email', 'max:255'],
@@ -30,6 +35,11 @@ class ContactController extends Controller
                 'message' => $validated['message'],
                 'ip_address' => $request->ip(),
                 'is_read' => false,
+            ]);
+
+            Log::info('Contact message saved successfully', [
+                'message_id' => $message->id,
+                'email' => $message->email,
             ]);
 
             // Send email notification to admin
