@@ -139,4 +139,32 @@ class UserProfileController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Get user's subscriptions
+     */
+    public function subscriptions(Request $request)
+    {
+        $user = $request->user();
+
+        $subscriptions = $user->subscriptions()->orderByDesc('created_at')->get()->map(function ($subscription) {
+            return [
+                'id' => $subscription->id,
+                'name' => $subscription->name,
+                'stripe_id' => $subscription->stripe_id,
+                'status' => $subscription->stripe_status,
+                'price_id' => $subscription->stripe_price,
+                'quantity' => $subscription->quantity,
+                'trial_ends_at' => $subscription->trial_ends_at?->format('Y-m-d H:i:s'),
+                'ends_at' => $subscription->ends_at?->format('Y-m-d H:i:s'),
+                'created_at' => $subscription->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $subscription->updated_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        return response()->json([
+            'subscriptions' => $subscriptions,
+            'has_active_subscription' => $user->subscriptions()->whereIn('stripe_status', ['active', 'trialing'])->exists(),
+        ]);
+    }
 }

@@ -9,11 +9,16 @@ use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
 use App\Http\Controllers\Api\UserProfileController;
+use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/stripe/checkout/session', [StripeController::class, 'createCheckoutSession']);
+});
 // Public routes (no authentication required)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/auth/google', [AuthController::class, 'google']);
 
 // Public Blog Routes
 Route::get('/blogs', [ApiBlogController::class, 'index']);
@@ -40,7 +45,7 @@ Route::get('/services/featured/list', [ApiServiceController::class, 'featured'])
 // Public Contact Form Route
 Route::post('/contact/submit', [ApiContactController::class, 'submit']);
 
-//Public Vacancy Routes
+// Public Vacancy Routes
 Route::get('/vacancies', [ApiCarrerController::class, 'index']);
 
 // Protected routes (authentication required)
@@ -55,6 +60,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/change-password', [UserProfileController::class, 'changePassword']);
     Route::delete('/profile', [UserProfileController::class, 'destroy']);
     Route::get('/profile/activity', [UserProfileController::class, 'activity']);
+    Route::get('/profile/subscriptions', [UserProfileController::class, 'subscriptions']);
+    // Handle successful checkout
+    Route::get('/checkout/success', function () {
+        return 'Subscription successful!';
+    })->name('checkout.success');
+
+    Route::get('/checkout/cancel', function () {
+        return 'Subscription canceled.';
+    })->name('checkout.cancel');
 
     // Contact Messages Management (Admin only)
     Route::prefix('contact-messages')->group(function () {

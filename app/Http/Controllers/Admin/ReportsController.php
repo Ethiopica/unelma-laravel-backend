@@ -39,7 +39,7 @@ class ReportsController extends Controller
         return [
             'total_users' => User::count(),
             'admin_users' => User::where('is_admin', true)->count(),
-            'regular_users' => User::where(function ($query) {
+            'customers' => User::where(function ($query) {
                 $query->where('is_admin', false)
                     ->orWhereNull('is_admin');
             })->count(),
@@ -91,7 +91,7 @@ class ReportsController extends Controller
             fputcsv($handle, ['Metric', 'Value']);
             fputcsv($handle, ['Total Users', $userStats['total_users']]);
             fputcsv($handle, ['Admin Users', $userStats['admin_users']]);
-            fputcsv($handle, ['Regular Users', $userStats['regular_users']]);
+            fputcsv($handle, ['Customers', $userStats['customers']]);
             fputcsv($handle, ['Verified Users', $userStats['verified_users']]);
             fputcsv($handle, ['Users with Profile Pictures', $userStats['users_with_pictures']]);
             fputcsv($handle, ['Today Registrations', $userStats['today_registrations']]);
@@ -118,7 +118,7 @@ class ReportsController extends Controller
                     $user->id,
                     $user->name,
                     $user->email,
-                    $user->is_admin ? 'Admin' : 'User',
+                    $user->is_admin ? 'Admin' : 'Customer',
                     $user->email_verified_at ? 'Yes' : 'No',
                     $user->profile_picture ? 'Yes' : 'No',
                     $user->created_at->format('Y-m-d H:i:s'),
