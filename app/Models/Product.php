@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class Product extends Model
 {
     protected $fillable = [
-        'name',
+        'name','category','sku','highlights','rating','image_url',
         'description',
         'price',
         'image',
@@ -19,17 +19,18 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'rating'=>'decimal:1',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'order' => 'integer',
     ];
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_local_url'];
 
     /**
      * Get the absolute URL for the product image.
      */
-    public function getImageUrlAttribute()
+    public function getImageLocalUrlAttribute()
     {
         try {
             if (! $this->image) {

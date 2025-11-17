@@ -69,7 +69,8 @@ class AuthController extends Controller
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-            'remember' => ['boolean']
+            'remember'=>['boolean']
+
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -84,10 +85,12 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         // Create new token
-        // Token expiration based on "remember me"
-        $expiresAt = $request->boolean('remember')
-            ? now()->addWeeks(2)
-            : now()->addHours(2);
+        // $token = $user->createToken('auth-token')->plainTextToken;
+
+         // Token expiration based on "remember me"
+         $expiresAt = $request->boolean('remember') 
+         ? now()->addWeeks(2)
+         : now()->addHours(2);
 
         $tokenResult = $user->createToken('auth-token', [], $expiresAt);
         $token = $tokenResult->plainTextToken;
