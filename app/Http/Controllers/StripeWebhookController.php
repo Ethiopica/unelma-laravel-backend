@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Laravel\Cashier\Subscription;
 use Stripe\Webhook;
 use Symfony\Component\HttpFoundation\Response;
-use Laravel\Cashier\Cashier;
-use App\Models\User;
-use Laravel\Cashier\Subscription;
 
 class StripeWebhookController extends Controller
 {
@@ -195,11 +194,3 @@ class StripeWebhookController extends Controller
         return response('Webhook handled', 200);
     }
 }
-
-
-
-
-
-
-
-

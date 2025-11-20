@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->string('image')->nullable();
+            $table->string('image_url')->nullable();
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_active')->default(true);
             $table->integer('order')->default(0);

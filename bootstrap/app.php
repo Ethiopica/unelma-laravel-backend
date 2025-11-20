@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
-        
+
         // Exclude Stripe webhook from CSRF protection
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
@@ -26,9 +26,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // Format API validation errors as JSON
         $exceptions->render(function (\Illuminate\Validation\ValidationException $e, $request) {
             if ($request->is('api/*')) {
+                $errors = $e->errors();
+                $firstError = collect($errors)->flatten()->first();
+                
                 return response()->json([
-                    'message' => 'The given data was invalid.',
-                    'errors' => $e->errors(),
+                    'success' => false,
+                    'message' => $firstError ?? 'The given data was invalid.',
+                    'errors' => $errors,
                 ], 422);
             }
         });

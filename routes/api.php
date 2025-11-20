@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController as ApiBlogController;
+use App\Http\Controllers\Api\BlogCommentController;
 use App\Http\Controllers\Api\CarrerController as ApiCarrerController;
 use App\Http\Controllers\Api\ContactController as ApiContactController;
 use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageController;
+use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
@@ -20,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/google', [AuthController::class, 'google']);
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe']);
 
 // Public Blog Routes
 Route::get('/blogs', [ApiBlogController::class, 'index']);
@@ -27,6 +30,9 @@ Route::get('/blogs/{slug}', [ApiBlogController::class, 'show']);
 Route::get('/blogs/categories/list', [ApiBlogController::class, 'categories']);
 Route::get('/blogs/recent/list', [ApiBlogController::class, 'recent']);
 Route::get('/blogs/popular/list', [ApiBlogController::class, 'popular']);
+Route::get('/blogs/latest', [ApiBlogController::class, 'latest']);
+Route::get('/blogs/{blog}/comments', [BlogCommentController::class, 'index']);
+Route::post('/blogs/{blog}/comments', [BlogCommentController::class, 'store']);
 
 // Public Product Routes
 Route::get('/products', [ApiProductController::class, 'index']);
@@ -47,7 +53,7 @@ Route::get('/services/featured/list', [ApiServiceController::class, 'featured'])
 Route::post('/contact/submit', [ApiContactController::class, 'submit']);
 Route::post('/contact', [ApiContactController::class, 'submit']); // Alias for frontend compatibility
 
-//Public Vacancy Routes
+// Public Vacancy Routes
 Route::get('/vacancies', [ApiCarrerController::class, 'index']);
 
 // Protected routes (authentication required)
@@ -66,12 +72,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Handle successful checkout
     Route::get('/checkout/success', function () {
-        return "Subscription successful!";
+        return 'Subscription successful!';
     })->name('checkout.success');
 
     Route::get('/checkout/cancel', function () {
-        return "Subscription canceled.";
+        return 'Subscription canceled.';
     })->name('checkout.cancel');
+
 
     // Subscription Management
     Route::get('/subscriptions', function (Request $request) {
@@ -100,6 +107,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $subscription->cancel();
         return response()->json(['message' => 'Subscription canceled successfully']);
     });
+
 
 
     // Contact Messages Management (Admin only)

@@ -22,47 +22,47 @@
         <!-- Summary Cards - Mobile First Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <!-- Total Users -->
-            <div class="bg-white rounded-lg shadow-sm border border-blue-200 p-4 sm:p-5">
+            <div class="bg-white rounded-lg shadow-sm border border-blue-200 reports-card p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Total Users</p>
-                    <div class="bg-blue-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="bg-blue-100 rounded-full p-2 sm:p-3 flex-shrink-0 reports-card-icon">
                         <i class="fa-solid fa-users text-blue-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
-                <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ number_format($userStats['total_users']) }}</p>
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 reports-card-number">{{ number_format($userStats['total_users']) }}</p>
             </div>
 
             <!-- Admin Users -->
-            <div class="bg-white rounded-lg shadow-sm border border-green-200 p-4 sm:p-5">
+            <div class="bg-white rounded-lg shadow-sm border border-green-200 reports-card p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Admin Users</p>
-                    <div class="bg-green-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="bg-green-100 rounded-full p-2 sm:p-3 flex-shrink-0 reports-card-icon">
                         <i class="fa-solid fa-shield-halved text-green-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
-                <p class="text-2xl sm:text-3xl font-bold text-green-600">{{ number_format($userStats['admin_users']) }}</p>
+                <p class="text-2xl sm:text-3xl font-bold text-green-600 reports-card-number">{{ number_format($userStats['admin_users']) }}</p>
             </div>
 
             <!-- Customers -->
-            <div class="bg-white rounded-lg shadow-sm border border-purple-200 p-4 sm:p-5">
+            <div class="bg-white rounded-lg shadow-sm border border-purple-200 reports-card p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Customers</p>
-                    <div class="bg-purple-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="bg-purple-100 rounded-full p-2 sm:p-3 flex-shrink-0 reports-card-icon">
                         <i class="fa-solid fa-user text-purple-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
-                <p class="text-2xl sm:text-3xl font-bold text-purple-600">{{ number_format($userStats['customers']) }}</p>
+                <p class="text-2xl sm:text-3xl font-bold text-purple-600 reports-card-number">{{ number_format($userStats['customers']) }}</p>
             </div>
 
             <!-- Verified Users -->
-            <div class="bg-white rounded-lg shadow-sm border border-amber-200 p-4 sm:p-5">
+            <div class="bg-white rounded-lg shadow-sm border border-amber-200 reports-card p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Verified Users</p>
-                    <div class="bg-amber-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="bg-amber-100 rounded-full p-2 sm:p-3 flex-shrink-0 reports-card-icon">
                         <i class="fa-solid fa-check-circle text-amber-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
-                <p class="text-2xl sm:text-3xl font-bold text-amber-600">{{ number_format($userStats['verified_users']) }}</p>
+                <p class="text-2xl sm:text-3xl font-bold text-amber-600 reports-card-number">{{ number_format($userStats['verified_users']) }}</p>
             </div>
         </div>
 

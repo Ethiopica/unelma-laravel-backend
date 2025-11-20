@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            if (document.body) {
+                document.body.setAttribute('data-theme', savedTheme);
+            } else {
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.body.setAttribute('data-theme', savedTheme);
+                });
+            }
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -34,19 +47,215 @@
             font-weight: 400;
             font-size: 17px;
         }
+
+        /* Theme Variables - Dark mode default */
+        :root,
+        html,
+        :root[data-theme="dark"],
+        html[data-theme="dark"] {
+            --color-primary: #27413C;
+            --color-secondary: #102B27;
+            --color-font: #75D7CB;
+            --color-surface: #142F2A;
+            --color-surface-alt: #0B1F1C;
+            --color-border: rgba(117, 215, 203, 0.25);
+            --color-muted: rgba(117, 215, 203, 0.7);
+        }
+
+        /* Theme Variables - Light mode */
+        :root[data-theme="light"],
+        html[data-theme="light"] {
+            --color-primary: #E8F5F3;
+            --color-secondary: #F0FDFA;
+            --color-font: #102B27;
+            --color-surface: #FFFFFF;
+            --color-surface-alt: #F9FAFB;
+            --color-border: rgba(16, 43, 39, 0.2);
+            --color-muted: rgba(16, 43, 39, 0.6);
+        }
+
+        html[data-theme="dark"] body,
+        body[data-theme="dark"],
+        html[data-theme="dark"] .admin-shell,
+        body[data-theme="dark"] .admin-shell {
+            background-color: var(--color-secondary);
+            color: var(--color-font);
+        }
+
+        html[data-theme="light"] body,
+        body[data-theme="light"],
+        html[data-theme="light"] .admin-shell,
+        body[data-theme="light"] .admin-shell {
+            background-color: var(--color-secondary);
+            color: var(--color-font);
+        }
+
+        html[data-theme="dark"] .bg-gray-100,
+        body[data-theme="dark"] .bg-gray-100,
+        html[data-theme="dark"] .admin-shell .bg-gray-100 {
+            background-color: var(--color-surface-alt) !important;
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="light"] .bg-gray-100,
+        body[data-theme="light"] .bg-gray-100,
+        html[data-theme="light"] .admin-shell .bg-gray-100 {
+            background-color: var(--color-secondary) !important;
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="dark"] .bg-\[#102B27\],
+        body[data-theme="dark"] .bg-\[#102B27\],
+        html[data-theme="dark"] main.bg-\[#102B27\] {
+            background-color: #102B27 !important;
+        }
+
+        html[data-theme="light"] .bg-\[#102B27\],
+        body[data-theme="light"] .bg-\[#102B27\],
+        html[data-theme="light"] main.bg-\[#102B27\] {
+            background-color: var(--color-secondary) !important;
+        }
+
+        html[data-theme="dark"] .bg-\[#27413C\],
+        body[data-theme="dark"] .bg-\[#27413C\] {
+            background-color: var(--color-primary) !important;
+        }
+
+        html[data-theme="light"] .bg-\[#27413C\],
+        body[data-theme="light"] .bg-\[#27413C\] {
+            background-color: var(--color-surface) !important;
+        }
+
+        html[data-theme="dark"] .text-\[#75D7CB\],
+        body[data-theme="dark"] .text-\[#75D7CB\],
+        html[data-theme="dark"] [class*="text-[#75D7CB]"]:not([class*="/"]) {
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="light"] .text-\[#75D7CB\],
+        body[data-theme="light"] .text-\[#75D7CB\],
+        html[data-theme="light"] [class*="text-[#75D7CB]"]:not([class*="/"]) {
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="dark"] .bg-white,
+        html[data-theme="dark"] .bg-gray-50,
+        html[data-theme="dark"] .bg-gray-100 {
+            background-color: var(--color-surface) !important;
+            color: var(--color-font) !important;
+            border-color: var(--color-border) !important;
+        }
+
+        html[data-theme="light"] .bg-white,
+        html[data-theme="light"] .bg-gray-50,
+        html[data-theme="light"] .bg-gray-100 {
+            background-color: var(--color-surface) !important;
+            color: var(--color-font) !important;
+            border-color: var(--color-border) !important;
+        }
+
+        html[data-theme="dark"] .text-gray-900,
+        html[data-theme="dark"] .text-gray-800,
+        html[data-theme="dark"] .text-gray-700,
+        html[data-theme="dark"] .text-gray-600,
+        html[data-theme="dark"] .text-gray-500 {
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="light"] .text-gray-900,
+        html[data-theme="light"] .text-gray-800,
+        html[data-theme="light"] .text-gray-700,
+        html[data-theme="light"] .text-gray-600,
+        html[data-theme="light"] .text-gray-500 {
+            color: var(--color-font) !important;
+        }
+
+        /* Account owner card theming */
+        html[data-theme="dark"] .account-owner-card {
+            background: linear-gradient(135deg, #1B3C38, #0F2422 60%, #0B1B1A);
+            border: 1px solid rgba(117, 215, 203, 0.25);
+            color: var(--color-font);
+            box-shadow: 0 25px 50px -12px rgba(7, 21, 18, 0.6);
+        }
+
+        html[data-theme="light"] .account-owner-card {
+            background: linear-gradient(120deg, #E8F5F3, #FFFFFF 65%, #F0FDFA);
+            border: 1px solid rgba(16, 43, 39, 0.15);
+            color: var(--color-font);
+            box-shadow: 0 15px 35px -20px rgba(16, 43, 39, 0.4);
+        }
+
+        html[data-theme="dark"] .account-owner-card .text-white,
+        html[data-theme="dark"] .account-owner-card .text-white\/70,
+        html[data-theme="dark"] .account-owner-card .text-white\/80,
+        html[data-theme="dark"] .account-owner-card [class*="text-white"] {
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="light"] .account-owner-card .text-white,
+        html[data-theme="light"] .account-owner-card .text-white\/70,
+        html[data-theme="light"] .account-owner-card .text-white\/80,
+        html[data-theme="light"] .account-owner-card [class*="text-white"] {
+            color: #102B27 !important;
+        }
+
+        html[data-theme="dark"] .account-owner-card .bg-white\/20,
+        html[data-theme="dark"] .account-owner-card .bg-white\/15,
+        html[data-theme="dark"] .account-owner-card .bg-white\/90,
+        html[data-theme="dark"] .account-owner-card [class*="bg-white"] {
+            background-color: rgba(117, 215, 203, 0.15) !important;
+            color: var(--color-font) !important;
+            border-color: rgba(117, 215, 203, 0.35) !important;
+        }
+
+        html[data-theme="light"] .account-owner-card .bg-white\/20,
+        html[data-theme="light"] .account-owner-card .bg-white\/15,
+        html[data-theme="light"] .account-owner-card .bg-white\/90,
+        html[data-theme="light"] .account-owner-card [class*="bg-white"] {
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            color: #102B27 !important;
+            border-color: rgba(16, 43, 39, 0.2) !important;
+        }
+
+        html[data-theme="dark"] .account-owner-card .border-white\/30,
+        html[data-theme="dark"] .account-owner-card [class*="border-white"] {
+            border-color: rgba(117, 215, 203, 0.35) !important;
+        }
+
+        html[data-theme="light"] .account-owner-card .border-white\/30,
+        html[data-theme="light"] .account-owner-card [class*="border-white"] {
+            border-color: rgba(16, 43, 39, 0.2) !important;
+        }
+
+        html[data-theme="dark"] .account-owner-card .bg-emerald-100\/30 {
+            background-color: rgba(16, 185, 129, 0.25) !important;
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="light"] .account-owner-card .bg-emerald-100\/30 {
+            background-color: rgba(16, 185, 129, 0.15) !important;
+            color: #0E2723 !important;
+        }
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen" data-theme="dark">
     @php
         $routeName = optional(request()->route())->getName();
         $adminSidebarExclusions = ['admin.login'];
-        $shouldUseAdminShell = request()->is('admin/*') && ! request()->is('admin/login') && ! request()->is('admin/password*') && ! in_array($routeName, $adminSidebarExclusions, true);
+        $shouldUseAdminShell =
+            request()->is('admin/*') &&
+            !request()->is('admin/login') &&
+            !request()->is('admin/password*') &&
+            !in_array($routeName, $adminSidebarExclusions, true);
     @endphp
 
     @if ($shouldUseAdminShell)
         @php($authUser = auth()->user())
-        <div class="min-h-screen bg-gray-100">
+        <div class="admin-shell min-h-screen bg-gray-100">
+            <div class="fixed top-4 right-4 z-40">
+                <x-admin.theme-toggle />
+            </div>
             <div class="flex min-h-screen">
                 <div id="admin-sidebar"
                     class="fixed inset-y-0 left-0 z-40 w-72 transform bg-white transition-transform duration-300 ease-in-out -translate-x-full shadow-lg lg:translate-x-0 lg:static lg:inset-auto lg:transform-none">
@@ -54,7 +263,8 @@
                 </div>
 
                 <div class="flex-1 flex flex-col min-h-screen">
-                    <header class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 shadow-sm lg:hidden">
+                    <header
+                        class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 shadow-sm lg:hidden">
                         <div class="flex items-center gap-3">
                             <button type="button" id="admin-sidebar-open"
                                 class="rounded-md border border-gray-300 bg-white p-2 text-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -85,15 +295,19 @@
                 </div>
             </div>
 
-            <div id="admin-sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-gray-900/50 backdrop-blur-sm lg:hidden"></div>
+            <div id="admin-sidebar-backdrop"
+                class="fixed inset-0 z-30 hidden bg-gray-900/50 backdrop-blur-sm lg:hidden"></div>
         </div>
     @else
         {{ $slot }}
     @endif
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+    @if ($shouldUseAdminShell)
+        <script src="{{ asset('js/theme-switcher.js') }}" defer></script>
+    @endif
     <script>
-        (function () {
+        (function() {
             const sidebar = document.getElementById('admin-sidebar');
             const backdrop = document.getElementById('admin-sidebar-backdrop');
             const openButton = document.getElementById('admin-sidebar-open');

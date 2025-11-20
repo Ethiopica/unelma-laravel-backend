@@ -5,18 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Stripe\StripeClient;
 
 class StripeController extends Controller
 {
     public function createCheckoutSession(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'price_id'    => ['required', 'string'],
-            'product_id'  => ['nullable', 'string'],
-            'quantity'    => ['nullable'],
+            'price_id' => ['required', 'string'],
+            'product_id' => ['nullable', 'string'],
+            'quantity' => ['nullable'],
             'success_url' => ['required', 'string'],
-            'cancel_url'  => ['required', 'string'],
+            'cancel_url' => ['required', 'string'],
             'subscription_name' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -60,11 +59,11 @@ class StripeController extends Controller
             'customer' => $customer->id,
             'payment_method_types' => ['card'],
             'line_items' => [[
-                'price'    => $data['price_id'],
+                'price' => $data['price_id'],
                 'quantity' => $quantity,
             ]],
-            'success_url'        => $successUrl . '?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url'         => $cancelUrl,
+            'success_url' => $successUrl.'?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => $cancelUrl,
             'client_reference_id' => $data['product_id'] ?? null,
             'metadata' => $metadata,
             'subscription_data' => [
@@ -75,9 +74,9 @@ class StripeController extends Controller
         ]);
 
         return response()->json([
-            'success'   => true,
+            'success' => true,
             'sessionId' => $session->id,
-            'url'       => $session->url,
+            'url' => $session->url,
         ]);
     }
 
@@ -89,6 +88,6 @@ class StripeController extends Controller
 
         $base = config('app.frontend_url', config('app.url'));
 
-        return rtrim($base, '/') . '/' . ltrim($url, '/');
+        return rtrim($base, '/').'/'.ltrim($url, '/');
     }
 }
