@@ -151,6 +151,13 @@
                     <label for="image_url" class="block text-sm font-medium text-gray-700 mb-2">
                        Or Image Url
                     </label>
+                    @if ($product->image_url)
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2">Current Image:</p>
+                            <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->name }}"
+                                class="w-48 h-32 object-cover rounded border-2 border-gray-300">
+                        </div>
+                    @endif
                     <input type="text" id="image_url" name="image_url" value="{{ old('image_url',$product->image_url) }}"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image_url') border-red-500 @enderror"
                         placeholder="e.g., https://www.example.com/images/product1.jpg">

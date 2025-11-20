@@ -66,6 +66,10 @@
                                                 <img src="{{ asset('storage/' . $blog->featured_image) }}"
                                                     alt="{{ $blog->title }}"
                                                     class="h-12 w-12 rounded object-cover mr-3">
+                                            @elseif ($blog->image_url)
+                                                <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}"
+                                                class="h-12 w-12 rounded object-cover mr-3">
+                                            </div>
                                             @endif
                                             <div>
                                                 <div class="text-sm font-medium text-gray-900">
@@ -76,7 +80,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $blog->author->name }}</div>
+                                        <div class="text-sm text-gray-900"> {{ $blog->author_name }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span
@@ -160,7 +164,7 @@
                             <div class="grid grid-cols-2 gap-3 text-sm">
                                 <div>
                                     <p class="text-gray-500">Author</p>
-                                    <p class="font-medium text-gray-900">{{ $blog->author->name }}</p>
+                                    <p class="font-medium text-gray-900">{{   $blog->author_name }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Category</p>
@@ -188,6 +192,7 @@
                                     <p class="text-gray-500">Published</p>
                                     <p class="text-gray-900">{{ $blog->published_at ? $blog->published_at->format('M d, Y') : '-' }}</p>
                                 </div>
+                                
                             </div>
 
                             <div class="flex flex-wrap gap-3">
@@ -205,6 +210,11 @@
                                         Delete
                                     </button>
                                 </form>
+                                <a href="{{ route('admin.blogs.comments', $blog->id) }}" 
+                                    class="inline-flex items-center justify-center rounded-md border border-purple-600 px-3 py-2 text-sm font-semibold text-purple-600 transition hover:bg-purple-600 hover:text-white"
+                                    >
+                                     View Comments ({{ $blog->comments->count() }})
+                                 </a>
                             </div>
                         </div>
                     @endforeach

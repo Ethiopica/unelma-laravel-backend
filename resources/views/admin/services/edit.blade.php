@@ -90,6 +90,55 @@
                     </p>
                 </div>
 
+                <!--Serive Image Url -->
+                <div class="mb-6">
+                    <label for="image_url" class="block text-sm font-medium text-gray-700 mb-2">
+                       Or Image Url
+                    </label>
+                    @if ($service->image)
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2">Current Image:</p>
+                            <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->name }}"
+                                class="w-48 h-32 object-cover rounded border-2 border-gray-300">
+                        </div>
+                    @endif
+                    <input type="text" id="image_url" name="image_url" value="{{ old('image_url',$service->image_url) }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image_url') border-red-500 @enderror"
+                        placeholder="e.g., https://www.example.com/images/service1.jpg">
+                    @error('image_url')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    
+                </div>
+
+                 <!-- Service Plans Section -->
+                 <div class="border-t pt-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Service Plans</h3>
+                    <div id="plansContainer" class="mt-6">
+                  
+                        @php $planIndex = 1; @endphp
+                        @foreach (old('plans', $service->plans->toArray()) as $plan )
+                        <div class="plan-item mb-6">
+                        <div class="flex justify-between items-center mb-2 mt-6">
+                            <h4 class="font-medium text-gray-700">Plan #{{$planIndex}}</h4>
+                            <button type="button" class="removePlanBtn text-red-500 hover:text-red-700">&times;</button>
+                            </div>
+                            <input type="text" name="plans[{{$planIndex}}][name]" value="{{ $plan['name'] ?? '' }}" placeholder="Plan Name *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <input type="number" name="plans[{{$planIndex}}][price]" value="{{ $plan['price'] ?? '' }}" placeholder="Price *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <input type="text" name="plans[{{$planIndex}}][period]" value="{{ $plan['period'] ?? '' }}" placeholder="Period" class="mb-3 mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <input type="text" name="plans[{{$planIndex}}][stripePriceId]" value="{{ $plan['stripePriceId'] ?? '' }}" placeholder="Stripe Price ID " class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <input type="text" name="plans[{{$planIndex}}][features]" value="{{ is_array($plan['features'] ?? null) ? implode(',', $plan['features']) : ($plan['features'] ?? '') }}" placeholder="Features (comma-separated)" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                            @php $planIndex++; @endphp
+                        @endforeach
+                    
+                    </div>
+                    <button type="button" id="addPlanBtn"
+                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
+                        Add Plan
+                    </button>
+                </div>
+
                 <!-- Settings Section -->
                 <div class="border-t pt-6 mb-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Display Settings</h3>
@@ -181,4 +230,40 @@
             </form>
         </div>
     </div>
+    <script>
+        let planIndex = {{ $planIndex }};
+        const addPlanBtn = document.getElementById("addPlanBtn");
+        const plansContainer = document.getElementById("plansContainer");
+    
+        addPlanBtn.addEventListener("click", () => {
+            addPlanFields();
+        });
+        function addPlanFields() {
+            const planFields = document.createElement("div");
+            planFields.classList.add("plan-item", "mb-6");
+            planFields.innerHTML = `
+                <div class="flex justify-between items-center mb-2 mt-6">
+                <h4 class="font-medium text-gray-700">Plan #${planIndex}</h4>
+                <button type="button" class="removePlanBtn text-red-500 hover:text-red-700">&times;</button>
+                </div>
+                <input type="text" name="plans[${planIndex}][name]" placeholder="Plan Name *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="number" name="plans[${planIndex}][price]" placeholder="Price *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" >
+                <input type="text" name="plans[${planIndex}][period]" placeholder="Period" class="mb-3 mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="text" name="plans[${planIndex}][stripePriceId]" placeholder="Stripe Price ID " class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="text" name="plans[${planIndex}][features]" placeholder="Features (comma-separated)" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+    
+        `;
+            plansContainer.appendChild(planFields);
+    
+            planFields.querySelector(".removePlanBtn").addEventListener("click", () => {
+                planFields.remove();
+                planIndex--;
+            });
+            planIndex++;
+        }
+
+        document.querySelectorAll(".removePlanBtn").forEach(btn => {
+            btn.addEventListener("click", (e) => btn.closest(".plan-item").remove());
+        });
+    </script>
 </x-layout>

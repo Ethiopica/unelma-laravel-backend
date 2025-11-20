@@ -88,10 +88,10 @@
             <!-- Product Image -->
             <div class="h-full">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
-                    @if($product->image_url)
+                    @if($product->image)
                         <div class="w-full flex-1">
                             <img 
-                                src="{{ $product->image_url }}" 
+                                src="{{ $product->image }}" 
                                 alt="{{ $product->name }}"
                                 class="w-full h-full object-cover"
                             >
