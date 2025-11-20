@@ -140,7 +140,7 @@
                     </label>
                     <input type="text" id="image_url" name="image_url" value="{{ old('image_url') }}"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image_url') border-red-500 @enderror"
-                        placeholder="e.g., https://www.example.com/images/product1.jpg">
+                        placeholder="e.g., https://www.example.com/images/blog1.jpg">
                     @error('image_url')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror

@@ -79,9 +79,14 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'category' => ['string', 'max:255'],
+            'sku' => ['required', 'string', 'max:255'],
+            'highlights' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'rating' => ['nullable','numeric', 'min:0','max:5'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'image_url' => ['nullable', 'string'],
             'is_featured' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'order' => ['nullable', 'integer', 'min:0'],

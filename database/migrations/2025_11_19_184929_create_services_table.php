@@ -17,10 +17,21 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('icon')->nullable(); // Icon name or class (e.g., 'fa-cloud', 'cloud-icon')
             $table->string('image')->nullable(); // Service image
-            $table->string('image_url')->nullable();
+            $table->text('image_url')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_featured')->default(false);
             $table->integer('order')->default(0);
+            $table->timestamps();
+        });
+
+        Schema::create('plans', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('service_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->decimal('price',10,2);
+            $table->string('period')->nullable();
+            $table->string('stripePriceId')->nullable();
+            $table->json('features')->nullable();
             $table->timestamps();
         });
     }
@@ -31,5 +42,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('services');
+        Schema::dropIfExists('service_plans');
     }
 };

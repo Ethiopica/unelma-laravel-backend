@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Models\Service;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -37,9 +39,16 @@ class ServicesController extends Controller
             'description' => ['nullable', 'string'],
             'icon' => ['nullable', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'image_url'=>['nullable','string'],
             'is_featured' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'order' => ['nullable', 'integer', 'min:0'],
+            'plans' => ['nullable','array'],
+            'plans.*.name'=>['required_with:plans.*','string'],
+            'plans.*.price'=>['required_with:plans.*','numeric'],
+            'plans.*.period'=>['nullable','string'],
+            'plans.*.stripePriceId'=>['nullable','string'],
+            'plans.*.features'=>['nullable','string'],
         ]);
 
         // Handle image upload
@@ -51,6 +60,26 @@ class ServicesController extends Controller
         $validated['is_active'] = $request->boolean('is_active');
 
         $service = Service::create($validated);
+
+        
+        // instead of creating PlanController, we create related plans for each service here
+        if (!empty($validated['plans'])){
+            foreach ($validated['plans'] as $planData){
+               $features = [];
+                if (!empty($planData['features']) && is_string($planData['features'])) {
+                    $features = array_values(array_filter(array_map('trim', explode(',', $planData['features']))));
+                }
+               
+                $service->plans()->create(
+                    [
+                    'name'=>$planData['name'],
+                    'price'=>$planData['price'],
+                    'period'=>$planData['period']?? null,
+                    'stripe_price_id'=>$planData['stripePriceId']?? null,
+                    'features'=>$features,
+                    ]);
+            }
+        }
 
         return redirect()
             ->route('admin.services.index')
@@ -75,9 +104,17 @@ class ServicesController extends Controller
             'description' => ['nullable', 'string'],
             'icon' => ['nullable', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'image_url'=>['nullable','string'],
             'is_featured' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'order' => ['nullable', 'integer', 'min:0'],
+            'plans' => ['nullable','array'],
+            'plans.*.id' => ['nullable','integer'], //plan Id for existing plan
+            'plans.*.name'=>['required_with:plans.*','string'],
+            'plans.*.price'=>['required_with:plans.*','numeric'],
+            'plans.*.period'=>['nullable','string'],
+            'plans.*.stripePriceId'=>['nullable','string'],
+            'plans.*.features'=>['nullable','string'],
         ]);
 
         // Handle image upload
@@ -92,8 +129,43 @@ class ServicesController extends Controller
         $validated['is_featured'] = $request->boolean('is_featured');
         $validated['is_active'] = $request->boolean('is_active');
 
+        // remove plans from validated
+        $sentPlansData = $validated['plans'] ?? [];
+        unset($validated['plans']);
+
+        // update service, without plans
         $service->update($validated);
 
+
+        
+        //handle plan update
+        
+        if (!empty($sentPlansData)){
+
+            $submittedPlanId = collect($sentPlansData)
+            ->pluck('id')->filter()->toArray();
+
+            //when user deletes a plan, plans that don't have id sent will be removed
+            $service->plans()->whereNotIn('id',$submittedPlanId)->delete();
+
+            foreach ($sentPlansData as $planData){
+                $features = [];
+                if (!empty($planData['features']) && is_string($planData['features'])) {
+                    $features = array_values(array_filter(array_map('trim', explode(',', $planData['features']))));
+                }
+                $service->plans()->updateOrCreate(
+                    ['id'=>$planData['id']??null],
+                    [
+                        'name'=>$planData['name'],
+                        'price'=>$planData['price'],
+                        'period'=>$planData['period']?? null,
+                        'stripe_price_id'=>$planData['stripePriceId']?? null,
+                        'features'=>$features,
+                    ]
+                    );
+            }
+        }
+    
         return redirect()
             ->route('admin.services.index')
             ->with('success', 'Service updated successfully!');
