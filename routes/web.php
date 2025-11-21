@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\CarrerController;
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MailSubscriberController;
@@ -81,6 +82,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
             return \App\Models\Blog::where('slug', $value)->firstOrFail();
         });
         Route::resource('blogs', BlogController::class)->except(['show']);
+
+
+        // comments for blog
+        Route::get('/blogs/{blog}/comments', [CommentController::class, 'showByBlog'])->name('blogs.comments');
+        
+        // Delete a comment
+        Route::delete('/admin/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
         // Product Management
         Route::resource('products', AdminProductController::class)->except(['show']);
 

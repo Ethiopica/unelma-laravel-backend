@@ -14,7 +14,8 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Service::where('is_active', true)
+            $query = Service::with('plans')
+                ->where('is_active', true)
                 ->orderBy('order', 'asc')
                 ->orderBy('created_at', 'desc');
 
@@ -64,7 +65,8 @@ class ServiceController extends Controller
      */
     public function show($id)
     {
-        $service = Service::where('id', $id)
+        $service = Service::with('plans')
+            ->where('id', $id)
             ->where('is_active', true)
             ->firstOrFail();
 

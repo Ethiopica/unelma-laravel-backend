@@ -15,7 +15,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $blogs = Blog::with('author')->orderBy('order')->orderBy('created_at', 'desc')->get();
+        $blogs = Blog::with('author')->withCount('comments')->orderBy('order')->orderBy('created_at', 'desc')->get();
 
         return view('admin.blogs.index', compact('blogs'));
     }
@@ -39,6 +39,7 @@ class BlogController extends Controller
             'excerpt' => ['nullable', 'string', 'max:500'],
             'content' => ['required', 'string'],
             'featured_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'image_url' => ['nullable', 'string'],
             'category' => ['nullable', 'string', 'max:100'],
             'tags' => ['nullable', 'string'],
             'is_published' => ['nullable', 'boolean'],
@@ -66,6 +67,7 @@ class BlogController extends Controller
 
         // Set author as current user
         $validated['author_id'] = auth()->id();
+        $validated['author_name'] = auth()->name;
 
         $validated['is_published'] = $request->boolean('is_published');
 

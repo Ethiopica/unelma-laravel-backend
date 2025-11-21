@@ -12,9 +12,11 @@ class Service extends Model
         'description',
         'icon',
         'image',
+        'image_url',
         'is_active',
         'is_featured',
         'order',
+        
     ];
 
     protected $casts = [
@@ -23,12 +25,16 @@ class Service extends Model
         'order' => 'integer',
     ];
 
-    protected $appends = ['image_url'];
+    public function plans(){
+        return $this->hasMany(Plan::class);
+    }
+
+    protected $appends = ['image_local_url'];
 
     /**
      * Get the absolute URL for the service image.
      */
-    public function getImageUrlAttribute()
+    public function getImageLocalUrlAttribute()
     {
         try {
             if (! $this->image) {

@@ -15,7 +15,9 @@ class BlogController extends Controller
     {
         try {
             $query = Blog::where('is_published', true)
-                ->with('author:id,name,email,profile_picture')
+                ->with([
+                'author:id,name,email,profile_picture',
+                'comments.user:id,name,profile_picture'])
                 ->orderBy('order', 'asc')
                 ->orderBy('published_at', 'desc');
 
@@ -62,10 +64,21 @@ class BlogController extends Controller
     }
 
     /**
-     * Get a single blog post by slug
+     * Get a single blog post by id
      */
-    public function show($slug)
-    {
+    
+     public function show($id)
+     {
+         $blog = Blog::with('comments.user:id,name,profile_picture')->findOrFail($id);
+     
+         return response()->json([
+             'success' => true,
+             'data' => $blog
+         ]);
+     }
+
+     public function showBySlug($slug)
+     {
         $blog = Blog::where('slug', $slug)
             ->where('is_published', true)
             ->with('author:id,name,email,profile_picture')
@@ -78,8 +91,7 @@ class BlogController extends Controller
             'success' => true,
             'data' => $blog,
         ]);
-    }
-
+     }
     /**
      * Get blog categories
      */

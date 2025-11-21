@@ -33,19 +33,32 @@
                     @enderror
                 </div>
 
-                <!-- Description -->
+                <!-- Product category -->
                 <div class="mb-6">
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                        Description
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                        Category
                     </label>
-                    <textarea id="description" name="description" rows="4"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
-                        placeholder="Describe your product features and benefits...">{{ old('description') }}</textarea>
-                    @error('description')
+                    <input type="text" id="category" name="category" value="{{ old('category') }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category') border-red-500 @enderror"
+                        placeholder="e.g., Open source">
+                    @error('category')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
+                <!-- Product sku -->
+                <div class="mb-6">
+                    <label for="sku" class="block text-sm font-medium text-gray-700 mb-2">
+                        Sku <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="sku" name="sku" value="{{ old('sku') }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('sku') border-red-500 @enderror"
+                        placeholder="e.g., 123456_UnelmaPlatforms_OpenSource">
+                    @error('sku')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
                 <!-- Price -->
                 <div class="mb-6">
                     <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
@@ -63,6 +76,49 @@
                     @enderror
                 </div>
 
+                
+
+                <!-- Highlights -->
+                <div class="mb-6">
+                    <label for="highlights" class="block text-sm font-medium text-gray-700 mb-2">
+                        Highlights
+                    </label>
+                    <textarea id="highlights" name="highlights" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                        placeholder="Product highlights...">{{ old('highlights') }}</textarea>
+                    @error('highlights')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                    </label>
+                    <textarea id="description" name="description" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                        placeholder="Describe your product features and benefits...">{{ old('description') }}</textarea>
+                    @error('description')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                
+                <!-- Rating -->
+                <div class="mb-6">
+                    <label for="rating" class="block text-sm font-medium text-gray-700 mb-2">
+                        Rating 
+                    </label>
+                    <input type="number" id="rating" name="rating" value="{{ old('rating') }}" step="0.01" min="0" max="5"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('rating') border-red-500 @enderror"
+                    placeholder="0">
+                 
+                    @error('rating')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Product Image -->
                 <div class="mb-6">
                     <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
@@ -75,6 +131,20 @@
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-1 text-sm text-gray-500">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB</p>
+                </div>
+
+                <!--Product Image Url -->
+                <div class="mb-6">
+                    <label for="image_url" class="block text-sm font-medium text-gray-700 mb-2">
+                       Or Image Url
+                    </label>
+                    <input type="text" id="image_url" name="image_url" value="{{ old('image_url') }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image_url') border-red-500 @enderror"
+                        placeholder="e.g., https://www.example.com/images/blog1.jpg">
+                    @error('image_url')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    
                 </div>
 
                 <!-- Settings Section -->

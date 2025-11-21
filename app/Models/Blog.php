@@ -15,6 +15,7 @@ class Blog extends Model
         'excerpt',
         'content',
         'featured_image',
+        'image_url',
         'author_id',
         'category',
         'tags',
@@ -70,11 +71,12 @@ class Blog extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
+   // All comments for this blog
     public function comments(): HasMany
     {
-        return $this->hasMany(BlogComment::class)->latest();
+        return $this->hasMany(Comment::class)->latest();
     }
-
+  
     /**
      * Get the route key name
      */
