@@ -130,6 +130,30 @@ class BlogController extends Controller
     }
 
     /**
+     * Get the single latest published blog post.
+     */
+    public function latest()
+    {
+        $blog = Blog::where('is_published', true)
+            ->with('author:id,name,email,profile_picture')
+            ->orderByDesc('published_at')
+                ->orderByDesc('created_at')
+            ->first();
+
+        if (! $blog) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No published blogs available.',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $blog,
+        ]);
+    }
+
+    /**
      * Get popular blog posts (by views)
      */
     public function popular(Request $request)

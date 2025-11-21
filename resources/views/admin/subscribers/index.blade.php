@@ -1,0 +1,197 @@
+<x-layout>
+    <x-slot:title>
+        Newsletter Subscribers - {{ config('app.name') }}
+    </x-slot:title>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
+        <!-- Header Section - Mobile First -->
+        <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Newsletter Subscribers</h1>
+                <p class="text-sm sm:text-base text-gray-600 mt-1">
+                    Live list synced from Unelma Mail ({{ config('services.unelma_mail.list_uid') ?? 'list' }}).
+                </p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <a href="{{ route('admin.dashboard') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+                <a href="https://core.unelmamail.com/" target="_blank"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <i class="fa-solid fa-up-right-from-square text-xs"></i>
+                    Open Unelma Mail
+                </a>
+            </div>
+        </div>
+
+        @if ($error)
+            <div class="bg-red-100 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+                    <div>
+                        <p class="font-semibold">Unable to load subscribers</p>
+                        <p class="mt-1 text-sm">{{ $error }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-100">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="inline-flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
+                            <i class="fa-solid fa-envelope-open-text text-sm sm:text-base"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-900">Mailing List Subscribers</h2>
+                            <p class="text-xs sm:text-sm text-gray-500">
+                                Showing {{ $subscribers->count() }} contacts{{ $meta ? ' (page '.$meta['current_page'].' of '.$meta['last_page'].')' : '' }}.
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="GET" class="flex flex-wrap items-center gap-3">
+                        <div>
+                            <label for="status" class="sr-only">Status</label>
+                            <select id="status" name="status"
+                                class="rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-300 px-3 py-2">
+                                <option value="">All statuses</option>
+                                <option value="subscribed" @selected(($filters['status'] ?? null) === 'subscribed')>Subscribed</option>
+                                <option value="unconfirmed" @selected(($filters['status'] ?? null) === 'unconfirmed')>Unconfirmed</option>
+                                <option value="unsubscribed" @selected(($filters['status'] ?? null) === 'unsubscribed')>Unsubscribed</option>
+                                <option value="bounced" @selected(($filters['status'] ?? null) === 'bounced')>Bounced</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="per_page" class="sr-only">Per page</label>
+                            <select id="per_page" name="per_page"
+                                class="rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-300 px-3 py-2">
+                                @foreach ([10, 20, 50, 100] as $size)
+                                    <option value="{{ $size }}" @selected(($filters['per_page'] ?? 20) == $size)>{{ $size }} / page</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button type="submit"
+                            class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            <i class="fa-solid fa-filter text-xs"></i>
+                            Apply
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Joined</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Source</th>
+                            <th scope="col" class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse ($subscribers as $subscriber)
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-10 w-10 flex items-center justify-center rounded-full bg-cyan-500 text-white font-semibold">
+                                            {{ strtoupper(substr($subscriber['first_name'] ?? $subscriber['email'], 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">
+                                                {{ trim(($subscriber['first_name'] ?? '') . ' ' . ($subscriber['last_name'] ?? '')) ?: $subscriber['email'] }}
+                                            </p>
+                                            <p class="text-sm text-gray-600">{{ $subscriber['email'] }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    @php
+                                        $status = strtolower($subscriber['status'] ?? 'subscribed');
+                                        $statusColors = [
+                                            'subscribed' => 'bg-green-100 text-green-800 border-green-200',
+                                            'unconfirmed' => 'bg-amber-100 text-amber-800 border-amber-200',
+                                            'unsubscribed' => 'bg-gray-100 text-gray-800 border-gray-200',
+                                            'bounced' => 'bg-red-100 text-red-800 border-red-200',
+                                        ];
+                                    @endphp
+                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border {{ $statusColors[$status] ?? 'bg-gray-100 text-gray-800 border-gray-200' }}">
+                                        {{ ucfirst($status) }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-gray-600">
+                                    {{ optional($subscriber['created_at'])->format('M j, Y') ?? '—' }}
+                                </td>
+                                <td class="px-4 py-4 text-sm text-gray-600">
+                                    {{ $subscriber['source'] ?? 'API' }}
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex justify-end flex-wrap gap-2">
+                                        @forelse ($subscriber['tags'] ?? [] as $tag)
+                                            <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800 border border-blue-200">
+                                                {{ $tag }}
+                                            </span>
+                                        @empty
+                                            <span class="text-xs text-gray-400">No tags</span>
+                                        @endforelse
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-4 py-12 text-center text-sm text-gray-500">
+                                    <div class="flex flex-col items-center gap-3">
+                                        <div class="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                            <i class="fa-solid fa-envelope-circle-check text-lg"></i>
+                                        </div>
+                                        <p class="font-semibold text-gray-700">No subscribers found</p>
+                                        <p class="text-sm text-gray-500 max-w-md">
+                                            Once visitors subscribe through your frontend form, they will appear here automatically.
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if ($meta)
+                <div class="border-t border-gray-100 px-4 sm:px-6 py-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm text-gray-600">
+                    <p>
+                        Showing
+                        <span class="font-semibold text-gray-900">{{ $subscribers->count() }}</span>
+                        of
+                        <span class="font-semibold text-gray-900">{{ number_format($meta['total']) }}</span>
+                        subscribers.
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <span>Page {{ $meta['current_page'] }} / {{ $meta['last_page'] }}</span>
+                        <div class="flex items-center gap-1">
+                            <a href="{{ request()->fullUrlWithQuery(['page' => max(1, $meta['current_page'] - 1)]) }}"
+                                class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 {{ $meta['current_page'] <= 1 ? 'pointer-events-none opacity-50' : '' }}">
+                                Prev
+                            </a>
+                            <a href="{{ request()->fullUrlWithQuery(['page' => min($meta['last_page'], $meta['current_page'] + 1)]) }}"
+                                class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 {{ $meta['current_page'] >= $meta['last_page'] ? 'pointer-events-none opacity-50' : '' }}">
+                                Next
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</x-layout>
+
+
+
+
+
+
+

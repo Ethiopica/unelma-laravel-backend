@@ -6,14 +6,17 @@ use App\Http\Controllers\Admin\CarrerController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MailSubscriberController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
+
 use App\Http\Controllers\Admin\VerifyUserController;
 use App\Http\Controllers\ContactController;
+
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -26,14 +29,28 @@ Route::get('/', function () {
 
 // Email Verification Routes
 Route::middleware('auth')->group(function () {
+
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+
+        return redirect()->intended('/');
+    })->middleware(['signed'])->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('success', 'Verification link sent!');
+    })->middleware(['throttle:6,1'])->name('verification.send');
+
     Route::get('verify-user/{link?}', [VerifyUserController::class, 'verifyUser'])->name('verify.user');
     Route::get('verify-user/{link}/confirm', [VerifyUserController::class, 'confirmUser'])->name('verify.user');
 
     Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
 });
-
-// Contact Form Submission
-Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
 
 Route::view('/checkout/success', 'checkout.success')->name('checkout.success');
 Route::view('/checkout/cancel', 'checkout.cancel')->name('checkout.cancel');
@@ -80,6 +97,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('services', ServicesController::class)->except(['show']);
 
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+        Route::get('/subscribers', [MailSubscriberController::class, 'index'])->name('subscribers.index');
 
         // Job Management
         Route::resource('carrers', CarrerController::class)->except(['show']);
@@ -97,18 +116,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Reports
         Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportsController::class, 'export'])->name('reports.export');
-
-        // Contact Messages
-        Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
-        Route::post('/contact-messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');
-        Route::delete('/contact-messages/{message}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
     });
 });
 
-// Delete at end not at beginning just to see
+// Email preview routes (for development/testing)
 Route::view('/user-register-email', 'mail.user');
-Route::view('/contactmessage-frontend', 'TestApi.index');
 Route::view('/reply-message-mail', 'mail.mail');
+
 Route::get('/checkout/success', function () {
     return 'Subscription successful!';
 })->name('checkout.success');
@@ -116,6 +130,7 @@ Route::get('/checkout/success', function () {
 Route::get('/checkout/cancel', function () {
     return 'Subscription canceled.';
 })->name('checkout.cancel');
+
 // Stripe webhook - excluded from CSRF protection in bootstrap/app.php
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
     ->name('stripe.webhook');

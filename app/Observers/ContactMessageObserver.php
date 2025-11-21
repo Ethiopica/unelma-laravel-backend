@@ -7,12 +7,14 @@ use App\Models\ContactMessage;
 class ContactMessageObserver
 {
     /**
-     * Handle the ContactMessage "created" event.
+     * Handle the ContactMessage "retrieved" event.
+     * Note: This is called every time a model is retrieved from the database.
+     * We'll only mark as read when explicitly viewing in admin panel, not on retrieval.
      */
     public function retrieved(ContactMessage $contactMessage): void
     {
-        $contactMessage->is_read = true;
-        $contactMessage->save();
+        // Removed auto-marking as read on retrieval to prevent unintended side effects
+        // Messages should only be marked as read when explicitly viewed in admin panel
     }
 
     public function created(ContactMessage $contactMessage): void

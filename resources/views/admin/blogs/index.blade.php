@@ -110,7 +110,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex items-center space-x-2">
                                             <a href="{{ route('admin.blogs.edit', $blog->id) }}"
-                                                class="text-blue-600 hover:text-blue-900" title="Edit">
+                                                class="text-blue-600 hover:text-blue-900 blog-edit-link" title="Edit">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -124,7 +124,7 @@
                                                 onsubmit="return confirm('Are you sure you want to delete this blog post?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900"
+                                                <button type="submit" class="text-[#E3E174] hover:text-[#E3E174]/80"
                                                     title="Delete">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -197,7 +197,7 @@
 
                             <div class="flex flex-wrap gap-3">
                                 <a href="{{ route('admin.blogs.edit', $blog->id) }}"
-                                    class="inline-flex items-center justify-center rounded-md border border-blue-600 px-3 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white">
+                                    class="blog-edit-button inline-flex items-center justify-center rounded-md border border-blue-600 px-3 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white">
                                     Edit
                                 </a>
                                 <form method="POST" action="{{ route('admin.blogs.destroy', $blog->id) }}"
@@ -206,7 +206,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="inline-flex items-center justify-center rounded-md border border-red-600 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-600 hover:text-white">
+                                        class="inline-flex items-center justify-center rounded-md border border-[#E3E174] px-3 py-2 text-sm font-semibold text-[#E3E174] transition hover:bg-gray-50">
                                         Delete
                                     </button>
                                 </form>

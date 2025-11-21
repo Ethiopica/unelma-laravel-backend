@@ -105,7 +105,7 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div>
                                     <span class="text-xs text-gray-500">Price</span>
-                                    <p class="text-2xl font-bold text-blue-600">
+                                    <p class="text-2xl font-bold text-blue-600 product-price">
                                         €{{ number_format($product->price, 2) }}</p>
                                 </div>
                                 <div class="text-right">
@@ -117,7 +117,7 @@
                             <!-- Actions -->
                             <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                                 <a href="{{ route('admin.products.edit', $product) }}"
-                                    class="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1">
+                                    class="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1 product-edit-link">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
@@ -131,7 +131,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="text-red-600 hover:text-red-800 font-medium flex items-center space-x-1">
+                                        class="text-[#E3E174] hover:text-[#E3E174]/80 font-medium flex items-center space-x-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
@@ -152,7 +152,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm font-medium uppercase">Total Products</p>
-                            <p class="text-3xl font-bold text-gray-800 mt-2">{{ $products->count() }}</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">{{ $products->count() }}</p>
                         </div>
                         <div class="bg-blue-100 rounded-full p-3">
                             <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,7 +167,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm font-medium uppercase">Active</p>
-                            <p class="text-3xl font-bold text-gray-800 mt-2">
+                            <p class="text-3xl font-bold text-gray-900 mt-2">
                                 {{ $products->where('is_active', true)->count() }}</p>
                         </div>
                         <div class="bg-green-100 rounded-full p-3">
@@ -184,7 +184,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm font-medium uppercase">Featured</p>
-                            <p class="text-3xl font-bold text-gray-800 mt-2">
+                            <p class="text-3xl font-bold text-gray-900 mt-2">
                                 {{ $products->where('is_featured', true)->count() }}</p>
                         </div>
                         <div class="bg-yellow-100 rounded-full p-3">
@@ -201,7 +201,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm font-medium uppercase">Inactive</p>
-                            <p class="text-3xl font-bold text-gray-800 mt-2">
+                            <p class="text-3xl font-bold text-gray-900 mt-2">
                                 {{ $products->where('is_active', false)->count() }}</p>
                         </div>
                         <div class="bg-gray-100 rounded-full p-3">
