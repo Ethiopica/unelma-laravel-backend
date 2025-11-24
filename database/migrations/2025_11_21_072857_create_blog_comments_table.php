@@ -30,16 +30,3 @@ return new class extends Migration
         Schema::dropIfExists('blog_comments');
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
