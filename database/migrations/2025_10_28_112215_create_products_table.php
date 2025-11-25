@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('sku');
             $table->text('highlights')->nullable();
             $table->text('description')->nullable();
-            $table->decimal('rating',2,1)->nullable();
+            $table->decimal('rating', 2, 1)->nullable();
             $table->string('image')->nullable();
             $table->text('image_url')->nullable();
             $table->boolean('is_featured')->default(false);
