@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Service extends Model
@@ -15,12 +16,14 @@ class Service extends Model
         'is_active',
         'is_featured',
         'order',
+        'favorite_count',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
         'order' => 'integer',
+        'favorite_count' => 'integer',
     ];
 
     protected $appends = ['image_url'];
@@ -41,5 +44,11 @@ class Service extends Model
 
             return $this->image ? asset('storage/'.$this->image) : null;
         }
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'item_id')
+            ->where('favorite_type', Favorite::TYPE_SERVICE);
     }
 }

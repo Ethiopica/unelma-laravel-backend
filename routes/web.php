@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CarrerController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MailSubscriberController;
+use App\Http\Controllers\Admin\FavoriteController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReportsController;
@@ -90,6 +91,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
         Route::get('/subscribers', [MailSubscriberController::class, 'index'])->name('subscribers.index');
+        Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
         // Job Management
         Route::resource('carrers', CarrerController::class)->except(['show']);
@@ -126,7 +128,18 @@ Route::get('/checkout/cancel', function () {
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
     ->name('stripe.webhook');
 
+// Alternative webhook route for Stripe CLI/Shell compatibility
+Route::post('/webhook/stripe', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook.alternative');
+
+// GET routes for webhook endpoint verification
 Route::get('/stripe/webhook', function () {
+    return response()->json([
+        'message' => 'Stripe webhook endpoint ready. Use POST for event delivery.',
+    ]);
+});
+
+Route::get('/webhook/stripe', function () {
     return response()->json([
         'message' => 'Stripe webhook endpoint ready. Use POST for event delivery.',
     ]);

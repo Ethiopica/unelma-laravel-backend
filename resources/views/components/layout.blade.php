@@ -8,7 +8,7 @@
     <title>{{ $title }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -43,9 +43,33 @@
             display: none !important;
         }
         body {
-            font-family: "Poppins", sans-serif;
+            font-family: "General Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-weight: 400;
             font-size: 17px;
+        }
+
+        .admin-shell {
+            font-family: "General Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 16px;
+            letter-spacing: -0.01em;
+            font-feature-settings: "ss01", "ss02", "cv02", "kern";
+        }
+
+        .admin-shell h1,
+        .admin-shell h2,
+        .admin-shell h3,
+        .admin-shell .section-heading,
+        .admin-shell .card-title {
+            font-family: "Space Grotesk", "General Sans", sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .admin-shell .card-title-subtle,
+        .admin-shell .text-muted-modern {
+            font-family: "General Sans", "Space Grotesk", sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.015em;
         }
 
         /* Theme Variables - Dark mode default */
@@ -170,6 +194,56 @@
             color: var(--color-font) !important;
         }
 
+        /* Content management cards - highlight controls in dark mode */
+        html[data-theme="dark"] .product-price,
+        html[data-theme="dark"] .product-edit-link,
+        html[data-theme="dark"] .service-edit-link,
+        html[data-theme="dark"] .blog-edit-link,
+        html[data-theme="dark"] .blog-edit-button {
+            color: #74D7CB !important;
+        }
+
+        html[data-theme="dark"] .product-edit-link svg,
+        html[data-theme="dark"] .service-edit-link svg,
+        html[data-theme="dark"] .blog-edit-link svg,
+        html[data-theme="dark"] .blog-edit-button svg {
+            color: #74D7CB !important;
+        }
+
+        html[data-theme="dark"] .blog-edit-button {
+            border-color: rgba(116, 215, 203, 0.6) !important;
+        }
+
+        /* Delete action styling */
+        .content-delete-action {
+            color: #E3E174;
+            border-color: rgba(227, 225, 116, 0.65);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .content-delete-action svg {
+            color: inherit;
+        }
+
+        .content-delete-action:hover {
+            color: #d4d262;
+            border-color: rgba(227, 225, 116, 0.8);
+        }
+
+        html[data-theme="light"] .content-delete-action {
+            color: #DC2626 !important;
+            border-color: rgba(220, 38, 38, 0.6) !important;
+        }
+
+        html[data-theme="light"] .content-delete-action svg {
+            color: #DC2626 !important;
+        }
+
+        html[data-theme="light"] .content-delete-action:hover {
+            color: #B91C1C !important;
+            border-color: rgba(185, 28, 28, 0.75) !important;
+        }
+
         /* Account owner card theming */
         html[data-theme="dark"] .account-owner-card {
             background: linear-gradient(135deg, #1B3C38, #0F2422 60%, #0B1B1A);
@@ -202,17 +276,19 @@
         html[data-theme="dark"] .account-owner-card .bg-white\/20,
         html[data-theme="dark"] .account-owner-card .bg-white\/15,
         html[data-theme="dark"] .account-owner-card .bg-white\/90,
-        html[data-theme="dark"] .account-owner-card [class*="bg-white"] {
-            background-color: rgba(117, 215, 203, 0.15) !important;
-            color: var(--color-font) !important;
+        html[data-theme="dark"] .account-owner-card [class*="bg-white"],
+        html[data-theme="dark"] .bg-white\/90 {
+            background-color: rgba(117, 215, 203, 0.9) !important;
+            color: var(--color-secondary) !important;
             border-color: rgba(117, 215, 203, 0.35) !important;
         }
 
         html[data-theme="light"] .account-owner-card .bg-white\/20,
         html[data-theme="light"] .account-owner-card .bg-white\/15,
         html[data-theme="light"] .account-owner-card .bg-white\/90,
-        html[data-theme="light"] .account-owner-card [class*="bg-white"] {
-            background-color: rgba(255, 255, 255, 0.85) !important;
+        html[data-theme="light"] .account-owner-card [class*="bg-white"],
+        html[data-theme="light"] .bg-white\/90 {
+            background-color: rgba(255, 255, 255, 0.9) !important;
             color: #102B27 !important;
             border-color: rgba(16, 43, 39, 0.2) !important;
         }
@@ -235,6 +311,24 @@
         html[data-theme="light"] .account-owner-card .bg-emerald-100\/30 {
             background-color: rgba(16, 185, 129, 0.15) !important;
             color: #0E2723 !important;
+        }
+
+        /* Apply account owner card button styles to text-indigo-700 buttons (used in vacancy buttons) */
+        html[data-theme="dark"] .text-indigo-700 {
+            color: var(--color-secondary) !important;
+        }
+
+        html[data-theme="light"] .text-indigo-700 {
+            color: #102B27 !important;
+        }
+
+        /* Hover state for bg-white/90 buttons (matches account owner card button hover) */
+        html[data-theme="dark"] .bg-white\/90:hover {
+            background-color: rgba(117, 215, 203, 1) !important;
+        }
+
+        html[data-theme="light"] .bg-white\/90:hover {
+            background-color: rgba(255, 255, 255, 1) !important;
         }
     </style>
 </head>
@@ -276,15 +370,15 @@
                             </button>
                             <span class="text-lg font-semibold text-gray-900">Admin Panel</span>
                         </div>
-                        @if ($authUser)
-                            <form method="POST" action="{{ route('admin.logout') }}">
-                                @csrf
-                                <button type="submit"
-                                    class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                                    Logout
-                                </button>
-                            </form>
-                        @endif
+                            @if ($authUser)
+                                <form method="POST" action="{{ route('admin.logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                        Logout
+                                    </button>
+                                </form>
+                            @endif
                     </header>
 
                     <main class="flex-1 bg-gray-100 overflow-y-auto">

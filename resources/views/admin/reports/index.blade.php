@@ -25,7 +25,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-blue-200 reports-card p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Total Users</p>
-                    <div class="bg-blue-100 rounded-full p-2 sm:p-3 flex-shrink-0 reports-card-icon">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 reports-card-icon">
                         <i class="fa-solid fa-users text-blue-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-green-200 reports-card p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Admin Users</p>
-                    <div class="bg-green-100 rounded-full p-2 sm:p-3 flex-shrink-0 reports-card-icon">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 reports-card-icon">
                         <i class="fa-solid fa-shield-halved text-green-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-purple-200 reports-card p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Customers</p>
-                    <div class="bg-purple-100 rounded-full p-2 sm:p-3 flex-shrink-0 reports-card-icon">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 reports-card-icon">
                         <i class="fa-solid fa-user text-purple-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-amber-200 reports-card p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Verified Users</p>
-                    <div class="bg-amber-100 rounded-full p-2 sm:p-3 flex-shrink-0 reports-card-icon">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 reports-card-icon">
                         <i class="fa-solid fa-check-circle text-amber-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -72,8 +72,8 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <h3 class="text-base sm:text-lg font-semibold text-gray-900">Today</h3>
-                    <div class="bg-blue-100 rounded-full p-2 flex-shrink-0">
-                        <i class="fa-solid fa-clock text-blue-600 text-sm"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-clock text-blue-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
                 <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ number_format($userStats['today_registrations']) }}</p>
@@ -84,8 +84,8 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <h3 class="text-base sm:text-lg font-semibold text-gray-900">This Week</h3>
-                    <div class="bg-green-100 rounded-full p-2 flex-shrink-0">
-                        <i class="fa-solid fa-calendar-week text-green-600 text-sm"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-calendar-week text-green-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
                 <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ number_format($userStats['this_week_registrations']) }}</p>
@@ -96,8 +96,8 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <h3 class="text-base sm:text-lg font-semibold text-gray-900">This Month</h3>
-                    <div class="bg-purple-100 rounded-full p-2 flex-shrink-0">
-                        <i class="fa-solid fa-calendar text-purple-600 text-sm"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-calendar text-purple-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
                 <p class="text-2xl sm:text-3xl font-bold text-gray-900">{{ number_format($userStats['this_month_registrations']) }}</p>
@@ -212,7 +212,7 @@
                             of total users
                         </p>
                     </div>
-                    <div class="bg-indigo-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-image text-indigo-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -230,7 +230,7 @@
                             {{ number_format($userStats['verified_users']) }} out of {{ number_format($userStats['total_users']) }} users
                         </p>
                     </div>
-                    <div class="bg-yellow-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-envelope-circle-check text-yellow-600 text-sm sm:text-base"></i>
                     </div>
                 </div>

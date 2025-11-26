@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
@@ -15,6 +16,7 @@ class Product extends Model
         'is_featured',
         'is_active',
         'order',
+        'favorite_count',
     ];
 
     protected $casts = [
@@ -22,6 +24,7 @@ class Product extends Model
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'order' => 'integer',
+        'favorite_count' => 'integer',
     ];
 
     protected $appends = ['image_url'];
@@ -42,5 +45,11 @@ class Product extends Model
 
             return $this->image ? asset('storage/'.$this->image) : null;
         }
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'item_id')
+            ->where('favorite_type', Favorite::TYPE_PRODUCT);
     }
 }

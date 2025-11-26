@@ -49,7 +49,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-blue-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Total</p>
-                    <div class="bg-blue-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-receipt text-blue-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-green-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Active</p>
-                    <div class="bg-green-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-check-circle text-green-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-amber-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Trialing</p>
-                    <div class="bg-amber-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-clock text-amber-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-red-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Past Due</p>
-                    <div class="bg-red-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-exclamation-triangle text-red-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5 col-span-2 md:col-span-1">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Canceled</p>
-                    <div class="bg-gray-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-ban text-gray-600 text-sm sm:text-base"></i>
                     </div>
                 </div>

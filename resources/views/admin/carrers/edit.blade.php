@@ -92,8 +92,8 @@
                         Cancel
                     </a>
                     <button type="submit"
-                        class="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                        <i class="fa-solid fa-check text-xs"></i>
+                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/90 px-5 py-3 text-indigo-700 font-semibold hover:bg-white transition">
+                        <i class="fa-solid fa-check"></i>
                         <span>Update Vacancy</span>
                     </button>
                 </div>

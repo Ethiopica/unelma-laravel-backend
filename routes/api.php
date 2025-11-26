@@ -11,11 +11,16 @@ use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
 use App\Http\Controllers\Api\UserProfileController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\StripeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
+    // Favorites
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::delete('/favorites', [FavoriteController::class, 'destroy']);
     Route::post('/stripe/checkout/session', [StripeController::class, 'createCheckoutSession']);
 });
 // Public routes (no authentication required)

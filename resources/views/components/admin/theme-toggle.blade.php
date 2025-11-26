@@ -38,15 +38,15 @@
         >
             <i class="fa-solid fa-sun"></i>
         </button>
-        <button
-            type="button"
+    <button
+        type="button"
             class="pill-option pill-right"
             :class="{ 'is-active': theme === 'dark' }"
             @click.stop="theme = 'dark'"
         >
             <i class="fa-solid fa-moon"></i>
         </button>
-    </div>
+        </div>
 </div>
 
 <script>
@@ -102,9 +102,9 @@
         const moonButton = pill.querySelector('.pill-right');
 
         function handleClick(button, desiredTheme) {
-            button.addEventListener('click', function(e) {
+        button.addEventListener('click', function(e) {
                 if (window.Alpine && container.__x) return;
-                const currentTheme = getCurrentTheme();
+            const currentTheme = getCurrentTheme();
                 if (currentTheme === desiredTheme) return;
                 applyTheme(desiredTheme);
                 updateToggleUI(desiredTheme);
