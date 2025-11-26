@@ -70,6 +70,11 @@
                                 <img src="{{ $imageSource }}" alt="{{ $product->name }}"
                                     class="w-full h-full object-cover">
                             </div>
+                        @elseif ($product->image_url)
+                        <div class="h-48 overflow-hidden bg-gray-200">
+                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
+                                class="w-full h-full object-cover">
+                        </div>
                         @else
                             <div
                                 class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">

@@ -16,7 +16,7 @@ class BlogController extends Controller
     {
         try {
             $query = Blog::where('is_published', true)
-                ->with($this->blogRelations())
+                ->with('author:id,name,email,profile_picture')
                 ->orderBy('order', 'asc')
                 ->orderBy('published_at', 'desc');
 
@@ -65,18 +65,7 @@ class BlogController extends Controller
     /**
      * Get a single blog post by id
      */
-
-    public function show($id)
-    {
-        $blog = Blog::with($this->blogRelations())->findOrFail($id);
-
-        return response()->json([
-            'success' => true,
-            'data' => $blog
-        ]);
-    }
-
-    public function showBySlug($slug)
+    public function show($slug)
     {
         $blog = Blog::where('slug', $slug)
             ->where('is_published', true)

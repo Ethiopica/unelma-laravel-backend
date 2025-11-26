@@ -15,8 +15,7 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Service::query()
-                ->where('is_active', true)
+            $query = Service::where('is_active', true)
                 ->orderBy('order', 'asc')
                 ->orderBy('created_at', 'desc');
 
@@ -53,7 +52,7 @@ class ServiceController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Services API Error: '.$e->getMessage(), [
+            \Log::error('Services API Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -70,8 +69,7 @@ class ServiceController extends Controller
      */
     public function show($id)
     {
-        $serviceQuery = Service::query()
-            ->where('id', $id)
+        $service = Service::where('id', $id)
             ->where('is_active', true)
             ->orderByDesc('created_at');
 

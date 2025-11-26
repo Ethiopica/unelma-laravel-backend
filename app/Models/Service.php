@@ -17,7 +17,6 @@ class Service extends Model
         'is_active',
         'is_featured',
         'order',
-        'favorite_count',
     ];
 
     protected $casts = [
@@ -27,11 +26,12 @@ class Service extends Model
         'favorite_count' => 'integer',
     ];
 
-    public function plans(){
+    public function plans()
+    {
         return $this->hasMany(Plan::class);
     }
 
-    protected $appends = ['image_local_url'];
+    protected $appends = ['image_url'];
 
     /**
      * Get the absolute URL for the service image.
@@ -45,9 +45,9 @@ class Service extends Model
 
             return Storage::url($this->image);
         } catch (\Exception $e) {
-            \Log::warning('Failed to generate image URL for service: '.$e->getMessage());
+            \Log::warning('Failed to generate image URL for service: ' . $e->getMessage());
 
-            return $this->image ? asset('storage/'.$this->image) : null;
+            return $this->image ? asset('storage/' . $this->image) : null;
         }
     }
 
