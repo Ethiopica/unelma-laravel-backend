@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class BlogController extends Controller
 {
@@ -15,7 +16,7 @@ class BlogController extends Controller
     {
         try {
             $query = Blog::where('is_published', true)
-                ->with('author:id,name,email,profile_picture')
+                ->with($this->blogRelations())
                 ->orderBy('order', 'asc')
                 ->orderBy('published_at', 'desc');
 
@@ -49,7 +50,7 @@ class BlogController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Blogs API Error: '.$e->getMessage(), [
+            \Log::error('Blogs API Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -62,13 +63,24 @@ class BlogController extends Controller
     }
 
     /**
-     * Get a single blog post by slug
+     * Get a single blog post by id
      */
-    public function show($slug)
+
+    public function show($id)
+    {
+        $blog = Blog::with($this->blogRelations())->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $blog
+        ]);
+    }
+
+    public function showBySlug($slug)
     {
         $blog = Blog::where('slug', $slug)
             ->where('is_published', true)
-            ->with('author:id,name,email,profile_picture')
+            ->with($this->blogRelations())
             ->firstOrFail();
 
         // Increment views
@@ -79,7 +91,6 @@ class BlogController extends Controller
             'data' => $blog,
         ]);
     }
-
     /**
      * Get blog categories
      */
@@ -106,7 +117,7 @@ class BlogController extends Controller
         $limit = $request->get('limit', 5);
 
         $blogs = Blog::where('is_published', true)
-            ->with('author:id,name,email,profile_picture')
+            ->with($this->blogRelations())
             ->orderBy('published_at', 'desc')
             ->limit($limit)
             ->get();
@@ -123,9 +134,9 @@ class BlogController extends Controller
     public function latest()
     {
         $blog = Blog::where('is_published', true)
-            ->with('author:id,name,email,profile_picture')
+            ->with($this->blogRelations())
             ->orderByDesc('published_at')
-                ->orderByDesc('created_at')
+            ->orderByDesc('created_at')
             ->first();
 
         if (! $blog) {
@@ -149,7 +160,7 @@ class BlogController extends Controller
         $limit = $request->get('limit', 5);
 
         $blogs = Blog::where('is_published', true)
-            ->with('author:id,name,email,profile_picture')
+            ->with($this->blogRelations())
             ->orderBy('views', 'desc')
             ->limit($limit)
             ->get();
@@ -158,5 +169,25 @@ class BlogController extends Controller
             'success' => true,
             'data' => $blogs,
         ]);
+    }
+
+    /**
+     * Determine which relations can be safely eager loaded.
+     */
+    protected function blogRelations(): array
+    {
+        $relations = [
+            'author:id,name,email,profile_picture',
+        ];
+
+        if (Schema::hasTable('blog_comments')) {
+            $relations[] = 'comments';
+
+            if (Schema::hasColumn('blog_comments', 'user_id')) {
+                $relations[] = 'comments.user:id,name,profile_picture';
+            }
+        }
+
+        return $relations;
     }
 }

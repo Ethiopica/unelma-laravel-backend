@@ -13,6 +13,7 @@ class Service extends Model
         'description',
         'icon',
         'image',
+        'image_url',
         'is_active',
         'is_featured',
         'order',
@@ -26,12 +27,16 @@ class Service extends Model
         'favorite_count' => 'integer',
     ];
 
-    protected $appends = ['image_url'];
+    public function plans(){
+        return $this->hasMany(Plan::class);
+    }
+
+    protected $appends = ['image_local_url'];
 
     /**
      * Get the absolute URL for the service image.
      */
-    public function getImageUrlAttribute()
+    public function getImageLocalUrlAttribute()
     {
         try {
             if (! $this->image) {

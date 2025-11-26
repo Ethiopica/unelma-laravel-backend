@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController as ApiBlogController;
 use App\Http\Controllers\Api\BlogCommentController;
 use App\Http\Controllers\Api\CarrerController as ApiCarrerController;
+use App\Http\Controllers\Api\CommentController as ApiCommentController;
 use App\Http\Controllers\Api\ContactController as ApiContactController;
 use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageController;
 use App\Http\Controllers\Api\NewsletterController;
@@ -31,13 +32,19 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
 
 // Public Blog Routes
 Route::get('/blogs', [ApiBlogController::class, 'index']);
-Route::get('/blogs/{slug}', [ApiBlogController::class, 'show']);
+Route::get('/blogs/{id}', [ApiBlogController::class, 'show']);
+Route::get('/blogs/{slug}', [ApiBlogController::class, 'showBySlug']);
 Route::get('/blogs/categories/list', [ApiBlogController::class, 'categories']);
 Route::get('/blogs/recent/list', [ApiBlogController::class, 'recent']);
 Route::get('/blogs/popular/list', [ApiBlogController::class, 'popular']);
 Route::get('/blogs/latest', [ApiBlogController::class, 'latest']);
 Route::get('/blogs/{blog}/comments', [BlogCommentController::class, 'index']);
 Route::post('/blogs/{blog}/comments', [BlogCommentController::class, 'store']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/blogs/{id}/comments', [ApiCommentController::class, 'store']);
+});
 
 // Public Product Routes
 Route::get('/products', [ApiProductController::class, 'index']);

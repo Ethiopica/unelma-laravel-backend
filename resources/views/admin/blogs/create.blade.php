@@ -89,6 +89,19 @@
                     <p class="mt-1 text-sm text-gray-500">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB</p>
                 </div>
 
+                <!--Blog Image Url -->
+                <div class="mb-6">
+                    <label for="image_url" class="block text-sm font-medium text-gray-700 mb-2">
+                       Or Image Url
+                    </label>
+                    <input type="text" id="image_url" name="image_url" value="{{ old('image_url') }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image_url') border-red-500 @enderror"
+                        placeholder="e.g., https://www.example.com/images/product1.jpg">
+                    @error('image_url')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    
+                </div>
                 <!-- Category and Tags -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <!-- Category -->

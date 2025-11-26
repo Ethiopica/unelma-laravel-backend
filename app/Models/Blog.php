@@ -72,17 +72,17 @@ class Blog extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
+   // All comments for this blog
     public function comments(): HasMany
     {
         return $this->hasMany(BlogComment::class)->latest();
     }
-
     public function favorites(): HasMany
     {
         return $this->hasMany(Favorite::class, 'item_id')
             ->where('favorite_type', Favorite::TYPE_BLOG);
     }
-
+ 
     /**
      * Get the route key name
      */

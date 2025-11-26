@@ -52,6 +52,11 @@
                                 <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->name }}"
                                     class="w-full h-full object-cover">
                             </div>
+                        @elseif ($service->image_url)
+                            <div class="h-48 overflow-hidden bg-gray-200">
+                                <img src="{{ $service->image_url }}" alt="{{ $service->name }}"
+                                    class="w-full h-full object-cover">
+                            </div>
                         @else
                             <div
                                 class="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">

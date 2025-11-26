@@ -88,10 +88,28 @@
             <!-- Product Image -->
             <div class="h-full">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
-                    @if($product->image_url)
+                    @php
+                        $imageSource = $product->image_local_url;
+
+                        if (! $imageSource && $product->image) {
+                            if (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://'])) {
+                                $imageSource = $product->image;
+                            } elseif (\Illuminate\Support\Str::startsWith($product->image, ['/storage/', 'storage/'])) {
+                                $imageSource = asset(ltrim($product->image, '/'));
+                            } else {
+                                $imageSource = asset('storage/' . ltrim($product->image, '/'));
+                            }
+                        }
+
+                        if (! $imageSource && $product->image_url) {
+                            $imageSource = $product->image_url;
+                        }
+                    @endphp
+
+                    @if($imageSource)
                         <div class="w-full flex-1">
                             <img 
-                                src="{{ $product->image_url }}" 
+                                src="{{ $imageSource }}" 
                                 alt="{{ $product->name }}"
                                 class="w-full h-full object-cover"
                             >

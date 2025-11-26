@@ -69,12 +69,14 @@
             <!-- Header with Icon - Mobile First -->
             <div class="px-4 sm:px-6 py-4 border-b border-gray-100">
                 <div class="flex items-center gap-3">
-                    <div class="inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-600 w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
+                    <div
+                        class="inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-600 w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
                         <i class="fa-solid fa-bolt text-sm sm:text-base"></i>
                     </div>
                     <div>
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900">Quick Actions</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 hidden sm:block">Access frequently used features and management tools.</p>
+                        <p class="text-xs sm:text-sm text-gray-500 hidden sm:block">Access frequently used features and
+                            management tools.</p>
                     </div>
                 </div>
             </div>
@@ -128,7 +130,8 @@
                             <i class="fa-solid fa-envelope text-amber-600 text-xl"></i>
                         </div>
                         @if ($stats['unread_messages'] > 0)
-                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                            <span
+                                class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
                                 {{ $stats['unread_messages'] }}
                             </span>
                         @endif

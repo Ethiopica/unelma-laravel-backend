@@ -7,7 +7,8 @@
 
 <aside class="flex h-full flex-col bg-white text-gray-900 shadow-xl border-r border-gray-200">
     <div class="flex items-center px-6 py-5 border-b border-gray-200 bg-gray-50">
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 text-xl font-bold tracking-tight text-gray-900">
+        <a href="{{ route('admin.dashboard') }}"
+            class="flex items-center gap-2 text-xl font-bold tracking-tight text-gray-900">
             <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
                 <i class="fa-solid fa-shield-halved text-blue-600 text-sm"></i>
             </div>
@@ -29,7 +30,8 @@
             </p>
             <a href="{{ route('admin.dashboard') }}"
                 class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.dashboard')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center @if (request()->routeIs('admin.dashboard')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif transition-all">
+                <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center @if (request()->routeIs('admin.dashboard')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif transition-all">
                     <i class="fa-solid fa-gauge-high text-sm"></i>
                 </div>
                 Dashboard
@@ -50,7 +52,8 @@
             </p>
             <a href="{{ route('admin.carrers.index') }}"
                 class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.carrers.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center @if (request()->routeIs('admin.carrers.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif transition-all">
+                <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center @if (request()->routeIs('admin.carrers.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif transition-all">
                     <i class="fa-solid fa-briefcase text-sm"></i>
                 </div>
                 Vacancies & Careers
@@ -59,9 +62,13 @@
             <div>
                 <button type="button"
                     class="group flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    @click="openUsers = !openUsers" :class="openUsers ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'">
+                    @click="openUsers = !openUsers"
+                    :class="openUsers ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' :
+                        'text-gray-700 hover:bg-gray-50 hover:text-gray-900'">
                     <span class="inline-flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all" :class="openUsers ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                            :class="openUsers ? 'bg-blue-100 text-blue-600' :
+                                'bg-gray-100 text-gray-600 group-hover:bg-gray-200'">
                             <i class="fa-solid fa-users text-sm"></i>
                         </div>
                         User Management
@@ -72,7 +79,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
-                <div x-show="openUsers" x-transition x-cloak class="mt-2 space-y-1 pl-4 ml-4 border-l-2 border-gray-200">
+                <div x-show="openUsers" x-transition x-cloak
+                    class="mt-2 space-y-1 pl-4 ml-4 border-l-2 border-gray-200">
                     <a href="{{ route('admin.users.index') }}"
                         class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 {{ $isUsersSection && !in_array($userFilter, ['admin', 'customer'], true) ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                         <i class="fa-solid fa-users text-xs"></i>
@@ -94,9 +102,13 @@
             <div>
                 <button type="button"
                     class="group flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    @click="openContent = !openContent" :class="openContent ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'">
+                    @click="openContent = !openContent"
+                    :class="openContent ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' :
+                        'text-gray-700 hover:bg-gray-50 hover:text-gray-900'">
                     <span class="inline-flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all" :class="openContent ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                            :class="openContent ? 'bg-blue-100 text-blue-600' :
+                                'bg-gray-100 text-gray-600 group-hover:bg-gray-200'">
                             <i class="fa-solid fa-layer-group text-sm"></i>
                         </div>
                         Content Management
@@ -107,7 +119,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
-                <div x-show="openContent" x-transition x-cloak class="mt-2 space-y-1 pl-4 ml-4 border-l-2 border-gray-200">
+                <div x-show="openContent" x-transition x-cloak
+                    class="mt-2 space-y-1 pl-4 ml-4 border-l-2 border-gray-200">
                     <a href="{{ route('admin.products.index') }}"
                         class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 @if (request()->routeIs('admin.products.*')) bg-blue-50 text-blue-700 @else text-gray-600 hover:bg-gray-50 hover:text-gray-900 @endif">
                         <i class="fa-solid fa-box text-xs"></i>
@@ -127,21 +140,24 @@
             </div>
             <a href="{{ route('admin.payments.index') }}"
                 class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.payments.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.payments.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
+                <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.payments.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
                     <i class="fa-solid fa-credit-card text-sm"></i>
                 </div>
                 Payments
             </a>
             <a href="{{ route('admin.subscribers.index') }}"
                 class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.subscribers.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.subscribers.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
+                <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.subscribers.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
                     <i class="fa-solid fa-envelope-circle-check text-sm"></i>
                 </div>
                 Subscribers
             </a>
             <a href="{{ route('admin.contact-messages.index') }}"
                 class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.contact-messages.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.contact-messages.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
+                <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.contact-messages.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
                     <i class="fa-solid fa-envelope-open-text text-sm"></i>
                 </div>
                 Messages
@@ -161,7 +177,8 @@
             </p>
             <a href="{{ route('admin.reports.index') }}"
                 class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.reports.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.reports.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
+                <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.reports.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
                     <i class="fa-solid fa-chart-line text-sm"></i>
                 </div>
                 Reports
@@ -174,7 +191,8 @@
             </p>
             <a href="{{ route('admin.settings.index') }}"
                 class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.settings.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.settings.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
+                <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.settings.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
                     <i class="fa-solid fa-gear text-sm"></i>
                 </div>
                 Settings
@@ -255,24 +273,35 @@
                     <h2><strong>Name: </strong>{{ $user->name }}</h2>
                     <div>
                         <h2><strong>Email: </strong>{{ $user->email }}</h2>
-                        <a href="{{ route('verify.user') }}">Verify Your email</a>
+                        @if (isset($user->email_verified_at))
+                            <span
+                                class="inline-flex justify-center items-center px-2 py-0.5 rounded-full bg-green-100 text-[9px] font-semibold text-green-800 border border-green-200">
+                                <i class="fa-solid fa-check-circle text-[8px] mr-1"></i>Verified
+                            </span>
+                        @else
+                            <a href="{{ route('verify.user') }}"
+                                class="bg-blue-50 text-blue-700 p-[2px] rounded-sm">Click to Verify Your
+                                email</a>
+                        @endif
                     </div>
                     <h2><strong>role: </strong>{{ $user->role }}</h2>
                 </div>
             </div>
             {{-- @if (!$user->role == 'super_admin') --}}
             <div class="mt-3">
-                <form action="{{ route('admin.users.update', $user->id) }}" class="flex flex-col"
+                <form action="{{ route('admin.users.update', $user->id) }}" class="flex flex-col gap-1"
                     enctype="multipart/form-data" method="POST">
                     @csrf
                     @method('PUT')
                     <div>
-                        <label for="name">Name:</label>
-                        <input type="text" name="name" id="name" placeholder="Update Your Name">
+                        <label for="name" class="">Name:</label>
+                        <input type="text" name="name" id="name" placeholder="Update Your Name"
+                            class="rounded-sm px-2">
                     </div>
                     <div>
                         <label for="email">Email:</label>
-                        <input type="text" name="email" id="email" placeholder="Update Your email">
+                        <input type="text" name="email" id="email" placeholder="Update Your email"
+                            class="rounded-sm px-2">
                     </div>
                     <div>
                         <div><img src="" alt="Preview Profile Picture" id='image' width="200px" />
@@ -281,7 +310,8 @@
                         <input type="file" name="profile_picture" id="photo" placeholder="Upload your photo"
                             onchange="document.getElementById('image').src=window.URL.createObjectURL(this.files[0])">
                     </div>
-                    <input type="submit" value="Update" class="p-2 bg-green-500 w-fit rounded-md cursor-pointer">
+                    <input type="submit" value="Update"
+                        class="p-2 bg-blue-50 text-blue-700 w-fit rounded-md cursor-pointer">
                 </form>
             </div>
             {{-- @else
@@ -290,7 +320,7 @@
         </div>
         <div class="flex justify-end space-x-3 mt-6 pt-4">
             <button onclick="closeUserModal()"
-                class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200">
+                class="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-gray-400 transition duration-200">
                 Close
             </button>
         </div>
