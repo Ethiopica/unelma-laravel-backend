@@ -134,6 +134,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
+                'profile_picture'=>$user->profile_picture,
                 'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
                 'updated_at' => $user->updated_at?->toISOString() ?? $user->updated_at,
             ],

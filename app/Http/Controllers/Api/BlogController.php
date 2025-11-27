@@ -18,7 +18,7 @@ class BlogController extends Controller
             $query = Blog::where('is_published', true)
                 ->with($this->blogRelations())
                 ->orderBy('order', 'asc')
-                ->orderBy('published_at', 'desc');
+                ->orderBy('created_at', 'desc');
 
             // Filter by category if provided
             if ($request->has('category')) {
