@@ -39,9 +39,14 @@ class BlogController extends Controller
             $perPage = $request->get('per_page', 10);
             $blogs = $query->paginate($perPage);
 
+            // Transform blogs to include full profile picture URLs
+            $transformedBlogs = $blogs->getCollection()->map(function ($blog) {
+                return $this->transformBlogWithProfilePictures($blog);
+            });
+
             return response()->json([
                 'success' => true,
-                'data' => $blogs->items(),
+                'data' => $transformedBlogs->values()->all(),
                 'meta' => [
                     'current_page' => $blogs->currentPage(),
                     'last_page' => $blogs->lastPage(),
@@ -65,14 +70,13 @@ class BlogController extends Controller
     /**
      * Get a single blog post by id
      */
-
     public function show($id)
     {
         $blog = Blog::with($this->blogRelations())->findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'data' => $blog
+            'data' => $this->transformBlogWithProfilePictures($blog)
         ]);
     }
 
@@ -88,7 +92,7 @@ class BlogController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $blog,
+            'data' => $this->transformBlogWithProfilePictures($blog),
         ]);
     }
     /**
@@ -122,9 +126,14 @@ class BlogController extends Controller
             ->limit($limit)
             ->get();
 
+        // Transform blogs to include full profile picture URLs
+        $transformedBlogs = $blogs->map(function ($blog) {
+            return $this->transformBlogWithProfilePictures($blog);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $blogs,
+            'data' => $transformedBlogs->values()->all(),
         ]);
     }
 
@@ -148,7 +157,7 @@ class BlogController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $blog,
+            'data' => $this->transformBlogWithProfilePictures($blog),
         ]);
     }
 
@@ -165,9 +174,14 @@ class BlogController extends Controller
             ->limit($limit)
             ->get();
 
+        // Transform blogs to include full profile picture URLs
+        $transformedBlogs = $blogs->map(function ($blog) {
+            return $this->transformBlogWithProfilePictures($blog);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $blogs,
+            'data' => $transformedBlogs->values()->all(),
         ]);
     }
 
@@ -189,5 +203,35 @@ class BlogController extends Controller
         }
 
         return $relations;
+    }
+
+    /**
+     * Transform blog data to include full profile picture URLs for author and comment users
+     */
+    private function transformBlogWithProfilePictures($blog)
+    {
+        $blogArray = $blog->toArray();
+
+        // Transform author profile picture
+        if ($blog->relationLoaded('author') && $blog->author) {
+            $blogArray['author']['profile_picture'] = $blog->author->profile_picture_url;
+        }
+
+        // Transform comment users' profile pictures
+        if ($blog->relationLoaded('comments') && $blog->comments) {
+            foreach ($blog->comments as $comment) {
+                if ($comment->relationLoaded('user') && $comment->user) {
+                    // Find the comment in the array and update it
+                    foreach ($blogArray['comments'] as $key => $commentData) {
+                        if (isset($commentData['id']) && $commentData['id'] == $comment->id) {
+                            $blogArray['comments'][$key]['user']['profile_picture'] = $comment->user->profile_picture_url;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $blogArray;
     }
 }
