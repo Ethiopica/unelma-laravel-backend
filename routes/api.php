@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ServiceController as ApiServiceController;
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/favorites', [FavoriteController::class, 'destroy']);
     Route::post('/stripe/checkout/session', [StripeController::class, 'createCheckoutSession']);
 });
+// Stripe webhook - must be public and excluded from CSRF (handled in bootstrap/app.php)
+// Accessible at /api/stripe/webhook
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook.api');
+
+// Alternative webhook route for compatibility
+Route::post('/webhook/stripe', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook.api.alternative');
+
 // Public routes (no authentication required)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -68,6 +78,11 @@ Route::post('/contact', [ApiContactController::class, 'submit']); // Alias for f
 // Public Vacancy Routes
 Route::get('/vacancies', [ApiCarrerController::class, 'index']);
 
+// Handle successful checkout - process subscription if webhook didn't
+// Note: This route works without auth by finding user from Stripe session
+Route::get('/checkout/success', [StripeController::class, 'handleCheckoutSuccess'])
+    ->name('checkout.success');
+
 // Protected routes (authentication required)
 Route::middleware('auth:sanctum')->group(function () {
     // Authentication
@@ -81,11 +96,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/profile', [UserProfileController::class, 'destroy']);
     Route::get('/profile/activity', [UserProfileController::class, 'activity']);
     Route::get('/profile/subscriptions', [UserProfileController::class, 'subscriptions']);
-
-    // Handle successful checkout
-    Route::get('/checkout/success', function () {
-        return 'Subscription successful!';
-    })->name('checkout.success');
 
     Route::get('/checkout/cancel', function () {
         return 'Subscription canceled.';

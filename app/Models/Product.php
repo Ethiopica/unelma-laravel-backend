@@ -12,6 +12,7 @@ class Product extends Model
         'name','category','sku','highlights','rating','image_url',
         'description',
         'price',
+        'stripe_price_id',
         'image',
         'is_featured',
         'is_active',
@@ -31,7 +32,7 @@ class Product extends Model
     protected $appends = ['image_local_url'];
 
     /**
-     * Get the absolute URL for the product image.
+     * Get the URL for the product image (relative path).
      */
     public function getImageLocalUrlAttribute()
     {
@@ -40,11 +41,14 @@ class Product extends Model
                 return null;
             }
 
+            // Storage::url() returns a path like /storage/products/...
+            // This is a relative path that works with the storage symlink
             return Storage::url($this->image);
         } catch (\Exception $e) {
             \Log::warning('Failed to generate image URL for product: '.$e->getMessage());
 
-            return $this->image ? asset('storage/'.$this->image) : null;
+            // Fallback: construct the path manually
+            return $this->image ? '/storage/'.ltrim($this->image, '/') : null;
         }
     }
 

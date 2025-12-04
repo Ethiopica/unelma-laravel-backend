@@ -86,9 +86,34 @@
             <!-- Product Image -->
             <div class="h-full">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
-                    @if ($product->image_url)
+                    @php
+                        $imageSource = null;
+
+                        // First, try image_local_url (from model accessor - relative path)
+                        if ($product->image_local_url) {
+                            $imageSource = $product->image_local_url;
+                        }
+
+                        // Fallback to image field with proper path handling
+                        if (! $imageSource && $product->image) {
+                            if (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://'])) {
+                                $imageSource = $product->image;
+                            } elseif (\Illuminate\Support\Str::startsWith($product->image, ['/storage/', 'storage/'])) {
+                                $imageSource = $product->image;
+                            } else {
+                                $imageSource = '/storage/' . ltrim($product->image, '/');
+                            }
+                        }
+
+                        // Last resort: image_url field
+                        if (! $imageSource && $product->image_url) {
+                            $imageSource = $product->image_url;
+                        }
+                    @endphp
+
+                    @if ($imageSource)
                         <div class="w-full flex-1">
-                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
+                            <img src="{{ $imageSource }}" alt="{{ $product->name }}"
                                 class="w-full h-full object-cover">
                         </div>
                     @else

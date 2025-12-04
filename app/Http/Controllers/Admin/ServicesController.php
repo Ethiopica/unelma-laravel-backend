@@ -7,6 +7,7 @@ use App\Models\Plan;
 use App\Models\Service;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class ServicesController extends Controller
@@ -63,7 +64,7 @@ class ServicesController extends Controller
 
         
         // instead of creating PlanController, we create related plans for each service here
-        if (!empty($validated['plans'])){
+        if (Schema::hasTable('plans') && !empty($validated['plans'])){
             foreach ($validated['plans'] as $planData){
                $features = [];
                 if (!empty($planData['features']) && is_string($planData['features'])) {
@@ -139,8 +140,7 @@ class ServicesController extends Controller
 
         
         //handle plan update
-        
-        if (!empty($sentPlansData)){
+        if (Schema::hasTable('plans') && !empty($sentPlansData)){
 
             $submittedPlanId = collect($sentPlansData)
             ->pluck('id')->filter()->toArray();

@@ -90,8 +90,8 @@
                     <a href="{{ route('admin.users.create') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center mb-3 group-hover:bg-blue-200 transition-colors">
-                            <i class="fa-solid fa-user-plus text-blue-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-3 group-hover:bg-blue-200 transition-colors">
+                            <i class="fa-solid fa-user-plus text-blue-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">Add User</h4>
                         <p class="text-xs text-gray-600">Create a new user account</p>
@@ -99,8 +99,8 @@
                     <a href="{{ route('admin.users.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center mb-3 group-hover:bg-blue-200 transition-colors">
-                            <i class="fa-solid fa-users text-blue-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-3 group-hover:bg-blue-200 transition-colors">
+                            <i class="fa-solid fa-users text-blue-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">Manage Users</h4>
                         <p class="text-xs text-gray-600">View and manage all users</p>
@@ -108,8 +108,8 @@
                     <a href="{{ route('admin.blogs.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 rounded-lg bg-purple-100 flex items-center justify-center mb-3 group-hover:bg-purple-200 transition-colors">
-                            <i class="fa-solid fa-blog text-purple-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center mb-3 group-hover:bg-purple-200 transition-colors">
+                            <i class="fa-solid fa-blog text-purple-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">Manage Blog</h4>
                         <p class="text-xs text-gray-600">Create and edit blog posts</p>
@@ -117,8 +117,8 @@
                     <a href="{{ route('admin.products.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 rounded-lg bg-indigo-100 flex items-center justify-center mb-3 group-hover:bg-indigo-200 transition-colors">
-                            <i class="fa-solid fa-box text-indigo-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center mb-3 group-hover:bg-indigo-200 transition-colors">
+                            <i class="fa-solid fa-box text-indigo-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">Manage Products</h4>
                         <p class="text-xs text-gray-600">Add and update products</p>
@@ -126,8 +126,8 @@
                     <a href="{{ route('admin.services.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 rounded-lg bg-green-100 flex items-center justify-center mb-3 group-hover:bg-green-200 transition-colors">
-                            <i class="fa-solid fa-briefcase text-green-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-3 group-hover:bg-green-200 transition-colors">
+                            <i class="fa-solid fa-briefcase text-green-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">Manage Services</h4>
                         <p class="text-xs text-gray-600">Showcase your services</p>
@@ -135,8 +135,8 @@
                     <a href="{{ route('admin.contact-messages.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center relative">
                         <div
-                            class="w-16 h-16 rounded-lg bg-amber-100 flex items-center justify-center mb-3 group-hover:bg-amber-200 transition-colors">
-                            <i class="fa-solid fa-envelope text-amber-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mb-3 group-hover:bg-amber-200 transition-colors">
+                            <i class="fa-solid fa-envelope text-amber-600 text-lg"></i>
                         </div>
                         @if ($stats['unread_messages'] > 0)
                             <span
@@ -150,8 +150,8 @@
                     <a href="{{ route('admin.subscribers.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 rounded-lg bg-cyan-100 flex items-center justify-center mb-3 group-hover:bg-cyan-200 transition-colors">
-                            <i class="fa-solid fa-envelope-circle-check text-cyan-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-cyan-100 flex items-center justify-center mb-3 group-hover:bg-cyan-200 transition-colors">
+                            <i class="fa-solid fa-envelope-circle-check text-cyan-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">Newsletter Subscribers</h4>
                         <p class="text-xs text-gray-600">Manage subscribers</p>
@@ -159,8 +159,8 @@
                     <a href="{{ route('admin.reports.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 rounded-lg bg-green-100 flex items-center justify-center mb-3 group-hover:bg-green-200 transition-colors">
-                            <i class="fa-solid fa-chart-line text-green-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-3 group-hover:bg-green-200 transition-colors">
+                            <i class="fa-solid fa-chart-line text-green-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">View Reports</h4>
                         <p class="text-xs text-gray-600">System analytics</p>
@@ -168,8 +168,8 @@
                     <a href="{{ route('admin.settings.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-gray-200 transition-colors">
-                            <i class="fa-solid fa-gear text-gray-600 text-xl"></i>
+                            class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-gray-200 transition-colors">
+                            <i class="fa-solid fa-gear text-gray-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">Settings</h4>
                         <p class="text-xs text-gray-600">Configure system</p>

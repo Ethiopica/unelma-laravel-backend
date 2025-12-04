@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class Service extends Model
@@ -31,7 +32,7 @@ class Service extends Model
         return $this->hasMany(Plan::class);
     }
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_local_url'];
 
     /**
      * Get the absolute URL for the service image.
@@ -55,5 +56,22 @@ class Service extends Model
     {
         return $this->hasMany(Favorite::class, 'item_id')
             ->where('favorite_type', Favorite::TYPE_SERVICE);
+    }
+
+    /**
+     * Safely get plans if the plans table exists
+     */
+    public function getPlansSafely()
+    {
+        if (!Schema::hasTable('plans')) {
+            return collect([]);
+        }
+
+        try {
+            return $this->plans;
+        } catch (\Exception $e) {
+            \Log::warning('Failed to load plans for service: ' . $e->getMessage());
+            return collect([]);
+        }
     }
 }

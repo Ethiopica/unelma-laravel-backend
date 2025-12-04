@@ -126,10 +126,10 @@
                         Product Image
                     </label>
 
-                    @if ($product->image)
+                    @if ($product->image_local_url || $product->image)
                         <div class="mb-4">
                             <p class="text-sm text-gray-600 mb-2">Current Image:</p>
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                            <img src="{{ $product->image_local_url ?? '/storage/' . $product->image }}" alt="{{ $product->name }}"
                                 class="w-48 h-32 object-cover rounded border-2 border-gray-300">
                         </div>
                     @endif

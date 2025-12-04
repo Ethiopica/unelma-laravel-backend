@@ -83,34 +83,35 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Joined</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Source</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Tags</th>
+                            <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber</th>
+                            <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
+                            <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Joined</th>
+                            <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Source</th>
+                            <th scope="col" class="px-4 lg:px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Tags</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($subscribers as $subscriber)
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-4 py-4">
+                                <td class="px-4 lg:px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="h-10 w-10 flex items-center justify-center rounded-full bg-cyan-500 text-white font-semibold">
+                                        <div class="h-10 w-10 flex items-center justify-center rounded-full bg-cyan-500 text-white font-semibold flex-shrink-0">
                                             {{ strtoupper(substr($subscriber['first_name'] ?? $subscriber['email'], 0, 1)) }}
                                         </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-900">
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-semibold text-gray-900 truncate">
                                                 {{ trim(($subscriber['first_name'] ?? '') . ' ' . ($subscriber['last_name'] ?? '')) ?: $subscriber['email'] }}
                                             </p>
-                                            <p class="text-sm text-gray-600">{{ $subscriber['email'] }}</p>
+                                            <p class="text-sm text-gray-600 truncate">{{ $subscriber['email'] }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     @php
                                         $status = strtolower($subscriber['status'] ?? 'subscribed');
                                         $statusColors = [
@@ -124,13 +125,14 @@
                                         {{ ucfirst($status) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-4 text-sm text-gray-600">
-                                    {{ optional($subscriber['created_at'])->format('M j, Y') ?? '—' }}
+                                <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    <span class="hidden lg:inline">{{ optional($subscriber['created_at'])->format('M j, Y') ?? '—' }}</span>
+                                    <span class="lg:hidden">{{ optional($subscriber['created_at'])->format('M j') ?? '—' }}</span>
                                 </td>
-                                <td class="px-4 py-4 text-sm text-gray-600">
+                                <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                     {{ $subscriber['source'] ?? 'API' }}
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-4 lg:px-6 py-4">
                                     <div class="flex justify-end flex-wrap gap-2">
                                         @forelse ($subscriber['tags'] ?? [] as $tag)
                                             <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800 border border-blue-200">
@@ -144,7 +146,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-12 text-center text-sm text-gray-500">
+                                <td colspan="5" class="px-4 lg:px-6 py-12 text-center text-sm text-gray-500">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                                             <i class="fa-solid fa-envelope-circle-check text-lg"></i>
@@ -159,6 +161,78 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="md:hidden divide-y divide-gray-200">
+                @forelse ($subscribers as $subscriber)
+                    <div class="p-4 space-y-3 bg-white">
+                        <!-- Subscriber Info -->
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 flex items-center justify-center rounded-full bg-cyan-500 text-white font-semibold flex-shrink-0">
+                                {{ strtoupper(substr($subscriber['first_name'] ?? $subscriber['email'], 0, 1)) }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-900 truncate">
+                                    {{ trim(($subscriber['first_name'] ?? '') . ' ' . ($subscriber['last_name'] ?? '')) ?: $subscriber['email'] }}
+                                </p>
+                                <p class="text-xs text-gray-500 truncate">{{ $subscriber['email'] }}</p>
+                            </div>
+                            @php
+                                $status = strtolower($subscriber['status'] ?? 'subscribed');
+                                $statusColors = [
+                                    'subscribed' => 'bg-green-100 text-green-800 border-green-200',
+                                    'unconfirmed' => 'bg-amber-100 text-amber-800 border-amber-200',
+                                    'unsubscribed' => 'bg-gray-100 text-gray-800 border-gray-200',
+                                    'bounced' => 'bg-red-100 text-red-800 border-red-200',
+                                ];
+                            @endphp
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold border flex-shrink-0 {{ $statusColors[$status] ?? 'bg-gray-100 text-gray-800 border-gray-200' }}">
+                                {{ ucfirst($status) }}
+                            </span>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Joined</p>
+                                <p class="font-medium text-gray-900">
+                                    {{ optional($subscriber['created_at'])->format('M j, Y') ?? '—' }}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Source</p>
+                                <p class="font-medium text-gray-900">{{ $subscriber['source'] ?? 'API' }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        @if (!empty($subscriber['tags'] ?? []))
+                            <div>
+                                <p class="text-xs text-gray-500 mb-2">Tags</p>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach ($subscriber['tags'] as $tag)
+                                        <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800 border border-blue-200">
+                                            {{ $tag }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @empty
+                    <div class="px-4 py-12 text-center text-sm text-gray-500">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                <i class="fa-solid fa-envelope-circle-check text-lg"></i>
+                            </div>
+                            <p class="font-semibold text-gray-700">No subscribers found</p>
+                            <p class="text-sm text-gray-500 max-w-md px-4">
+                                Once visitors subscribe through your frontend form, they will appear here automatically.
+                            </p>
+                        </div>
+                    </div>
+                @endforelse
             </div>
 
             @if ($meta)

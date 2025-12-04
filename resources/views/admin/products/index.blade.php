@@ -48,33 +48,38 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition duration-200">
                         <!-- Product Image -->
                         @php
-                            $imageSource = $product->image_local_url;
-
-                            if (! $imageSource && $product->image) {
-                                if (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://'])) {
+                            // Determine image source with priority: image_local_url > image > image_url
+                            $imageSource = null;
+                            
+                            // Use image_local_url accessor (most reliable)
+                            if (!empty($product->image_local_url)) {
+                                $imageSource = $product->image_local_url;
+                            }
+                            // Fallback to image field
+                            elseif (!empty($product->image)) {
+                                // Handle different image path formats
+                                if (str_starts_with($product->image, 'http://') || str_starts_with($product->image, 'https://')) {
                                     $imageSource = $product->image;
-                                } elseif (\Illuminate\Support\Str::startsWith($product->image, ['/storage/', 'storage/'])) {
-                                    $imageSource = asset(ltrim($product->image, '/'));
+                                } elseif (str_starts_with($product->image, '/storage/')) {
+                                    $imageSource = $product->image;
+                                } elseif (str_starts_with($product->image, 'storage/')) {
+                                    $imageSource = '/' . $product->image;
                                 } else {
-                                    $imageSource = asset('storage/' . ltrim($product->image, '/'));
+                                    // Default: prepend /storage/
+                                    $imageSource = '/storage/' . ltrim($product->image, '/');
                                 }
                             }
-
-                            if (! $imageSource && $product->image_url) {
+                            // Last resort: image_url field
+                            elseif (!empty($product->image_url)) {
                                 $imageSource = $product->image_url;
                             }
                         @endphp
 
-                        @if ($imageSource)
+                        @if (!empty($imageSource))
                             <div class="h-48 overflow-hidden bg-gray-200">
                                 <img src="{{ $imageSource }}" alt="{{ $product->name }}"
                                     class="w-full h-full object-cover">
                             </div>
-                        @elseif ($product->image_url)
-                        <div class="h-48 overflow-hidden bg-gray-200">
-                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
-                                class="w-full h-full object-cover">
-                        </div>
                         @else
                             <div
                                 class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">

@@ -8,7 +8,7 @@
     <title>{{ $title }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=General+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -43,13 +43,13 @@
             display: none !important;
         }
         body {
-            font-family: "General Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: "Poppins", "General Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-weight: 400;
             font-size: 17px;
         }
 
         .admin-shell {
-            font-family: "General Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: "Poppins", "General Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 16px;
             letter-spacing: -0.01em;
             font-feature-settings: "ss01", "ss02", "cv02", "kern";
@@ -60,14 +60,14 @@
         .admin-shell h3,
         .admin-shell .section-heading,
         .admin-shell .card-title {
-            font-family: "Space Grotesk", "General Sans", sans-serif;
+            font-family: "Poppins", "Space Grotesk", "General Sans", sans-serif;
             font-weight: 600;
             letter-spacing: -0.02em;
         }
 
         .admin-shell .card-title-subtle,
         .admin-shell .text-muted-modern {
-            font-family: "General Sans", "Space Grotesk", sans-serif;
+            font-family: "Poppins", "General Sans", "Space Grotesk", sans-serif;
             font-weight: 500;
             letter-spacing: 0.015em;
         }
@@ -370,15 +370,16 @@
                             </button>
                             <span class="text-lg font-semibold text-gray-900">Admin Panel</span>
                         </div>
-                            @if ($authUser)
-                                <form method="POST" action="{{ route('admin.logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                        class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                                        Logout
-                                    </button>
-                                </form>
-                            @endif
+                        @if ($authUser)
+                            {{-- Show this logout button only on large screens; mobile uses sidebar/account area --}}
+                            <form method="POST" action="{{ route('admin.logout') }}" class="hidden lg:block">
+                                @csrf
+                                <button type="submit"
+                                    class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                    Logout
+                                </button>
+                            </form>
+                        @endif
                     </header>
 
                     <main class="flex-1 bg-gray-100 overflow-y-auto">

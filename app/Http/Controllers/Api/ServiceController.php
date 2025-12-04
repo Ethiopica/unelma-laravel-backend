@@ -69,7 +69,7 @@ class ServiceController extends Controller
      */
     public function show($id)
     {
-        $service = Service::where('id', $id)
+        $serviceQuery = Service::where('id', $id)
             ->where('is_active', true)
             ->orderByDesc('created_at');
 

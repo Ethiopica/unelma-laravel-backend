@@ -116,8 +116,15 @@
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Service Plans</h3>
                     <div id="plansContainer" class="mt-6">
                   
-                        @php $planIndex = 1; @endphp
-                        @foreach (old('plans', $service->plans->toArray()) as $plan )
+                        @php 
+                            $planIndex = 1;
+                            $existingPlans = old('plans', []);
+                            $plansCollection = $service->getPlansSafely();
+                            if ($plansCollection && $plansCollection->count() > 0) {
+                                $existingPlans = old('plans', $plansCollection->toArray());
+                            }
+                        @endphp
+                        @foreach ($existingPlans as $plan )
                         <div class="plan-item mb-6">
                         <div class="flex justify-between items-center mb-2 mt-6">
                             <h4 class="font-medium text-gray-700">Plan #{{$planIndex}}</h4>

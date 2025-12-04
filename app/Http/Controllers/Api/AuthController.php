@@ -126,7 +126,23 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
+        \Log::info('=== /api/user ENDPOINT CALLED ===', [
+            'has_user' => $request->user() ? true : false,
+            'user_id' => $request->user()?->id,
+            'auth_header' => $request->header('Authorization') ? 'present' : 'missing',
+            'auth_header_preview' => $request->header('Authorization') ? substr($request->header('Authorization'), 0, 20) . '...' : null,
+            'bearer_token' => $request->bearerToken() ? 'present' : 'missing',
+            'all_headers' => $request->headers->all(),
+        ]);
+
         $user = $request->user();
+        
+        if (!$user) {
+            \Log::warning('User endpoint called without authentication', [
+                'auth_header' => $request->header('Authorization'),
+                'bearer_token' => $request->bearerToken(),
+            ]);
+        }
 
         return response()->json([
             'user' => [
