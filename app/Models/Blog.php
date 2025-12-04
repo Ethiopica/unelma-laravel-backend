@@ -75,7 +75,7 @@ class Blog extends Model
    // All comments for this blog
     public function comments(): HasMany
     {
-        return $this->hasMany(BlogComment::class)->latest();
+        return $this->hasMany(Comment::class)->latest();
     }
     public function favorites(): HasMany
     {

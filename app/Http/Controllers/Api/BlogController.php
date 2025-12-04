@@ -190,20 +190,26 @@ class BlogController extends Controller
      */
     protected function blogRelations(): array
     {
-        $relations = [
+        return [
             'author:id,name,email,profile_picture',
+            'comments.user:id,name,profile_picture',
         ];
-
-        if (Schema::hasTable('blog_comments')) {
-            $relations[] = 'comments';
-
-            if (Schema::hasColumn('blog_comments', 'user_id')) {
-                $relations[] = 'comments.user:id,name,profile_picture';
-            }
-        }
-
-        return $relations;
     }
+    // {
+    //     $relations = [
+    //         'author:id,name,email,profile_picture',
+    //     ];
+
+    //     if (Schema::hasTable('blog_comments')) {
+    //         $relations[] = 'comments';
+
+    //         if (Schema::hasColumn('blog_comments', 'user_id')) {
+    //             $relations[] = 'comments.user:id,name,profile_picture';
+    //         }
+    //     }
+
+    //     return $relations;
+    // }
 
     /**
      * Transform blog data to include full profile picture URLs for author and comment users
