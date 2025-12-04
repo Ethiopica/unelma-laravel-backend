@@ -6,23 +6,7 @@
     <p>{{ $reply }}</p>
 
     <br><br>
-    <p>Tesam 3 — Support Team</p>
+    <p>Unelma Platforms Support Team</p>
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

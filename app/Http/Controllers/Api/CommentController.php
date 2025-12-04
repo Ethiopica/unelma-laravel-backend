@@ -27,7 +27,7 @@ class CommentController extends Controller
     
             // Load user info for frontend
             $comment->load('user:id,name,profile_picture');
-            
+    
             // Reload blog with comments to include the new comment
             $blog->load('comments.user:id,name,profile_picture');
     
