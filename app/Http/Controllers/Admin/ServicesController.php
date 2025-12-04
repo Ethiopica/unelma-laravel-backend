@@ -48,7 +48,7 @@ class ServicesController extends Controller
             'plans.*.name'=>['required_with:plans.*','string'],
             'plans.*.price'=>['required_with:plans.*','numeric'],
             'plans.*.period'=>['nullable','string'],
-            'plans.*.stripePriceId'=>['nullable','string'],
+            'plans.*.stripePriceId'=>['required_with:plans.*','string'],
             'plans.*.features'=>['nullable','string'],
         ]);
 
@@ -114,7 +114,7 @@ class ServicesController extends Controller
             'plans.*.name'=>['required_with:plans.*','string'],
             'plans.*.price'=>['required_with:plans.*','numeric'],
             'plans.*.period'=>['nullable','string'],
-            'plans.*.stripePriceId'=>['nullable','string'],
+            'plans.*.stripePriceId'=>['required_with:plans.*','string'],
             'plans.*.features'=>['nullable','string'],
         ]);
 

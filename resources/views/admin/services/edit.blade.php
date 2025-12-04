@@ -130,10 +130,13 @@
                             <h4 class="font-medium text-gray-700">Plan #{{$planIndex}}</h4>
                             <button type="button" class="removePlanBtn text-red-500 hover:text-red-700">&times;</button>
                             </div>
+                            @if(isset($plan['id']))
+                                <input type="hidden" name="plans[{{$planIndex}}][id]" value="{{ $plan['id'] }}">
+                            @endif
                             <input type="text" name="plans[{{$planIndex}}][name]" value="{{ $plan['name'] ?? '' }}" placeholder="Plan Name *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <input type="number" name="plans[{{$planIndex}}][price]" value="{{ $plan['price'] ?? '' }}" placeholder="Price *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <input type="text" name="plans[{{$planIndex}}][period]" value="{{ $plan['period'] ?? '' }}" placeholder="Period" class="mb-3 mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <input type="text" name="plans[{{$planIndex}}][stripePriceId]" value="{{ $plan['stripePriceId'] ?? '' }}" placeholder="Stripe Price ID " class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <input type="text" name="plans[{{$planIndex}}][stripePriceId]" value="{{ $plan['stripePriceId'] ?? ($plan['stripe_price_id'] ?? '') }}" placeholder="Stripe Price ID *" required class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <input type="text" name="plans[{{$planIndex}}][features]" value="{{ is_array($plan['features'] ?? null) ? implode(',', $plan['features']) : ($plan['features'] ?? '') }}" placeholder="Features (comma-separated)" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                             @php $planIndex++; @endphp
@@ -256,7 +259,7 @@
                 <input type="text" name="plans[${planIndex}][name]" placeholder="Plan Name *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <input type="number" name="plans[${planIndex}][price]" placeholder="Price *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" >
                 <input type="text" name="plans[${planIndex}][period]" placeholder="Period" class="mb-3 mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <input type="text" name="plans[${planIndex}][stripePriceId]" placeholder="Stripe Price ID " class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="text" name="plans[${planIndex}][stripePriceId]" placeholder="Stripe Price ID *" required class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <input type="text" name="plans[${planIndex}][features]" placeholder="Features (comma-separated)" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
     
         `;

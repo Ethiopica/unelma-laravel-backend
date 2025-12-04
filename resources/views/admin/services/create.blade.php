@@ -196,7 +196,7 @@
                 <input type="text" name="plans[${planIndex}][name]" placeholder="Plan Name *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <input type="number" name="plans[${planIndex}][price]" placeholder="Price *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" >
                 <input type="text" name="plans[${planIndex}][period]" placeholder="Period" class="mb-3 mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <input type="text" name="plans[${planIndex}][stripePriceId]" placeholder="Stripe Price ID " class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="text" name="plans[${planIndex}][stripePriceId]" placeholder="Stripe Price ID *" required class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <input type="text" name="plans[${planIndex}][features]" placeholder="Features (comma-separated)" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
     
         `;
