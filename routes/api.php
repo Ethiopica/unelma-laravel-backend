@@ -48,8 +48,9 @@ Route::get('/blogs/categories/list', [ApiBlogController::class, 'categories']);
 Route::get('/blogs/recent/list', [ApiBlogController::class, 'recent']);
 Route::get('/blogs/popular/list', [ApiBlogController::class, 'popular']);
 Route::get('/blogs/latest', [ApiBlogController::class, 'latest']);
-Route::get('/blogs/{blog}/comments', [BlogCommentController::class, 'index']);
-Route::post('/blogs/{blog}/comments', [BlogCommentController::class, 'store']);
+// Route::get('/blogs/{blog}/comments', [BlogCommentController::class, 'index']);
+// Route::post('/blogs/{blog}/comments', 
+// [BlogCommentController::class, 'store']);
 
 
 Route::middleware('auth:sanctum')->group(function () {

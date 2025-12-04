@@ -69,4 +69,29 @@ class User extends Authenticatable
             ->where('item_id', $itemId)
             ->exists();
     }
+
+    /**
+     * Get the full URL for the user's profile picture.
+     * Returns null if no profile picture exists.
+     * Handles both Google OAuth avatars (full URLs) and uploaded images (relative paths).
+     */
+    public function getProfilePictureUrlAttribute()
+    {
+        if (!$this->profile_picture) {
+            return null;
+        }
+
+        // If it's already a full URL (Google OAuth avatar), return as is
+        if (str_starts_with($this->profile_picture, 'http://') || str_starts_with($this->profile_picture, 'https://')) {
+            return $this->profile_picture;
+        }
+
+        // For uploaded images, convert relative path to full URL
+        try {
+            return asset('storage/' . $this->profile_picture);
+        } catch (\Exception $e) {
+            \Log::warning('Failed to generate profile picture URL for user: ' . $e->getMessage());
+            return $this->profile_picture ? asset('storage/' . $this->profile_picture) : null;
+        }
+    }
 }
