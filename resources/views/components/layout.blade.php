@@ -194,6 +194,44 @@
             color: var(--color-font) !important;
         }
 
+        /* Active/Selected states in dark mode - use #1F5D54 */
+        html[data-theme="dark"] .bg-blue-50,
+        html[data-theme="dark"] [class*="bg-blue-50"] {
+            background-color: #1F5D54 !important;
+        }
+
+        html[data-theme="dark"] .bg-blue-100,
+        html[data-theme="dark"] [class*="bg-blue-100"] {
+            background-color: #1F5D54 !important;
+        }
+
+        html[data-theme="dark"] .border-blue-600,
+        html[data-theme="dark"] [class*="border-blue-600"] {
+            border-color: #1F5D54 !important;
+        }
+
+        html[data-theme="dark"] .text-blue-700,
+        html[data-theme="dark"] [class*="text-blue-700"] {
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="dark"] .text-blue-600,
+        html[data-theme="dark"] [class*="text-blue-600"] {
+            color: var(--color-font) !important;
+        }
+
+        /* Status badge text colors in dark mode - use #75D7CB */
+        html[data-theme="dark"] .status-badge,
+        body[data-theme="dark"] .status-badge {
+            color: #75D7CB !important;
+        }
+
+        /* Favorite type text color in light mode - use black */
+        html[data-theme="light"] .favorite-type,
+        body[data-theme="light"] .favorite-type {
+            color: #000000 !important;
+        }
+
         /* Content management cards - highlight controls in dark mode */
         html[data-theme="dark"] .product-price,
         html[data-theme="dark"] .product-edit-link,
@@ -329,6 +367,94 @@
 
         html[data-theme="light"] .bg-white\/90:hover {
             background-color: rgba(255, 255, 255, 1) !important;
+        }
+
+        /* Dark mode hover effects - use #123530 */
+        html[data-theme="dark"] .hover\:bg-gray-50:hover,
+        html[data-theme="dark"] .hover\:bg-gray-100:hover,
+        html[data-theme="dark"] .hover\:bg-white:hover,
+        html[data-theme="dark"] tr:hover,
+        html[data-theme="dark"] tbody tr:hover,
+        html[data-theme="dark"] a:hover:not(.nav-link):not(.cta-button):not(.content-delete-action),
+        html[data-theme="dark"] button:hover:not(.content-delete-action):not([class*="bg-red"]):not([class*="bg-blue"]),
+        html[data-theme="dark"] [class*="hover:bg-gray"]:hover,
+        html[data-theme="dark"] [class*="hover:bg-white"]:hover {
+            background-color: #123530 !important;
+        }
+
+        /* Dark mode hover for sidebar and navigation items */
+        html[data-theme="dark"] .group:hover:not([class*="bg-blue"]):not([class*="bg-red"]),
+        html[data-theme="dark"] nav a:hover:not(.nav-link):not(.cta-button),
+        html[data-theme="dark"] aside a:hover:not([class*="bg-blue"]),
+        html[data-theme="dark"] aside button:hover:not([class*="bg-red"]),
+        html[data-theme="dark"] .group-hover\:bg-gray-200.group:hover,
+        html[data-theme="dark"] [class*="group-hover:bg-gray"]:hover {
+            background-color: #123530 !important;
+        }
+
+        /* Dark mode hover for icon containers in sidebar */
+        html[data-theme="dark"] .group:hover [class*="group-hover:bg-gray"] {
+            background-color: #123530 !important;
+        }
+
+        /* Dashboard specific dark mode styling */
+        /* Summary cards borders in dark mode */
+        html[data-theme="dark"] .border-blue-200,
+        html[data-theme="dark"] .border-green-200,
+        html[data-theme="dark"] .border-purple-200,
+        html[data-theme="dark"] .border-amber-200,
+        html[data-theme="dark"] .border-cyan-200,
+        html[data-theme="dark"] .border-indigo-200 {
+            border-color: var(--color-border) !important;
+        }
+
+        /* Icon background colors in dark mode - make them more subtle */
+        html[data-theme="dark"] .bg-blue-100,
+        html[data-theme="dark"] .bg-green-100,
+        html[data-theme="dark"] .bg-purple-100,
+        html[data-theme="dark"] .bg-amber-100,
+        html[data-theme="dark"] .bg-cyan-100,
+        html[data-theme="dark"] .bg-indigo-100 {
+            background-color: rgba(31, 93, 84, 0.3) !important;
+        }
+
+        /* Icon text colors in dark mode */
+        html[data-theme="dark"] .text-blue-600,
+        html[data-theme="dark"] .text-green-600,
+        html[data-theme="dark"] .text-purple-600,
+        html[data-theme="dark"] .text-amber-600,
+        html[data-theme="dark"] .text-cyan-600,
+        html[data-theme="dark"] .text-indigo-600 {
+            color: var(--color-font) !important;
+        }
+
+        /* Group hover icon backgrounds in dark mode */
+        html[data-theme="dark"] .group-hover\:bg-blue-200:hover,
+        html[data-theme="dark"] .group-hover\:bg-green-200:hover,
+        html[data-theme="dark"] .group-hover\:bg-purple-200:hover,
+        html[data-theme="dark"] .group-hover\:bg-amber-200:hover,
+        html[data-theme="dark"] .group-hover\:bg-cyan-200:hover,
+        html[data-theme="dark"] .group-hover\:bg-indigo-200:hover {
+            background-color: rgba(31, 93, 84, 0.5) !important;
+        }
+
+        /* Success message in dark mode */
+        html[data-theme="dark"] .bg-green-100 {
+            background-color: rgba(31, 93, 84, 0.2) !important;
+            border-color: rgba(31, 93, 84, 0.5) !important;
+        }
+
+        html[data-theme="dark"] .text-green-700 {
+            color: var(--color-font) !important;
+        }
+
+        html[data-theme="dark"] .border-green-400 {
+            border-color: rgba(31, 93, 84, 0.6) !important;
+        }
+
+        /* Quick action card hover borders in dark mode */
+        html[data-theme="dark"] .hover\:border-blue-300:hover {
+            border-color: var(--color-border) !important;
         }
     </style>
 </head>

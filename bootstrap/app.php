@@ -38,6 +38,16 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        // Handle authentication exceptions with proper 401 status
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated.',
+                ], 401);
+            }
+        });
+
         // Format ALL other API exceptions as JSON - Catch everything before views can render
         $exceptions->render(function (\Throwable $e, $request) {
             // Check if this is an API request

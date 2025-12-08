@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\StripeController;
@@ -48,8 +49,9 @@ Route::get('/blogs/categories/list', [ApiBlogController::class, 'categories']);
 Route::get('/blogs/recent/list', [ApiBlogController::class, 'recent']);
 Route::get('/blogs/popular/list', [ApiBlogController::class, 'popular']);
 Route::get('/blogs/latest', [ApiBlogController::class, 'latest']);
-Route::get('/blogs/{blog}/comments', [BlogCommentController::class, 'index']);
-Route::post('/blogs/{blog}/comments', [BlogCommentController::class, 'store']);
+// Route::get('/blogs/{blog}/comments', [BlogCommentController::class, 'index']);
+// Route::post('/blogs/{blog}/comments', 
+// [BlogCommentController::class, 'store']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -70,6 +72,10 @@ Route::get('/services/page', [ApiPageController::class, 'services']); // Conveni
 Route::get('/services', [ApiServiceController::class, 'index']);
 Route::get('/services/{id}', [ApiServiceController::class, 'show']);
 Route::get('/services/featured/list', [ApiServiceController::class, 'featured']);
+
+// Public Subscription Options Routes (Get available subscription options with price IDs)
+Route::get('/subscriptions/options', [SubscriptionController::class, 'options']);
+Route::get('/subscriptions/{type}/{id}', [SubscriptionController::class, 'show']); // type: product or plan
 
 // Public Contact Form Routes
 Route::post('/contact/submit', [ApiContactController::class, 'submit']);

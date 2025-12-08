@@ -117,7 +117,7 @@
                                     </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                                    <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 favorite-type">
                                         {{ ucfirst($favorite->favorite_type) }}
                                     </span>
                                 </td>
@@ -167,7 +167,7 @@
                                 </p>
                                 <p class="text-xs text-gray-500 truncate">{{ $favorite->user?->email ?? '—' }}</p>
                             </div>
-                            <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 flex-shrink-0">
+                            <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 flex-shrink-0 favorite-type">
                                 {{ ucfirst($favorite->favorite_type) }}
                             </span>
                         </div>

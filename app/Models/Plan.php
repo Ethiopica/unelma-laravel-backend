@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Plan extends Model
 {
     protected $fillable=[
-        'name','price','period','stripePriceId','features'];
+        'name','price','period','stripe_price_id','features'];
 
     protected $casts=[
         'features' =>'array',

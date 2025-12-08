@@ -16,9 +16,12 @@ class BlogController extends Controller
     {
         try {
             $query = Blog::where('is_published', true)
-                ->with('author:id,name,email,profile_picture')
+                ->with([
+                    'author:id,name,email,profile_picture',
+                    'comments.user:id,name,profile_picture'
+                ])
                 ->orderBy('order', 'asc')
-                ->orderBy('published_at', 'desc');
+                ->orderBy('created_at', 'desc');
 
             // Filter by category if provided
             if ($request->has('category')) {
@@ -39,9 +42,14 @@ class BlogController extends Controller
             $perPage = $request->get('per_page', 10);
             $blogs = $query->paginate($perPage);
 
+            // Transform blogs to include full profile picture URLs
+            $transformedBlogs = $blogs->getCollection()->map(function ($blog) {
+                return $this->transformBlogWithProfilePictures($blog);
+            });
+
             return response()->json([
                 'success' => true,
-                'data' => $blogs->items(),
+                'data' => $transformedBlogs->values()->all(),
                 'meta' => [
                     'current_page' => $blogs->currentPage(),
                     'last_page' => $blogs->lastPage(),
@@ -65,7 +73,19 @@ class BlogController extends Controller
     /**
      * Get a single blog post by id
      */
-    public function show($slug)
+
+    public function show($id)
+    {
+        $blog = Blog::with($this->blogRelations())->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->transformBlogWithProfilePictures($blog)
+        ]);
+    }
+
+    public function showBySlug($slug)
+
     {
         $blog = Blog::where('slug', $slug)
             ->where('is_published', true)
@@ -77,7 +97,7 @@ class BlogController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $blog,
+            'data' => $this->transformBlogWithProfilePictures($blog),
         ]);
     }
     /**
@@ -111,9 +131,14 @@ class BlogController extends Controller
             ->limit($limit)
             ->get();
 
+        // Transform blogs to include full profile picture URLs
+        $transformedBlogs = $blogs->map(function ($blog) {
+            return $this->transformBlogWithProfilePictures($blog);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $blogs,
+            'data' => $transformedBlogs->values()->all(),
         ]);
     }
 
@@ -137,7 +162,7 @@ class BlogController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $blog,
+            'data' => $this->transformBlogWithProfilePictures($blog),
         ]);
     }
 
@@ -154,9 +179,14 @@ class BlogController extends Controller
             ->limit($limit)
             ->get();
 
+        // Transform blogs to include full profile picture URLs
+        $transformedBlogs = $blogs->map(function ($blog) {
+            return $this->transformBlogWithProfilePictures($blog);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $blogs,
+            'data' => $transformedBlogs->values()->all(),
         ]);
     }
 
@@ -165,18 +195,54 @@ class BlogController extends Controller
      */
     protected function blogRelations(): array
     {
-        $relations = [
+        return [
             'author:id,name,email,profile_picture',
+            'comments.user:id,name,profile_picture',
         ];
+    }
+    // {
+    //     $relations = [
+    //         'author:id,name,email,profile_picture',
+    //     ];
 
-        if (Schema::hasTable('blog_comments')) {
-            $relations[] = 'comments';
+    //     if (Schema::hasTable('blog_comments')) {
+    //         $relations[] = 'comments';
 
-            if (Schema::hasColumn('blog_comments', 'user_id')) {
-                $relations[] = 'comments.user:id,name,profile_picture';
+    //         if (Schema::hasColumn('blog_comments', 'user_id')) {
+    //             $relations[] = 'comments.user:id,name,profile_picture';
+    //         }
+    //     }
+
+    //     return $relations;
+    // }
+
+    /**
+     * Transform blog data to include full profile picture URLs for author and comment users
+     */
+    private function transformBlogWithProfilePictures($blog)
+    {
+        $blogArray = $blog->toArray();
+
+        // Transform author profile picture
+        if ($blog->relationLoaded('author') && $blog->author) {
+            $blogArray['author']['profile_picture'] = $blog->author->profile_picture_url;
+        }
+
+        // Transform comment users' profile pictures
+        if ($blog->relationLoaded('comments') && $blog->comments) {
+            foreach ($blog->comments as $comment) {
+                if ($comment->relationLoaded('user') && $comment->user) {
+                    // Find the comment in the array and update it
+                    foreach ($blogArray['comments'] as $key => $commentData) {
+                        if (isset($commentData['id']) && $commentData['id'] == $comment->id) {
+                            $blogArray['comments'][$key]['user']['profile_picture'] = $comment->user->profile_picture_url;
+                            break;
+                        }
+                    }
+                }
             }
         }
 
-        return $relations;
+        return $blogArray;
     }
 }
