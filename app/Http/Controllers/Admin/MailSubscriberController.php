@@ -134,5 +134,61 @@ class MailSubscriberController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Delete a subscriber from Unelma Mail.
+     */
+    public function destroy(Request $request, string $subscriberUid)
+    {
+        try {
+            $this->unelmaMail->deleteSubscriber($subscriberUid);
+
+            return redirect()
+                ->route('admin.subscribers.index')
+                ->with('success', 'Subscriber deleted successfully.');
+        } catch (\RuntimeException $exception) {
+            \Log::error('MailSubscriberController Delete RuntimeException', [
+                'message' => $exception->getMessage(),
+                'subscriber_uid' => $subscriberUid,
+                'trace' => $exception->getTraceAsString(),
+            ]);
+
+            return redirect()
+                ->route('admin.subscribers.index')
+                ->with('error', 'Failed to delete subscriber: ' . $exception->getMessage());
+        } catch (RequestException $exception) {
+            $response = optional($exception->response);
+            $errorMessage = data_get($response->json(), 'message', 'Failed to delete subscriber from Unelma Mail.');
+
+            if ($response && $response->status() === 404) {
+                $errorMessage = 'Subscriber not found. It may have already been deleted.';
+            } elseif ($response && $response->status() === 401) {
+                $errorMessage = 'Unauthorized: Invalid API key. Please check your UNELMA_MAIL_API_KEY in .env file.';
+            } elseif ($response && $response->status() === 403) {
+                $errorMessage = 'Forbidden: Access denied. Please check your API credentials and permissions.';
+            }
+
+            \Log::error('MailSubscriberController Delete RequestException', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'subscriber_uid' => $subscriberUid,
+            ]);
+
+            return redirect()
+                ->route('admin.subscribers.index')
+                ->with('error', $errorMessage);
+        } catch (\Throwable $exception) {
+            report($exception);
+            \Log::error('MailSubscriberController Delete Exception', [
+                'message' => $exception->getMessage(),
+                'subscriber_uid' => $subscriberUid,
+                'trace' => $exception->getTraceAsString(),
+            ]);
+
+            return redirect()
+                ->route('admin.subscribers.index')
+                ->with('error', 'Something went wrong while deleting the subscriber. Please check the logs for details.');
+        }
+    }
 }
 

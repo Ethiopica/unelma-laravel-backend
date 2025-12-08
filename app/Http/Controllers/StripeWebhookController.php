@@ -306,6 +306,23 @@ class StripeWebhookController extends Controller
                         $subscriptionName = $session->metadata['subscription_name'];
                     }
 
+                    // Extract amount from subscription price (in cents, convert to dollars)
+                    $amount = null;
+                    if (isset($stripeSubscription->items->data[0]->price->unit_amount)) {
+                        $amount = $stripeSubscription->items->data[0]->price->unit_amount / 100;
+                    } elseif (isset($session->latest_invoice->amount_paid)) {
+                        // Fallback to invoice amount if available
+                        $amount = $session->latest_invoice->amount_paid / 100;
+                    } elseif (isset($stripeSubscription->latest_invoice)) {
+                        // Try to get from latest invoice if expanded
+                        $latestInvoice = is_string($stripeSubscription->latest_invoice) 
+                            ? null 
+                            : $stripeSubscription->latest_invoice;
+                        if ($latestInvoice && isset($latestInvoice->amount_paid)) {
+                            $amount = $latestInvoice->amount_paid / 100;
+                        }
+                    }
+
                     // Create or update the local subscription record
                     $user->subscriptions()->updateOrCreate(
                         ['stripe_id' => $stripeSubscription->id],
@@ -314,6 +331,7 @@ class StripeWebhookController extends Controller
                             'stripe_status' => $stripeSubscription->status,
                             'stripe_price' => $stripeSubscription->items->data[0]->price->id,
                             'quantity' => $stripeSubscription->items->data[0]->quantity,
+                            'amount' => $amount,
                             'trial_ends_at' => $stripeSubscription->trial_end ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->trial_end) : null,
                             'ends_at' => null, // Reset ends_at for new subscriptions
                         ]
@@ -360,6 +378,20 @@ class StripeWebhookController extends Controller
                             $subscriptionName = $stripeSubscription->metadata['name'];
                         }
 
+                        // Extract amount from subscription price (in cents, convert to dollars)
+                        $amount = null;
+                        if (isset($stripeSubscription->items->data[0]->price->unit_amount)) {
+                            $amount = $stripeSubscription->items->data[0]->price->unit_amount / 100;
+                        } elseif (isset($stripeSubscription->latest_invoice)) {
+                            // Try to get from latest invoice if available
+                            $latestInvoice = is_string($stripeSubscription->latest_invoice) 
+                                ? null 
+                                : $stripeSubscription->latest_invoice;
+                            if ($latestInvoice && isset($latestInvoice->amount_paid)) {
+                                $amount = $latestInvoice->amount_paid / 100;
+                            }
+                        }
+
                         // Create or update the local subscription record
                         $user->subscriptions()->updateOrCreate(
                             ['stripe_id' => $stripeSubscription->id],
@@ -372,6 +404,7 @@ class StripeWebhookController extends Controller
                                 'quantity' => isset($stripeSubscription->items->data[0]->quantity) 
                                     ? $stripeSubscription->items->data[0]->quantity 
                                     : 1,
+                                'amount' => $amount,
                                 'trial_ends_at' => isset($stripeSubscription->trial_end) && $stripeSubscription->trial_end 
                                     ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->trial_end) 
                                     : null,
@@ -452,11 +485,20 @@ class StripeWebhookController extends Controller
                     if ($subscription) {
                         $subscription->stripe_status = 'active';
                         $subscription->ends_at = null; // Clear any end date
+                        
+                        // Update amount from invoice if available (in cents, convert to dollars)
+                        if (isset($invoice->amount_paid)) {
+                            $subscription->amount = $invoice->amount_paid / 100;
+                        } elseif (isset($invoice->amount_due)) {
+                            $subscription->amount = $invoice->amount_due / 100;
+                        }
+                        
                         $subscription->save();
                         Log::info('Subscription activated after successful payment', [
                             'user_id' => $user->id,
                             'subscription_id' => $subscription->id,
                             'invoice_id' => $invoice->id,
+                            'amount' => $subscription->amount,
                         ]);
                     }
                 } else {

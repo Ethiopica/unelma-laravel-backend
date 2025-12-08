@@ -142,6 +142,9 @@
                                 Status</th>
                             <th scope="col"
                                 class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Amount Paid</th>
+                            <th scope="col"
+                                class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 Quantity</th>
                             <th scope="col"
                                 class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -178,7 +181,7 @@
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     <span @class([
-                                        'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize border',
+                                        'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize border status-badge',
                                         'bg-green-100 text-green-800 border-green-200' => $subscription->stripe_status === 'active',
                                         'bg-blue-100 text-blue-800 border-blue-200' => $subscription->stripe_status === 'trialing',
                                         'bg-amber-100 text-amber-800 border-amber-200' =>
@@ -191,6 +194,13 @@
                                     ])>
                                         {{ str_replace('_', ' ', $subscription->stripe_status) }}
                                     </span>
+                                </td>
+                                <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                                    @if($subscription->amount)
+                                        ${{ number_format($subscription->amount, 2) }}
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $subscription->quantity ?? '—' }}
@@ -228,7 +238,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 lg:px-6 py-10 text-center text-sm text-gray-500">
+                                <td colspan="8" class="px-4 lg:px-6 py-10 text-center text-sm text-gray-500">
                                     <div class="flex flex-col items-center gap-3">
                                         <div
                                             class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
@@ -264,7 +274,7 @@
                                 </p>
                             </div>
                             <span @class([
-                                'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize flex-shrink-0 border',
+                                'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize flex-shrink-0 border status-badge',
                                 'bg-green-100 text-green-800 border-green-200' => $subscription->stripe_status === 'active',
                                 'bg-blue-100 text-blue-800 border-blue-200' => $subscription->stripe_status === 'trialing',
                                 'bg-amber-100 text-amber-800 border-amber-200' =>
@@ -287,9 +297,24 @@
                                 <p class="text-xs text-gray-600 truncate">{{ $subscription->stripe_price }}</p>
                             </div>
                             <div>
+                                <p class="text-xs text-gray-500 mb-1">Amount Paid</p>
+                                <p class="font-medium text-gray-900">
+                                    @if($subscription->amount)
+                                        ${{ number_format($subscription->amount, 2) }}
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Additional Details -->
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
                                 <p class="text-xs text-gray-500 mb-1">Quantity</p>
                                 <p class="font-medium text-gray-900">{{ $subscription->quantity ?? '—' }}</p>
                             </div>
+                            <div></div>
                         </div>
 
                         <!-- Dates -->

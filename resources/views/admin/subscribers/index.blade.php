@@ -26,6 +26,24 @@
             </div>
         </div>
 
+        @if (session('success'))
+            <div class="bg-green-100 border-l-4 border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-check-circle mr-2"></i>
+                    {{ session('success') }}
+                </div>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="bg-red-100 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                    {{ session('error') }}
+                </div>
+            </div>
+        @endif
+
         @if ($error)
             <div class="bg-red-100 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 <div class="flex items-start gap-3">
@@ -90,9 +108,10 @@
                         <tr>
                             <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber</th>
                             <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                            <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Joined</th>
+                            <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Subscription Date</th>
                             <th scope="col" class="px-4 lg:px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Source</th>
                             <th scope="col" class="px-4 lg:px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Tags</th>
+                            <th scope="col" class="px-4 lg:px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -121,7 +140,7 @@
                                             'bounced' => 'bg-red-100 text-red-800 border-red-200',
                                         ];
                                     @endphp
-                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border {{ $statusColors[$status] ?? 'bg-gray-100 text-gray-800 border-gray-200' }}">
+                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border status-badge {{ $statusColors[$status] ?? 'bg-gray-100 text-gray-800 border-gray-200' }}">
                                         {{ ucfirst($status) }}
                                     </span>
                                 </td>
@@ -143,10 +162,23 @@
                                         @endforelse
                                     </div>
                                 </td>
+                                <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-right">
+                                    <form action="{{ route('admin.subscribers.destroy', $subscriber['id']) }}"
+                                        method="POST" class="inline"
+                                        onsubmit="return confirm('Are you sure you want to delete this subscriber? This action cannot be undone.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="inline-flex items-center rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 whitespace-nowrap">
+                                            <i class="fa-solid fa-trash text-xs"></i>
+                                            <span class="hidden lg:inline ml-1">Delete</span>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 lg:px-6 py-12 text-center text-sm text-gray-500">
+                                <td colspan="6" class="px-4 lg:px-6 py-12 text-center text-sm text-gray-500">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                                             <i class="fa-solid fa-envelope-circle-check text-lg"></i>
@@ -187,7 +219,7 @@
                                     'bounced' => 'bg-red-100 text-red-800 border-red-200',
                                 ];
                             @endphp
-                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold border flex-shrink-0 {{ $statusColors[$status] ?? 'bg-gray-100 text-gray-800 border-gray-200' }}">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold border flex-shrink-0 status-badge {{ $statusColors[$status] ?? 'bg-gray-100 text-gray-800 border-gray-200' }}">
                                 {{ ucfirst($status) }}
                             </span>
                         </div>
@@ -195,7 +227,7 @@
                         <!-- Details -->
                         <div class="grid grid-cols-2 gap-3 text-sm">
                             <div>
-                                <p class="text-xs text-gray-500 mb-1">Joined</p>
+                                <p class="text-xs text-gray-500 mb-1">Subscription Date</p>
                                 <p class="font-medium text-gray-900">
                                     {{ optional($subscriber['created_at'])->format('M j, Y') ?? '—' }}
                                 </p>
@@ -219,6 +251,21 @@
                                 </div>
                             </div>
                         @endif
+
+                        <!-- Actions -->
+                        <div class="pt-2">
+                            <form action="{{ route('admin.subscribers.destroy', $subscriber['id']) }}" method="POST"
+                                class="w-full"
+                                onsubmit="return confirm('Are you sure you want to delete this subscriber? This action cannot be undone.');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-md border border-red-300 bg-white px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50">
+                                    <i class="fa-solid fa-trash"></i>
+                                    Delete Subscriber
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @empty
                     <div class="px-4 py-12 text-center text-sm text-gray-500">

@@ -14,13 +14,75 @@ class StripeController extends Controller
     public function createCheckoutSession(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'price_id' => ['required', 'string'],
-            'product_id' => ['nullable', 'string'],
+            'price_id' => ['nullable', 'string'], // Optional if product_id or plan_id is provided
+            'product_id' => ['nullable', 'integer'], // Product ID to look up price_id
+            'plan_id' => ['nullable', 'integer'], // Plan ID to look up price_id
             'quantity' => ['nullable'],
             'success_url' => ['required', 'string'],
             'cancel_url' => ['required', 'string'],
             'subscription_name' => ['nullable', 'string', 'max:255'],
         ]);
+
+        // Determine price_id from product_id or plan_id if price_id not provided
+        $priceId = $data['price_id'] ?? null;
+        $resolvedProductId = $data['product_id'] ?? null;
+        $resolvedPlanId = $data['plan_id'] ?? null;
+        
+        if (!$priceId) {
+            if (isset($data['product_id'])) {
+                $product = \App\Models\Product::where('id', $data['product_id'])
+                    ->where('is_active', true)
+                    ->whereNotNull('stripe_price_id')
+                    ->first();
+                
+                if (!$product) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Product not found or does not have a Stripe price ID configured.',
+                    ], 404);
+                }
+                
+                $priceId = $product->stripe_price_id;
+                $resolvedProductId = (string) $product->id;
+                
+                Log::info('Price ID resolved from product', [
+                    'product_id' => $product->id,
+                    'price_id' => $priceId,
+                ]);
+            } elseif (isset($data['plan_id'])) {
+                if (!\Illuminate\Support\Facades\Schema::hasTable('plans')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Plans table does not exist.',
+                    ], 404);
+                }
+                
+                $plan = \App\Models\Plan::where('id', $data['plan_id'])
+                    ->whereNotNull('stripe_price_id')
+                    ->with('service')
+                    ->first();
+                
+                if (!$plan || !$plan->service || !$plan->service->is_active) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Plan not found, inactive, or does not have a Stripe price ID configured.',
+                    ], 404);
+                }
+                
+                $priceId = $plan->stripe_price_id;
+                $resolvedPlanId = (string) $plan->id;
+                
+                Log::info('Price ID resolved from plan', [
+                    'plan_id' => $plan->id,
+                    'price_id' => $priceId,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Either price_id, product_id, or plan_id must be provided.',
+                ], 400);
+            }
+        }
 
         $user = $request->user();
 
@@ -118,7 +180,8 @@ class StripeController extends Controller
             'user_id' => (string) $user->getKey(),
             'email' => $user->email,
             'subscription_name' => $subscriptionName,
-            'product_id' => $data['product_id'] ?? null,
+            'product_id' => $resolvedProductId,
+            'plan_id' => $resolvedPlanId,
         ]);
 
         try {
@@ -127,7 +190,7 @@ class StripeController extends Controller
                 'customer' => $customer->id,
                 'payment_method_types' => ['card'],
                 'line_items' => [[
-                    'price' => $data['price_id'],
+                    'price' => $priceId,
                     'quantity' => $quantity,
                 ]],
                 'success_url' => $successUrl.'?session_id={CHECKOUT_SESSION_ID}',
@@ -145,7 +208,9 @@ class StripeController extends Controller
                 'session_id' => $session->id,
                 'user_id' => $user->id,
                 'customer_id' => $customer->id,
-                'price_id' => $data['price_id'],
+                'price_id' => $priceId,
+                'product_id' => $resolvedProductId,
+                'plan_id' => $resolvedPlanId,
                 'mode' => $session->livemode ? 'live' : 'test',
                 'url' => $session->url,
             ]);
@@ -157,7 +222,9 @@ class StripeController extends Controller
             ]);
         } catch (ApiErrorException $e) {
             Log::error('Stripe API Error: ' . $e->getMessage(), [
-                'price_id' => $data['price_id'],
+                'price_id' => $priceId,
+                'product_id' => $resolvedProductId,
+                'plan_id' => $resolvedPlanId,
                 'user_id' => $user->getKey(),
                 'error_type' => method_exists($e, 'getStripeCode') ? $e->getStripeCode() : null,
             ]);
@@ -166,7 +233,7 @@ class StripeController extends Controller
             
             // Provide user-friendly error messages
             if (str_contains($errorMessage, 'No such price')) {
-                $errorMessage = "The price ID '{$data['price_id']}' does not exist in Stripe. Please verify the price ID is correct and exists in your Stripe account.";
+                $errorMessage = "The price ID '{$priceId}' does not exist in Stripe. Please verify the price ID is correct and exists in your Stripe account.";
             } elseif (str_contains($errorMessage, 'No such customer')) {
                 $errorMessage = 'Customer not found in Stripe. Please try again.';
             } elseif (str_contains($errorMessage, 'Invalid')) {
@@ -193,7 +260,9 @@ class StripeController extends Controller
             Log::error('Unexpected error creating Stripe checkout session', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-                'price_id' => $data['price_id'],
+                'price_id' => $priceId ?? null,
+                'product_id' => $resolvedProductId,
+                'plan_id' => $resolvedPlanId,
                 'user_id' => $user->getKey(),
             ]);
 
@@ -316,6 +385,20 @@ class StripeController extends Controller
                         $subscriptionName = $session->metadata['subscription_name'];
                     }
 
+                    // Extract amount from subscription price (in cents, convert to dollars)
+                    $amount = null;
+                    if (isset($stripeSubscription->items->data[0]->price->unit_amount)) {
+                        $amount = $stripeSubscription->items->data[0]->price->unit_amount / 100;
+                    } elseif (isset($session->latest_invoice)) {
+                        // Try to get from latest invoice if available
+                        $latestInvoice = is_string($session->latest_invoice) 
+                            ? null 
+                            : $session->latest_invoice;
+                        if ($latestInvoice && isset($latestInvoice->amount_paid)) {
+                            $amount = $latestInvoice->amount_paid / 100;
+                        }
+                    }
+
                     // Create or update the local subscription record
                     $user->subscriptions()->updateOrCreate(
                         ['stripe_id' => $stripeSubscription->id],
@@ -324,6 +407,7 @@ class StripeController extends Controller
                             'stripe_status' => $stripeSubscription->status,
                             'stripe_price' => $stripeSubscription->items->data[0]->price->id,
                             'quantity' => $stripeSubscription->items->data[0]->quantity,
+                            'amount' => $amount,
                             'trial_ends_at' => $stripeSubscription->trial_end ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->trial_end) : null,
                             'ends_at' => null,
                         ]

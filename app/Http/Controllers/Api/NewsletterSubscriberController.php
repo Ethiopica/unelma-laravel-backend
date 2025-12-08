@@ -37,7 +37,8 @@ class NewsletterSubscriberController extends Controller
         $add_subscriber = Http::withHeaders([
             'api_token' =>  $token
         ])->post('https://core.unelmamail.com/api/v1/subscribers', [
-            'list_uid' => '6914039d88fe9',
+            //'list_uid' => '6914039d88fe9',
+            'list_uid' => '691ef0d6757a2',
             'email' => $user_email,
         ]);
         var_export($add_subscriber->body());

@@ -100,6 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
         Route::get('/subscribers', [MailSubscriberController::class, 'index'])->name('subscribers.index');
+        Route::delete('/subscribers/{subscriberUid}', [MailSubscriberController::class, 'destroy'])->name('subscribers.destroy');
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
         // Job Management
