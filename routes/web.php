@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BlogController;
-use App\Http\Controllers\Admin\CarrerController;
+use App\Http\Controllers\Admin\CareerController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -88,7 +88,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // comments for blog
         Route::get('/blogs/{blog}/comments', [CommentController::class, 'showByBlog'])->name('blogs.comments');
-        
+
         // Delete a comment
         Route::delete('/admin/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
@@ -109,7 +109,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
         // Job Management
-        Route::resource('carrers', CarrerController::class)->except(['show']);
+        Route::resource('carrers', CareerController::class)->except(['show']);
 
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');

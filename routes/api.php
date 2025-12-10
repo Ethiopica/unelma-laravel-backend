@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController as ApiBlogController;
 use App\Http\Controllers\Api\BlogCommentController;
-use App\Http\Controllers\Api\CarrerController as ApiCarrerController;
+use App\Http\Controllers\Api\CarrerController as ApiCareerController;
 use App\Http\Controllers\Api\CommentController as ApiCommentController;
 use App\Http\Controllers\Api\ContactController as ApiContactController;
 use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageController;
@@ -91,7 +91,7 @@ Route::post('/contact/submit', [ApiContactController::class, 'submit']);
 Route::post('/contact', [ApiContactController::class, 'submit']); // Alias for frontend compatibility
 
 // Public Vacancy Routes
-Route::get('/vacancies', [ApiCarrerController::class, 'index']);
+Route::get('/vacancies', [ApiCareerController::class, 'index']);
 
 // Handle successful checkout - process subscription if webhook didn't
 // Note: This route works without auth by finding user from Stripe session
