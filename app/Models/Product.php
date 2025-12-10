@@ -9,7 +9,13 @@ use Illuminate\Support\Facades\Storage;
 class Product extends Model
 {
     protected $fillable = [
-        'name','category','sku','highlights','rating','image_url',
+        'name',
+        'category',
+        'sku',
+        'highlights',
+        'rating',
+        'rating_count',
+        'image_url',
         'description',
         'price',
         'stripe_price_id',
@@ -22,7 +28,8 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
-        'rating'=>'decimal:1',
+        'rating' => 'decimal:2',
+        'rating_count' => 'integer',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'order' => 'integer',
@@ -56,5 +63,26 @@ class Product extends Model
     {
         return $this->hasMany(Favorite::class, 'item_id')
             ->where('favorite_type', Favorite::TYPE_PRODUCT);
+    }
+
+    /**
+     * Get all ratings for this product
+     */
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(ProductRating::class);
+    }
+
+    /**
+     * Recalculate and update the average rating and count
+     */
+    public function updateAverageRating(): void
+    {
+        $ratings = $this->ratings();
+
+        $this->update([
+            'rating' => round($ratings->avg('rating') ?? 0, 2),
+            'rating_count' => $ratings->count(),
+        ]);
     }
 }

@@ -456,6 +456,124 @@
         html[data-theme="dark"] .hover\:border-blue-300:hover {
             border-color: var(--color-border) !important;
         }
+
+        /* Category badge styling for dark mode - use #75D7CB */
+        html[data-theme="dark"] .category-badge {
+            background-color: rgba(31, 93, 84, 0.4) !important;
+            color: #75D7CB !important;
+            border: 1px solid rgba(117, 215, 203, 0.3);
+        }
+
+        html[data-theme="light"] .category-badge {
+            background-color: #F3E8FF !important;
+            color: #6B21A8 !important;
+        }
+
+        /* Blog comments link/button styling */
+        html[data-theme="dark"] .blog-comments-link,
+        html[data-theme="dark"] .blog-comments-button {
+            color: #75D7CB !important;
+            border-color: rgba(117, 215, 203, 0.5) !important;
+        }
+
+        html[data-theme="dark"] .blog-comments-link svg {
+            color: #75D7CB !important;
+        }
+
+        html[data-theme="light"] .blog-comments-link,
+        html[data-theme="light"] .blog-comments-button {
+            color: #7C3AED !important;
+            border-color: #7C3AED !important;
+        }
+
+        html[data-theme="light"] .blog-comments-link svg {
+            color: #7C3AED !important;
+        }
+
+        /* Form input styling for dark mode */
+        html[data-theme="dark"] input[type="text"],
+        html[data-theme="dark"] input[type="email"],
+        html[data-theme="dark"] input[type="number"],
+        html[data-theme="dark"] input[type="password"],
+        html[data-theme="dark"] input[type="file"],
+        html[data-theme="dark"] textarea,
+        html[data-theme="dark"] select {
+            background-color: var(--color-surface-alt) !important;
+            color: #75D7CB !important;
+            border-color: var(--color-border) !important;
+        }
+
+        html[data-theme="dark"] input[type="text"]::placeholder,
+        html[data-theme="dark"] input[type="email"]::placeholder,
+        html[data-theme="dark"] input[type="number"]::placeholder,
+        html[data-theme="dark"] input[type="password"]::placeholder,
+        html[data-theme="dark"] textarea::placeholder {
+            color: rgba(117, 215, 203, 0.5) !important;
+        }
+
+        html[data-theme="dark"] input[type="text"]:focus,
+        html[data-theme="dark"] input[type="email"]:focus,
+        html[data-theme="dark"] input[type="number"]:focus,
+        html[data-theme="dark"] input[type="password"]:focus,
+        html[data-theme="dark"] textarea:focus,
+        html[data-theme="dark"] select:focus {
+            border-color: #75D7CB !important;
+            box-shadow: 0 0 0 2px rgba(117, 215, 203, 0.2) !important;
+        }
+
+        /* Labels styling for dark mode */
+        html[data-theme="dark"] label {
+            color: #75D7CB !important;
+        }
+
+        /* Section headings in forms */
+        html[data-theme="dark"] .border-t {
+            border-color: var(--color-border) !important;
+        }
+
+        /* Checkbox styling for dark mode */
+        html[data-theme="dark"] input[type="checkbox"] {
+            background-color: var(--color-surface-alt) !important;
+            border-color: var(--color-border) !important;
+        }
+
+        html[data-theme="dark"] input[type="checkbox"]:checked {
+            background-color: #1F5D54 !important;
+            border-color: #75D7CB !important;
+        }
+
+        /* Breadcrumb navigation styling for dark mode */
+        html[data-theme="dark"] .breadcrumb-nav,
+        html[data-theme="dark"] .breadcrumb-nav a,
+        html[data-theme="dark"] .breadcrumb-nav span {
+            color: #75D7CB !important;
+        }
+
+        html[data-theme="dark"] .breadcrumb-nav a:hover {
+            color: #A8E8E0 !important;
+        }
+
+        /* Section heading h3 styling for dark mode */
+        html[data-theme="dark"] h3.text-lg {
+            color: #75D7CB !important;
+        }
+
+        /* Helper text styling for dark mode */
+        html[data-theme="dark"] p.text-sm.text-gray-500,
+        html[data-theme="dark"] .text-sm.text-gray-500 {
+            color: rgba(117, 215, 203, 0.7) !important;
+        }
+
+        /* Error text styling - keep red for visibility */
+        html[data-theme="dark"] .text-red-500,
+        html[data-theme="dark"] .text-red-600 {
+            color: #F87171 !important;
+        }
+
+        /* Blog info section in edit form */
+        html[data-theme="dark"] .bg-gray-50.rounded-lg.p-4 p.text-gray-600 {
+            color: rgba(117, 215, 203, 0.7) !important;
+        }
     </style>
 </head>
 

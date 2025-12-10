@@ -14,8 +14,9 @@ class StripeController extends Controller
     public function createCheckoutSession(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'price_id' => ['nullable', 'string'], // Optional if product_id or plan_id is provided
+            'price_id' => ['nullable', 'string'], // Optional if product_id, service_id, or plan_id is provided
             'product_id' => ['nullable', 'integer'], // Product ID to look up price_id
+            'service_id' => ['nullable', 'integer'], // Service ID to look up price_id
             'plan_id' => ['nullable', 'integer'], // Plan ID to look up price_id
             'quantity' => ['nullable'],
             'success_url' => ['required', 'string'],
@@ -23,9 +24,10 @@ class StripeController extends Controller
             'subscription_name' => ['nullable', 'string', 'max:255'],
         ]);
 
-        // Determine price_id from product_id or plan_id if price_id not provided
+        // Determine price_id from product_id, service_id, or plan_id if price_id not provided
         $priceId = $data['price_id'] ?? null;
         $resolvedProductId = $data['product_id'] ?? null;
+        $resolvedServiceId = $data['service_id'] ?? null;
         $resolvedPlanId = $data['plan_id'] ?? null;
         
         if (!$priceId) {
@@ -47,6 +49,26 @@ class StripeController extends Controller
                 
                 Log::info('Price ID resolved from product', [
                     'product_id' => $product->id,
+                    'price_id' => $priceId,
+                ]);
+            } elseif (isset($data['service_id'])) {
+                $service = \App\Models\Service::where('id', $data['service_id'])
+                    ->where('is_active', true)
+                    ->whereNotNull('stripe_price_id')
+                    ->first();
+                
+                if (!$service) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Service not found or does not have a Stripe price ID configured.',
+                    ], 404);
+                }
+                
+                $priceId = $service->stripe_price_id;
+                $resolvedServiceId = (string) $service->id;
+                
+                Log::info('Price ID resolved from service', [
+                    'service_id' => $service->id,
                     'price_id' => $priceId,
                 ]);
             } elseif (isset($data['plan_id'])) {
@@ -79,7 +101,7 @@ class StripeController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Either price_id, product_id, or plan_id must be provided.',
+                    'message' => 'Either price_id, product_id, service_id, or plan_id must be provided.',
                 ], 400);
             }
         }
@@ -181,6 +203,7 @@ class StripeController extends Controller
             'email' => $user->email,
             'subscription_name' => $subscriptionName,
             'product_id' => $resolvedProductId,
+            'service_id' => $resolvedServiceId,
             'plan_id' => $resolvedPlanId,
         ]);
 
@@ -210,6 +233,7 @@ class StripeController extends Controller
                 'customer_id' => $customer->id,
                 'price_id' => $priceId,
                 'product_id' => $resolvedProductId,
+                'service_id' => $resolvedServiceId,
                 'plan_id' => $resolvedPlanId,
                 'mode' => $session->livemode ? 'live' : 'test',
                 'url' => $session->url,
@@ -224,6 +248,7 @@ class StripeController extends Controller
             Log::error('Stripe API Error: ' . $e->getMessage(), [
                 'price_id' => $priceId,
                 'product_id' => $resolvedProductId,
+                'service_id' => $resolvedServiceId,
                 'plan_id' => $resolvedPlanId,
                 'user_id' => $user->getKey(),
                 'error_type' => method_exists($e, 'getStripeCode') ? $e->getStripeCode() : null,
@@ -262,6 +287,7 @@ class StripeController extends Controller
                 'trace' => $e->getTraceAsString(),
                 'price_id' => $priceId ?? null,
                 'product_id' => $resolvedProductId,
+                'service_id' => $resolvedServiceId,
                 'plan_id' => $resolvedPlanId,
                 'user_id' => $user->getKey(),
             ]);

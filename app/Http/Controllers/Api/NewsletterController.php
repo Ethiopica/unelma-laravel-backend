@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\NewsletterSubscriber;
 use App\Services\UnelmaMailService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
@@ -18,15 +19,16 @@ class NewsletterController extends Controller
     }
 
     /**
-     * Subscribe the given email address to Unelma Mail.
+     * Subscribe the given email address to the newsletter.
+     * Tries Unelma Mail first, falls back to local database storage.
      */
     public function subscribe(Request $request): JsonResponse
     {
         try {
-        $data = $request->validate([
-            'email' => ['required', 'email', 'max:255'],
-            'first_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
+            $data = $request->validate([
+                'email' => ['required', 'email', 'max:255'],
+                'first_name' => ['nullable', 'string', 'max:255'],
+                'last_name' => ['nullable', 'string', 'max:255'],
                 'send_verification' => ['nullable', 'boolean'],
                 'double_opt_in' => ['nullable', 'boolean'],
             ]);
@@ -45,6 +47,10 @@ class NewsletterController extends Controller
             'double_opt_in' => $data['double_opt_in'] ?? false,
         ]);
 
+        // Try Unelma Mail first
+        $unelmaSuccess = false;
+        $unelmaError = null;
+        
         try {
             $result = $this->unelmaMail->subscribe(
                 $data['email'],
@@ -55,9 +61,11 @@ class NewsletterController extends Controller
                     'double_opt_in' => $data['double_opt_in'] ?? false,
                 ]
             );
+            $unelmaSuccess = true;
 
-            // Unelma Mail sends verification emails automatically if double opt-in is enabled
-            // in the Unelma Mail dashboard for the list. The API doesn't require verification parameters.
+            // Also save to local database as backup
+            $this->saveToLocalDatabase($data, 'synced');
+
             $message = 'You have been subscribed to the newsletter.';
             if (!empty($data['send_verification']) || !empty($data['double_opt_in'])) {
                 $message = 'Subscription successful. Please check your email to verify your subscription.';
@@ -69,103 +77,114 @@ class NewsletterController extends Controller
                 'data' => $result,
             ], 201);
         } catch (\RuntimeException $exception) {
-            return response()->json([
-                'success' => false,
-                'message' => $exception->getMessage(),
-            ], 500);
+            $unelmaError = $exception->getMessage();
         } catch (ConnectionException $exception) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unable to reach Unelma Mail. Please check your internet connection or API base URL.',
-            ], 502);
+            $unelmaError = 'Unable to reach Unelma Mail service.';
         } catch (RequestException $exception) {
             $response = $exception->response;
             $statusCode = $response->status() ?: 502;
             $responseData = $response->json() ?? [];
-            $responseBody = $response->body();
 
-            // Extract error messages from Unelma Mail response
-            $errorMessages = [];
-            if (is_array($responseData)) {
-                foreach ($responseData as $field => $messages) {
-                    if (is_array($messages)) {
-                        $errorMessages[$field] = $messages;
-                    } else {
-                        $errorMessages[$field] = [$messages];
+            // Check if it's a duplicate email error (not a server error)
+            if ($statusCode === 403 || $statusCode === 422) {
+                $errorMessages = [];
+                if (is_array($responseData)) {
+                    foreach ($responseData as $field => $messages) {
+                        if (is_array($messages)) {
+                            $errorMessages[$field] = $messages;
+                        } else {
+                            $errorMessages[$field] = [$messages];
+                        }
                     }
                 }
-            }
-
-            // Build user-friendly message
-            $message = 'Failed to subscribe to newsletter.';
-            
-            // Handle validation errors (like email already taken)
-            if (!empty($errorMessages)) {
-                $firstError = reset($errorMessages);
-                if (is_array($firstError) && !empty($firstError)) {
-                    $message = $firstError[0];
-                } elseif (is_string($firstError)) {
-                    $message = $firstError;
-                }
-            } elseif (isset($responseData['message'])) {
-                $rawMessage = $responseData['message'];
                 
-                // Clean up Unelma Mail internal errors (view-related errors)
-                if (str_contains($rawMessage, 'View:') || 
-                    str_contains($rawMessage, 'Undefined variable') ||
-                    str_contains($rawMessage, 'resources/views')) {
-                    // This is an internal Unelma Mail error, provide user-friendly message
-                    if ($statusCode === 500) {
-                        $message = 'The newsletter service is temporarily unavailable. Please try again later.';
-                    } else {
-                        $message = 'An error occurred while processing your subscription. Please try again.';
-                    }
-                } else {
-                    $message = $rawMessage;
+                // Check if already subscribed
+                $firstError = reset($errorMessages);
+                $errorMsg = is_array($firstError) ? ($firstError[0] ?? '') : (string) $firstError;
+                
+                if (str_contains(strtolower($errorMsg), 'taken') || 
+                    str_contains(strtolower($errorMsg), 'already') ||
+                    str_contains(strtolower($errorMsg), 'exists')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This email is already subscribed to the newsletter.',
+                    ], 409);
                 }
-            } elseif ($statusCode === 500) {
-                // Unelma Mail server error
-                $message = 'The newsletter service is temporarily unavailable. Please try again later.';
-            } elseif ($statusCode === 403) {
-                // Forbidden - usually means email already exists or validation failed
-                $message = 'Unable to complete subscription. This email may already be subscribed.';
             }
 
-            return response()->json([
-                'success' => false,
-                'message' => $message,
-                'errors' => $errorMessages ?: ($responseData ?: []),
-            ], $statusCode);
-        } catch (\Throwable $exception) {
-            // Log the full exception for debugging
-            \Log::error('Newsletter subscription unexpected error', [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString(),
-                'exception_type' => get_class($exception),
-            ]);
-
-            // Don't call report() as it might trigger view rendering
-            // The exception handler in bootstrap/app.php will handle it
+            // Server error - fall back to local storage
+            $unelmaError = 'Unelma Mail server error (status: ' . $statusCode . ')';
             
-            // Clean error message - remove view-related details
-            $errorMessage = $exception->getMessage();
-            if (str_contains($errorMessage, 'View:') || str_contains($errorMessage, 'Undefined variable')) {
-                $errorMessage = 'An error occurred while processing your subscription. Please try again later.';
-            }
-
-            // Always return JSON, never render views
-            return response()->json([
-                'success' => false,
-                'message' => config('app.debug') ? $exception->getMessage() : $errorMessage,
-                'error' => config('app.debug') ? [
-                    'type' => get_class($exception),
-                    'file' => $exception->getFile(),
-                    'line' => $exception->getLine(),
-                ] : null,
-            ], 500);
+            \Log::warning('Unelma Mail API error, falling back to local storage', [
+                'status' => $statusCode,
+                'response' => $responseData,
+            ]);
+        } catch (\Throwable $exception) {
+            $unelmaError = $exception->getMessage();
+            
+            \Log::warning('Unelma Mail unexpected error, falling back to local storage', [
+                'error' => $exception->getMessage(),
+                'type' => get_class($exception),
+            ]);
         }
+
+        // Unelma Mail failed - save to local database
+        if (!$unelmaSuccess) {
+            try {
+                $subscriber = $this->saveToLocalDatabase($data, 'pending');
+                
+                \Log::info('Newsletter subscriber saved to local database (Unelma Mail unavailable)', [
+                    'email' => $data['email'],
+                    'subscriber_id' => $subscriber->id,
+                    'unelma_error' => $unelmaError,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'You have been subscribed to the newsletter.',
+                    'note' => config('app.debug') ? 'Saved locally (Unelma Mail temporarily unavailable)' : null,
+                ], 201);
+            } catch (\Illuminate\Database\QueryException $e) {
+                // Check for duplicate entry
+                if (str_contains($e->getMessage(), 'Duplicate entry') || 
+                    str_contains($e->getMessage(), 'UNIQUE constraint')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This email is already subscribed to the newsletter.',
+                    ], 409);
+                }
+                
+                \Log::error('Failed to save newsletter subscriber to database', [
+                    'email' => $data['email'],
+                    'error' => $e->getMessage(),
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to process your subscription. Please try again later.',
+                ], 500);
+            }
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Unable to process your subscription. Please try again later.',
+        ], 500);
+    }
+
+    /**
+     * Save subscriber to local database.
+     */
+    protected function saveToLocalDatabase(array $data, string $status = 'pending'): NewsletterSubscriber
+    {
+        return NewsletterSubscriber::updateOrCreate(
+            ['email' => $data['email']],
+            [
+                'first_name' => $data['first_name'] ?? null,
+                'last_name' => $data['last_name'] ?? null,
+                'status' => $status,
+            ]
+        );
     }
 }
 

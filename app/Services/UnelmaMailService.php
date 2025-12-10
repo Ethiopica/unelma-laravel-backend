@@ -73,12 +73,12 @@ class UnelmaMailService
             'send_verification' => $sendVerification,
         ]);
 
-        // Use the public subscribers endpoint with form data (application/x-www-form-urlencoded)
-        // Matches Unelma Mail's curl example format exactly
+        // Use the public subscribers endpoint with JSON format
+        // Based on Unelma Mail's curl example: curl -X POST -H 'Content-Type: application/json' -d '{...}'
         $response = Http::baseUrl($this->baseUrl)
-            ->asForm() // This sets Content-Type to application/x-www-form-urlencoded
+            ->asJson()
             ->withHeaders([
-                'accept' => 'application/json', // Match Unelma Mail's curl example header format
+                'Content-Type' => 'application/json',
             ])
             ->post('/public/subscribers', $payload);
 
@@ -113,13 +113,13 @@ class UnelmaMailService
             throw new \RuntimeException('Unelma Mail credentials are not configured. Please set UNELMA_MAIL_API_KEY and UNELMA_MAIL_LIST_UID in your .env file.');
         }
 
-        // Build query parameters
+        // Build query parameters (filter out null and empty strings)
         $query = array_filter([
             'list_uid' => $this->listUid,
             'per_page' => $perPage,
             'page' => $page,
             'status' => $status,
-        ], static fn($value) => $value !== null);
+        ], static fn($value) => $value !== null && $value !== '');
 
         // Try different authentication methods
         // Option 1: API token in query string (most common)

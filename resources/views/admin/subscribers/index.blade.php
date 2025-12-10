@@ -5,23 +5,23 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
         <!-- Header Section - Mobile First -->
-        <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+        <div class="space-y-4">
             <div>
                 <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Newsletter Subscribers</h1>
-                <p class="text-sm sm:text-base text-gray-600 mt-1">
-                    Live list synced from Unelma Mail ({{ config('services.unelma_mail.list_uid') ?? 'list' }}).
+                <p class="text-sm sm:text-base text-gray-600 mt-1 truncate">
+                    Live list synced from Unelma Mail
                 </p>
             </div>
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 sm:w-auto gap-2">
                 <a href="{{ route('admin.dashboard') }}"
-                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    Back to Dashboard
+                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <i class="fa-solid fa-arrow-left flex-shrink-0"></i>
+                    <span>Dashboard</span>
                 </a>
                 <a href="https://core.unelmamail.com/" target="_blank"
-                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <i class="fa-solid fa-up-right-from-square text-xs"></i>
-                    Open Unelma Mail
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <i class="fa-solid fa-up-right-from-square text-xs flex-shrink-0"></i>
+                    <span>Unelma Mail</span>
                 </a>
             </div>
         </div>
@@ -57,48 +57,39 @@
         @endif
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="px-4 sm:px-6 py-4 border-b border-gray-100">
-                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="inline-flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
-                            <i class="fa-solid fa-envelope-open-text text-sm sm:text-base"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-base sm:text-lg font-semibold text-gray-900">Mailing List Subscribers</h2>
-                            <p class="text-xs sm:text-sm text-gray-500">
-                                Showing {{ $subscribers->count() }} contacts{{ $meta ? ' (page '.$meta['current_page'].' of '.$meta['last_page'].')' : '' }}.
-                            </p>
-                        </div>
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-100 space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="inline-flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
+                        <i class="fa-solid fa-envelope-open-text text-sm sm:text-base"></i>
                     </div>
-
-                    <form method="GET" class="flex flex-wrap items-center gap-3">
-                        <div>
-                            <label for="status" class="sr-only">Status</label>
-                            <select id="status" name="status"
-                                class="rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-300 px-3 py-2">
-                                <option value="">All statuses</option>
-                                <option value="subscribed" @selected(($filters['status'] ?? null) === 'subscribed')>Subscribed</option>
-                                <option value="unconfirmed" @selected(($filters['status'] ?? null) === 'unconfirmed')>Unconfirmed</option>
-                                <option value="unsubscribed" @selected(($filters['status'] ?? null) === 'unsubscribed')>Unsubscribed</option>
-                                <option value="bounced" @selected(($filters['status'] ?? null) === 'bounced')>Bounced</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="per_page" class="sr-only">Per page</label>
-                            <select id="per_page" name="per_page"
-                                class="rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-300 px-3 py-2">
-                                @foreach ([10, 20, 50, 100] as $size)
-                                    <option value="{{ $size }}" @selected(($filters['per_page'] ?? 20) == $size)>{{ $size }} / page</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <button type="submit"
-                            class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            <i class="fa-solid fa-filter text-xs"></i>
-                            Apply
-                        </button>
-                    </form>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Mailing List Subscribers</h2>
+                        <p class="text-xs sm:text-sm text-gray-500">
+                            Showing {{ $subscribers->count() }} contacts{{ $meta ? ' (page '.$meta['current_page'].' of '.$meta['last_page'].')' : '' }}.
+                        </p>
+                    </div>
                 </div>
+
+                <form method="GET" action="{{ route('admin.subscribers.index') }}" class="flex items-center gap-2">
+                    <select id="status" name="status"
+                        class="flex-1 min-w-0 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-300 px-2 py-2">
+                        <option value="">All statuses</option>
+                        <option value="subscribed" @selected(($filters['status'] ?? null) === 'subscribed')>Subscribed</option>
+                        <option value="unconfirmed" @selected(($filters['status'] ?? null) === 'unconfirmed')>Unconfirmed</option>
+                        <option value="unsubscribed" @selected(($filters['status'] ?? null) === 'unsubscribed')>Unsubscribed</option>
+                        <option value="bounced" @selected(($filters['status'] ?? null) === 'bounced')>Bounced</option>
+                    </select>
+                    <select id="per_page" name="per_page"
+                        class="w-16 flex-shrink-0 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-300 px-1 py-2">
+                        @foreach ([10, 20, 50, 100] as $size)
+                            <option value="{{ $size }}" @selected(($filters['per_page'] ?? 20) == $size)>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit"
+                        class="flex-shrink-0 inline-flex items-center justify-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <i class="fa-solid fa-filter text-xs"></i>
+                    </button>
+                </form>
             </div>
 
             <!-- Desktop Table View -->

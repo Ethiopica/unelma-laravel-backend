@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageContro
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
+use App\Http\Controllers\Api\ProductRatingController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserProfileController;
@@ -56,12 +57,20 @@ Route::get('/blogs/latest', [ApiBlogController::class, 'latest']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/blogs/{id}/comments', [ApiCommentController::class, 'store']);
+
+    // Product Ratings (protected - require authentication)
+    Route::post('/products/rate', [ProductRatingController::class, 'rate']);
+    Route::get('/products/{productId}/my-rating', [ProductRatingController::class, 'getUserRating']);
+    Route::delete('/products/{productId}/my-rating', [ProductRatingController::class, 'deleteUserRating']);
 });
 
 // Public Product Routes
 Route::get('/products', [ApiProductController::class, 'index']);
 Route::get('/products/{id}', [ApiProductController::class, 'show']);
 Route::get('/products/featured/list', [ApiProductController::class, 'featured']);
+
+// Public Product Rating Route - anyone can view ratings
+Route::get('/products/{productId}/ratings', [ProductRatingController::class, 'getProductRatings']);
 
 // Public Page Routes
 Route::get('/pages', [ApiPageController::class, 'index']);

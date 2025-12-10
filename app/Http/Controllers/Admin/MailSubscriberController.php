@@ -20,7 +20,7 @@ class MailSubscriberController extends Controller
     {
         $perPage = min(max((int) $request->input('per_page', 20), 5), 100);
         $page = max((int) $request->input('page', 1), 1);
-        $status = $request->input('status');
+        $status = $request->input('status') ?: null;
 
         $subscribers = collect();
         $meta = null;
