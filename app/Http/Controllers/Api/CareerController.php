@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Carrer;
+use App\Models\Career;
 
-class CarrerController extends Controller
+class CareerController extends Controller
 {
     public function index()
     {
-        $carrers = Carrer::all();
+        $carrers = Career::all();
 
         return response()->json([
             'success' => true,
