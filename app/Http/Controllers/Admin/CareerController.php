@@ -3,17 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Career;
 use App\Models\Carrer;
 use Illuminate\Http\Request;
 
-class CarrerController extends Controller
+class CareerController extends Controller
 {
     /**
      * Display a listing of services
      */
     public function index()
     {
-        $carrers = Carrer::all();
+        $carrers = Career::all();
 
         return view('admin.carrers.index', compact('carrers'));
     }
@@ -36,7 +37,7 @@ class CarrerController extends Controller
             'description' => ['required', 'string'],
         ]);
 
-        $service = Carrer::create($validated);
+        $service = Career::create($validated);
 
         return redirect()
             ->route('admin.carrers.index')
@@ -46,7 +47,7 @@ class CarrerController extends Controller
     /**
      * Show the form for editing a service
      */
-    public function edit(Carrer $carrer)
+    public function edit(Career $carrer)
     {
         return view('admin.carrers.edit', compact('carrer'));
     }
@@ -54,7 +55,7 @@ class CarrerController extends Controller
     /**
      * Update the specified service
      */
-    public function update(Request $request, Carrer $carrer)
+    public function update(Request $request, Career $carrer)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -71,7 +72,7 @@ class CarrerController extends Controller
     /**
      * Remove the specified service
      */
-    public function destroy(Carrer $carrer)
+    public function destroy(Career $carrer)
     {
         $carrer->delete();
 
