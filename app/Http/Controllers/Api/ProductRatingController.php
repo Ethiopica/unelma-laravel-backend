@@ -36,13 +36,13 @@ class ProductRatingController extends Controller
         $product = Product::findOrFail($productId);
 
         // Check if user has purchased this product
-        if (!$user->hasPurchasedProduct($product)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You can only rate products you have purchased.',
-                'error' => 'purchase_required',
-            ], 403);
-        }
+        // if (!$user->hasPurchasedProduct($product)) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'You can only rate products you have purchased.',
+        //         'error' => 'purchase_required',
+        //     ], 403);
+        // }
 
         // Check if user already has a rating for this product
         $existingRating = ProductRating::where('product_id', $productId)
