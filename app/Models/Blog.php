@@ -15,7 +15,6 @@ class Blog extends Model
         'excerpt',
         'content',
         'featured_image',
-        'image_url',
         'author_id',
         'category',
         'tags',

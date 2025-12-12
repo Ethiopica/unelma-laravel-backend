@@ -10,7 +10,6 @@ use App\Http\Controllers\Admin\MailSubscriberController;
 use App\Http\Controllers\Admin\FavoriteController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
-use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -94,10 +93,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Product Management
         Route::resource('products', AdminProductController::class)->except(['show']);
-
-        // Product Ratings Management
-        Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
-        Route::delete('/ratings/{rating}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 
         // Services Management
         Route::resource('services', ServicesController::class)->except(['show']);

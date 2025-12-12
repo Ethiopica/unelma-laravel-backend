@@ -113,13 +113,13 @@ class UnelmaMailService
             throw new \RuntimeException('Unelma Mail credentials are not configured. Please set UNELMA_MAIL_API_KEY and UNELMA_MAIL_LIST_UID in your .env file.');
         }
 
-        // Build query parameters (filter out null and empty strings)
+        // Build query parameters
         $query = array_filter([
             'list_uid' => $this->listUid,
             'per_page' => $perPage,
             'page' => $page,
             'status' => $status,
-        ], static fn($value) => $value !== null && $value !== '');
+        ], static fn($value) => $value !== null);
 
         // Try different authentication methods
         // Option 1: API token in query string (most common)

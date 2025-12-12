@@ -5,56 +5,60 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductRating;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductRatingController extends Controller
 {
     /**
-     * Submit or update a product rating
-     *
-     * Request body:
-     * {
-     *   "productId": 1,
-     *   "rating": 4,        // Required (1-5)
-     *   "feedback": "..."   // Optional
-     * }
-     *
-     * Note: Only users who have purchased the product can rate it
+     * Get all ratings for a product
      */
-    public function rate(Request $request): JsonResponse
+    public function index($productId)
+    {
+        $product = Product::findOrFail($productId);
+        
+        $ratings = ProductRating::where('product_id', $productId)
+            ->with('user:id,name,profile_picture')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'product_id' => $product->id,
+            'average_rating' => round($product->rating ?? 0, 1),
+            'total_ratings' => $ratings->count(),
+            'ratings' => $ratings->map(function ($rating) {
+                return [
+                    'id' => $rating->id,
+                    'rating' => $rating->rating,
+                    'feedback' => $rating->feedback,
+                    'user' => $rating->user ? [
+                        'id' => $rating->user->id,
+                        'name' => $rating->user->name,
+                        'profile_picture' => $rating->user->profile_picture,
+                    ] : null,
+                    'created_at' => $rating->created_at->toISOString(),
+                ];
+            }),
+        ]);
+    }
+
+    /**
+     * Store a new rating or update existing one
+     */
+    public function store(Request $request, $productId)
     {
         $validated = $request->validate([
-            'productId' => ['required', 'integer', 'exists:products,id'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'feedback' => ['nullable', 'string'],
+            'feedback' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $user = Auth::user();
-        $productId = $validated['productId'];
         $product = Product::findOrFail($productId);
+        $user = $request->user();
 
-        // Check if user has purchased this product
-        if (!$user->hasPurchasedProduct($product)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You can only rate products you have purchased.',
-                'error' => 'purchase_required',
-            ], 403);
-        }
-
-        // Check if user already has a rating for this product
-        $existingRating = ProductRating::where('product_id', $productId)
-            ->where('user_id', $user->id)
-            ->first();
-
-        $isUpdate = $existingRating !== null;
-
-        // Create or update the user's rating for this product
-        $productRating = ProductRating::updateOrCreate(
+        // Create or update the rating
+        $rating = ProductRating::updateOrCreate(
             [
-                'product_id' => $productId,
+                'product_id' => $product->id,
                 'user_id' => $user->id,
             ],
             [
@@ -63,102 +67,99 @@ class ProductRatingController extends Controller
             ]
         );
 
-        // Recalculate product's average rating and count
-        $product->updateAverageRating();
-        $product->refresh();
-
-        // Load user info (name, profile_picture) with the rating
-        $productRating->load('user:id,name,profile_picture');
+        // Update product's average rating
+        $this->updateProductRating($product);
 
         return response()->json([
-            'success' => true,
-            'message' => $isUpdate ? 'Rating updated successfully!' : 'Rating submitted successfully!',
-            'is_update' => $isUpdate,
-            'data' => [
-                'rating' => $productRating,
-                'product' => $product,
+            'message' => 'Rating submitted successfully',
+            'rating' => [
+                'id' => $rating->id,
+                'rating' => $rating->rating,
+                'feedback' => $rating->feedback,
+                'created_at' => $rating->created_at->toISOString(),
             ],
-        ]);
+            'product' => [
+                'id' => $product->id,
+                'average_rating' => round($product->fresh()->rating ?? 0, 1),
+                'rating_count' => $product->fresh()->rating_count ?? 0,
+            ],
+        ], $rating->wasRecentlyCreated ? 201 : 200);
     }
 
     /**
-     * Get all ratings for a product with user info
+     * Get the current user's rating for a product
      */
-    public function getProductRatings(int $productId): JsonResponse
+    public function show(Request $request, $productId)
     {
         $product = Product::findOrFail($productId);
+        $user = $request->user();
 
-        $ratings = ProductRating::where('product_id', $productId)
-            ->with('user:id,name,profile_picture')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'rating' => $product->rating,             // Average rating
-                'rating_count' => $product->rating_count, // Amount of users who rated
-                'ratings' => $ratings,                    // Individual ratings with user info
-            ],
-        ]);
-    }
-
-    /**
-     * Get current user's rating for a product
-     * Also returns whether the user can rate (has purchased) the product
-     */
-    public function getUserRating(int $productId): JsonResponse
-    {
-        $user = Auth::user();
-        $product = Product::findOrFail($productId);
-
-        $rating = ProductRating::where('product_id', $productId)
-            ->where('user_id', $user->id)
-            ->first();
-
-        $hasPurchased = $user->hasPurchasedProduct($product);
-
-        return response()->json([
-            'success' => true,
-            'data' => $rating,
-            'can_rate' => $hasPurchased,
-            'has_purchased' => $hasPurchased,
-        ]);
-    }
-
-    /**
-     * Delete current user's rating for a product
-     */
-    public function deleteUserRating(int $productId): JsonResponse
-    {
-        $user = Auth::user();
-
-        $rating = ProductRating::where('product_id', $productId)
+        $rating = ProductRating::where('product_id', $product->id)
             ->where('user_id', $user->id)
             ->first();
 
         if (!$rating) {
             return response()->json([
-                'success' => false,
-                'message' => 'Rating not found.',
-            ], 404);
-        }
-
-        $product = $rating->product;
-        $rating->delete();
-
-        // Recalculate product's average rating and count
-        if ($product) {
-            $product->updateAverageRating();
-            $product->refresh();
+                'message' => 'You have not rated this product yet',
+                'rating' => null,
+            ]);
         }
 
         return response()->json([
-            'success' => true,
-            'message' => 'Rating deleted successfully!',
-            'data' => [
-                'product' => $product,
+            'rating' => [
+                'id' => $rating->id,
+                'rating' => $rating->rating,
+                'feedback' => $rating->feedback,
+                'created_at' => $rating->created_at->toISOString(),
             ],
+        ]);
+    }
+
+    /**
+     * Delete the current user's rating for a product
+     */
+    public function destroy(Request $request, $productId)
+    {
+        $product = Product::findOrFail($productId);
+        $user = $request->user();
+
+        $rating = ProductRating::where('product_id', $product->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$rating) {
+            return response()->json([
+                'message' => 'Rating not found',
+            ], 404);
+        }
+
+        $rating->delete();
+
+        // Update product's average rating
+        $this->updateProductRating($product);
+
+        return response()->json([
+            'message' => 'Rating deleted successfully',
+            'product' => [
+                'id' => $product->id,
+                'average_rating' => round($product->fresh()->rating ?? 0, 1),
+                'rating_count' => $product->fresh()->rating_count ?? 0,
+            ],
+        ]);
+    }
+
+    /**
+     * Update the product's average rating and count
+     */
+    private function updateProductRating(Product $product): void
+    {
+        $stats = ProductRating::where('product_id', $product->id)
+            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as count')
+            ->first();
+
+        $product->update([
+            'rating' => $stats->avg_rating ?? 0,
+            'rating_count' => $stats->count ?? 0,
         ]);
     }
 }

@@ -70,7 +70,7 @@
                     </div>
                 </div>
 
-                <form method="GET" action="{{ route('admin.subscribers.index') }}" class="flex items-center gap-2">
+                <form method="GET" class="flex items-center gap-2">
                     <select id="status" name="status"
                         class="flex-1 min-w-0 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-300 px-2 py-2">
                         <option value="">All statuses</option>

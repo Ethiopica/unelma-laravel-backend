@@ -58,10 +58,10 @@ Route::get('/blogs/latest', [ApiBlogController::class, 'latest']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/blogs/{id}/comments', [ApiCommentController::class, 'store']);
 
-    // Product Ratings (protected - require authentication)
-    Route::post('/products/rate', [ProductRatingController::class, 'rate']);
-    Route::get('/products/{productId}/my-rating', [ProductRatingController::class, 'getUserRating']);
-    Route::delete('/products/{productId}/my-rating', [ProductRatingController::class, 'deleteUserRating']);
+    // Product Ratings (authenticated)
+    Route::get('/products/{productId}/ratings/mine', [ProductRatingController::class, 'show']);
+    Route::post('/products/{productId}/ratings', [ProductRatingController::class, 'store']);
+    Route::delete('/products/{productId}/ratings', [ProductRatingController::class, 'destroy']);
 });
 
 // Public Product Routes
@@ -69,8 +69,8 @@ Route::get('/products', [ApiProductController::class, 'index']);
 Route::get('/products/{id}', [ApiProductController::class, 'show']);
 Route::get('/products/featured/list', [ApiProductController::class, 'featured']);
 
-// Public Product Rating Route - anyone can view ratings
-Route::get('/products/{productId}/ratings', [ProductRatingController::class, 'getProductRatings']);
+// Public Product Ratings (view ratings)
+Route::get('/products/{productId}/ratings', [ProductRatingController::class, 'index']);
 
 // Public Page Routes
 Route::get('/pages', [ApiPageController::class, 'index']);
