@@ -92,10 +92,7 @@ class MailSubscriberController extends Controller
             ];
         } catch (\RuntimeException $exception) {
             $error = $exception->getMessage();
-            \Log::error('MailSubscriberController RuntimeException', [
-                'message' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString(),
-            ]);
+            \Log::error('MailSubscriberController RuntimeException: ' . $exception->getMessage());
         } catch (RequestException $exception) {
             $response = optional($exception->response);
             $errorMessage = data_get($response->json(), 'message', 'Failed to load subscribers from Unelma Mail.');
@@ -120,7 +117,6 @@ class MailSubscriberController extends Controller
             $error = 'Something went wrong while loading subscribers. Please check the logs for details.';
             \Log::error('MailSubscriberController Exception', [
                 'message' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString(),
             ]);
         }
 
@@ -150,7 +146,6 @@ class MailSubscriberController extends Controller
             \Log::error('MailSubscriberController Delete RuntimeException', [
                 'message' => $exception->getMessage(),
                 'subscriber_uid' => $subscriberUid,
-                'trace' => $exception->getTraceAsString(),
             ]);
 
             return redirect()
@@ -182,7 +177,6 @@ class MailSubscriberController extends Controller
             \Log::error('MailSubscriberController Delete Exception', [
                 'message' => $exception->getMessage(),
                 'subscriber_uid' => $subscriberUid,
-                'trace' => $exception->getTraceAsString(),
             ]);
 
             return redirect()

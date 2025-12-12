@@ -19,6 +19,7 @@ class Service extends Model
         'is_featured',
         'order',
         'stripe_price_id',
+        'payment_type', // 'subscription', 'one_time', or null (auto-detect from Stripe)
     ];
 
     protected $casts = [

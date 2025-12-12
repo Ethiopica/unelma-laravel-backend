@@ -71,9 +71,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has purchased a specific product
-     * A product is considered purchased if the user has an active subscription
-     * with the product's stripe_price_id
+     * Get all one-time purchases by this user
+     */
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    /**
+     * Check if user has purchased a specific product.
+     * 
+     * Note: This checks payment subscriptions (Stripe), not newsletter/email subscriptions (Unelma Mail).
+     * A product is considered purchased if the user has an active payment subscription
+     * with the product's stripe_price_id.
      */
     public function hasPurchasedProduct(Product $product): bool
     {
@@ -82,7 +92,8 @@ class User extends Authenticatable
             return false;
         }
 
-        // Check if user has any subscription (active or completed) with this product's price
+        // Check if user has any payment subscription (active or completed) with this product's price
+        // Note: subscriptions() is Laravel Cashier's relationship for payment subscriptions
         return $this->subscriptions()
             ->where('stripe_price', $product->stripe_price_id)
             ->whereIn('stripe_status', ['active', 'trialing', 'past_due', 'canceled', 'complete'])

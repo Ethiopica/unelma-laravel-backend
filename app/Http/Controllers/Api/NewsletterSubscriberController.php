@@ -30,10 +30,7 @@ class NewsletterSubscriberController extends Controller
         $response = json_decode($login_admin_unelmamail->body());
         $token = $response->api_token;
 
-        // dd('working till here');
-        // dd($user_email);
-
-        //Now add siiuscriber
+        // Now add subscriber
         $add_subscriber = Http::withHeaders([
             'api_token' =>  $token
         ])->post('https://core.unelmamail.com/api/v1/subscribers', [

@@ -9,11 +9,11 @@ class CareerController extends Controller
 {
     public function index()
     {
-        $carrers = Career::all();
+        $careers = Career::all();
 
         return response()->json([
             'success' => true,
-            'data' => $carrers,
+            'data' => $careers,
         ]);
     }
 }

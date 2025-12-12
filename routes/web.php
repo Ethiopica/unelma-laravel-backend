@@ -51,6 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::get('verify-user/{link?}', [VerifyUserController::class, 'verifyUser'])->name('verify.user');
     Route::get('verify-user/{link}/confirm', [VerifyUserController::class, 'confirmUser'])->name('verify.user');
 
+    // Payment subscription route (Stripe), not newsletter subscription (Unelma Mail)
     Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
 });
 

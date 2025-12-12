@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController as ApiBlogController;
-use App\Http\Controllers\Api\CareerController;
+use App\Http\Controllers\Api\CareerController as ApiCareerController;
 use App\Http\Controllers\Api\CommentController as ApiCommentController;
 use App\Http\Controllers\Api\ContactController as ApiContactController;
 use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageController;
@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\ProductRatingController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
-use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\PaymentSubscriptionController;
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\StripeController;
@@ -43,16 +43,13 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
 
 // Public Blog Routes
 Route::get('/blogs', [ApiBlogController::class, 'index']);
+Route::get('/blogs/{id}/comments', [ApiCommentController::class, 'index']); // Must come before /blogs/{id} to avoid route conflict
 Route::get('/blogs/{id}', [ApiBlogController::class, 'show']);
 Route::get('/blogs/{slug}', [ApiBlogController::class, 'showBySlug']);
 Route::get('/blogs/categories/list', [ApiBlogController::class, 'categories']);
 Route::get('/blogs/recent/list', [ApiBlogController::class, 'recent']);
 Route::get('/blogs/popular/list', [ApiBlogController::class, 'popular']);
 Route::get('/blogs/latest', [ApiBlogController::class, 'latest']);
-// Route::get('/blogs/{blog}/comments', [BlogCommentController::class, 'index']);
-// Route::post('/blogs/{blog}/comments', 
-// [BlogCommentController::class, 'store']);
-
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/blogs/{id}/comments', [ApiCommentController::class, 'store']);
@@ -81,16 +78,17 @@ Route::get('/services', [ApiServiceController::class, 'index']);
 Route::get('/services/{id}', [ApiServiceController::class, 'show']);
 Route::get('/services/featured/list', [ApiServiceController::class, 'featured']);
 
-// Public Subscription Options Routes (Get available subscription options with price IDs)
-Route::get('/subscriptions/options', [SubscriptionController::class, 'options']);
-Route::get('/subscriptions/{type}/{id}', [SubscriptionController::class, 'show']); // type: product or plan
+// Public Payment Subscription Options Routes (Get available payment subscription options with price IDs)
+// Note: These are for payment subscriptions (Stripe), not newsletter/email subscriptions (Unelma Mail)
+Route::get('/subscriptions/options', [PaymentSubscriptionController::class, 'options']);
+Route::get('/subscriptions/{type}/{id}', [PaymentSubscriptionController::class, 'show']); // type: product or plan
 
 // Public Contact Form Routes
 Route::post('/contact/submit', [ApiContactController::class, 'submit']);
 Route::post('/contact', [ApiContactController::class, 'submit']); // Alias for frontend compatibility
 
 // Public Vacancy Routes
-Route::get('/vacancies', [CareerController::class, 'index']);
+Route::get('/vacancies', [ApiCareerController::class, 'index']);
 
 // Handle successful checkout - process subscription if webhook didn't
 // Note: This route works without auth by finding user from Stripe session
@@ -110,13 +108,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/profile', [UserProfileController::class, 'destroy']);
     Route::get('/profile/activity', [UserProfileController::class, 'activity']);
     Route::get('/profile/subscriptions', [UserProfileController::class, 'subscriptions']);
+    Route::get('/profile/purchases', [UserProfileController::class, 'purchases']);
+    // Alternative routes for purchases (for frontend compatibility)
+    Route::get('/purchases', [UserProfileController::class, 'purchases']);
+    Route::get('/user/purchases', [UserProfileController::class, 'purchases']);
 
     Route::get('/checkout/cancel', function () {
         return 'Subscription canceled.';
     })->name('checkout.cancel');
 
 
-    // Subscription Management
+    // Payment Subscription Management
+    // Note: These are for payment subscriptions (Stripe), not newsletter/email subscriptions (Unelma Mail)
     Route::get('/subscriptions', function (Request $request) {
         $subscriptions = $request->user()->subscriptions()->orderByDesc('created_at')->get()->map(function ($subscription) {
             return [
@@ -126,6 +129,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 'status' => $subscription->stripe_status,
                 'price_id' => $subscription->stripe_price,
                 'quantity' => $subscription->quantity,
+                'amount' => $subscription->amount,
+                'payment_type' => 'subscription', // Always subscription for this endpoint
                 'trial_ends_at' => $subscription->trial_ends_at?->toISOString(),
                 'ends_at' => $subscription->ends_at?->toISOString(),
                 'created_at' => $subscription->created_at->toISOString(),
@@ -133,6 +138,7 @@ Route::middleware('auth:sanctum')->group(function () {
             ];
         });
         return response()->json([
+            'success' => true,
             'subscriptions' => $subscriptions,
             'has_active_subscription' => $request->user()->subscriptions()->whereIn('stripe_status', ['active', 'trialing'])->exists(),
         ]);
