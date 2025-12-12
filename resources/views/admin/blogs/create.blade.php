@@ -1,10 +1,10 @@
 <x-layout>
-    <x-slot:title>Create blog Post - {{ config('app.name') }}</x-slot:title>
+    <x-slot:title>Create Blog Post - {{ config('app.name') }}</x-slot:title>
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="mb-6">
-            <div class="flex items-center space-x-2 text-sm text-gray-600 mb-2">
+            <div class="flex items-center space-x-2 text-sm text-gray-600 mb-2 breadcrumb-nav">
                 <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-900">Dashboard</a>
                 <span>/</span>
                 <a href="{{ route('admin.blogs.index') }}" class="hover:text-gray-900">Blog</a>

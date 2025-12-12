@@ -3,14 +3,16 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController as ApiBlogController;
 use App\Http\Controllers\Api\BlogCommentController;
-use App\Http\Controllers\Api\CarrerController as ApiCarrerController;
+use App\Http\Controllers\Api\CarrerController as ApiCareerController;
 use App\Http\Controllers\Api\CommentController as ApiCommentController;
 use App\Http\Controllers\Api\ContactController as ApiContactController;
 use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageController;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
+use App\Http\Controllers\Api\ProductRatingController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\StripeController;
@@ -55,12 +57,20 @@ Route::get('/blogs/latest', [ApiBlogController::class, 'latest']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/blogs/{id}/comments', [ApiCommentController::class, 'store']);
+
+    // Product Ratings (protected - require authentication)
+    Route::post('/products/rate', [ProductRatingController::class, 'rate']);
+    Route::get('/products/{productId}/my-rating', [ProductRatingController::class, 'getUserRating']);
+    Route::delete('/products/{productId}/my-rating', [ProductRatingController::class, 'deleteUserRating']);
 });
 
 // Public Product Routes
 Route::get('/products', [ApiProductController::class, 'index']);
 Route::get('/products/{id}', [ApiProductController::class, 'show']);
 Route::get('/products/featured/list', [ApiProductController::class, 'featured']);
+
+// Public Product Rating Route - anyone can view ratings
+Route::get('/products/{productId}/ratings', [ProductRatingController::class, 'getProductRatings']);
 
 // Public Page Routes
 Route::get('/pages', [ApiPageController::class, 'index']);
@@ -72,12 +82,16 @@ Route::get('/services', [ApiServiceController::class, 'index']);
 Route::get('/services/{id}', [ApiServiceController::class, 'show']);
 Route::get('/services/featured/list', [ApiServiceController::class, 'featured']);
 
+// Public Subscription Options Routes (Get available subscription options with price IDs)
+Route::get('/subscriptions/options', [SubscriptionController::class, 'options']);
+Route::get('/subscriptions/{type}/{id}', [SubscriptionController::class, 'show']); // type: product or plan
+
 // Public Contact Form Routes
 Route::post('/contact/submit', [ApiContactController::class, 'submit']);
 Route::post('/contact', [ApiContactController::class, 'submit']); // Alias for frontend compatibility
 
 // Public Vacancy Routes
-Route::get('/vacancies', [ApiCarrerController::class, 'index']);
+Route::get('/vacancies', [ApiCareerController::class, 'index']);
 
 // Handle successful checkout - process subscription if webhook didn't
 // Note: This route works without auth by finding user from Stripe session

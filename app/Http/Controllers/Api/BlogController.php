@@ -17,8 +17,9 @@ class BlogController extends Controller
         try {
             $query = Blog::where('is_published', true)
                 ->with([
-                'author:id,name,email,profile_picture',
-                'comments.user:id,name,profile_picture'])
+                    'author:id,name,email,profile_picture',
+                    'comments.user:id,name,profile_picture'
+                ])
                 ->orderBy('order', 'asc')
                 ->orderBy('created_at', 'desc');
 

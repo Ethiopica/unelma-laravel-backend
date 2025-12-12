@@ -85,11 +85,11 @@
                     </label>
                     <input type="text" id="stripe_price_id" name="stripe_price_id" value="{{ old('stripe_price_id', $product->stripe_price_id) }}" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('stripe_price_id') border-red-500 @enderror"
-                        placeholder="e.g., price_1234567890">
+                        placeholder="e.g., price_1SZtv4Jg4Qxq8pC4yT9kDMrG">
                     @error('stripe_price_id')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
-                    <p class="mt-1 text-sm text-gray-500">The Stripe Price ID for this product</p>
+                    <p class="mt-1 text-sm text-gray-500">Required for checkout functionality. Get this from your Stripe Dashboard → Products → Prices</p>
                 </div>
 
                 <!-- Highlights -->

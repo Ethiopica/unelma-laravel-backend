@@ -84,19 +84,19 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span
-                                            class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            class="category-badge px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
                                             {{ $blog->category ?? 'Uncategorized' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if ($blog->is_published)
                                             <span
-                                                class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                class="status-badge px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                                 Published
                                             </span>
                                         @else
                                             <span
-                                                class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                class="status-badge px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
                                                 Draft
                                             </span>
                                         @endif
@@ -116,6 +116,14 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
                                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                    </path>
+                                                </svg>
+                                            </a>
+                                            <a href="{{ route('admin.blogs.comments', $blog->id) }}" 
+                                                class="blog-comments-link" title="View Comments">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z">
                                                     </path>
                                                 </svg>
                                             </a>
@@ -164,22 +172,22 @@
                             <div class="grid grid-cols-2 gap-3 text-sm">
                                 <div>
                                     <p class="text-gray-500">Author</p>
-                                    <p class="font-medium text-gray-900">{{   $blog->author_name }}</p>
+                                    <p class="font-medium text-gray-900">{{ $blog->author_name }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Category</p>
-                                    <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800">
+                                    <span class="category-badge inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800">
                                         {{ $blog->category ?? 'Uncategorized' }}
                                     </span>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Status</p>
                                     @if ($blog->is_published)
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                                        <span class="status-badge inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
                                             Published
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">
+                                        <span class="status-badge inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">
                                             Draft
                                         </span>
                                     @endif
@@ -211,13 +219,77 @@
                                     </button>
                                 </form>
                                 <a href="{{ route('admin.blogs.comments', $blog->id) }}" 
-                                    class="inline-flex items-center justify-center rounded-md border border-purple-600 px-3 py-2 text-sm font-semibold text-purple-600 transition hover:bg-purple-600 hover:text-white"
-                                    >
+                                    class="blog-comments-button inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold transition hover:bg-gray-50">
                                      View Comments ({{ $blog->comments->count() }})
                                  </a>
                             </div>
                         </div>
                     @endforeach
+                </div>
+
+                <!-- Stats Section -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6 border-t border-gray-200">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium uppercase">Total Posts</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $blogs->count() }}</p>
+                            </div>
+                            <div class="bg-blue-100 rounded-full p-3">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium uppercase">Published</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $blogs->where('is_published', true)->count() }}</p>
+                            </div>
+                            <div class="bg-green-100 rounded-full p-3">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium uppercase">Drafts</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">{{ $blogs->where('is_published', false)->count() }}</p>
+                            </div>
+                            <div class="bg-gray-200 rounded-full p-3">
+                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium uppercase">Total Views</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">{{ number_format($blogs->sum('views')) }}</p>
+                            </div>
+                            <div class="bg-purple-100 rounded-full p-3">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             @else
                 <div class="text-center py-12">

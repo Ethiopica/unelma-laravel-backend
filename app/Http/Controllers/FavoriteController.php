@@ -30,8 +30,27 @@ class FavoriteController extends Controller
      */
     public function index(Request $request)
     {
+        // Log authentication status for debugging
+        \Log::info('Favorites index request', [
+            'has_user' => $request->user() ? true : false,
+            'user_id' => $request->user()?->id,
+            'auth_header' => $request->header('Authorization') ? 'present' : 'missing',
+            'bearer_token' => $request->bearerToken() ? 'present' : 'missing',
+        ]);
+
+        $user = $request->user();
+        
+        if (!$user) {
+            \Log::warning('Favorites index: Unauthenticated request');
+            return response()->json([
+                'success' => false,
+                'message' => 'Authentication required',
+                'data' => [],
+            ], 401);
+        }
+
         $favorites = Favorite::with('user')
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $user->id)
             ->latest()
             ->get();
 
@@ -46,12 +65,28 @@ class FavoriteController extends Controller
      */
     public function store(Request $request)
     {
+        // Log authentication status for debugging
+        \Log::info('Favorites store request', [
+            'has_user' => $request->user() ? true : false,
+            'user_id' => $request->user()?->id,
+            'auth_header' => $request->header('Authorization') ? 'present' : 'missing',
+            'bearer_token' => $request->bearerToken() ? 'present' : 'missing',
+        ]);
+
+        $user = $request->user();
+        
+        if (!$user) {
+            \Log::warning('Favorites store: Unauthenticated request');
+            return response()->json([
+                'success' => false,
+                'message' => 'Authentication required',
+            ], 401);
+        }
+
         $data = $request->validate([
             'favorite_type' => ['required', Rule::in(array_keys($this->typeModelMap))],
             'item_id' => ['required', 'integer'],
         ]);
-
-        $user = $request->user();
         $modelClass = $this->typeModelMap[$data['favorite_type']];
         $content = $modelClass::findOrFail($data['item_id']);
 

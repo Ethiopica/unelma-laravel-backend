@@ -18,6 +18,7 @@ class Service extends Model
         'is_active',
         'is_featured',
         'order',
+        'stripe_price_id',
     ];
 
     protected $casts = [

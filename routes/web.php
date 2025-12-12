@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BlogController;
-use App\Http\Controllers\Admin\CarrerController;
+use App\Http\Controllers\Admin\CareerController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\MailSubscriberController;
 use App\Http\Controllers\Admin\FavoriteController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -87,12 +88,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // comments for blog
         Route::get('/blogs/{blog}/comments', [CommentController::class, 'showByBlog'])->name('blogs.comments');
-        
+
         // Delete a comment
         Route::delete('/admin/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
         // Product Management
         Route::resource('products', AdminProductController::class)->except(['show']);
+
+        // Product Ratings Management
+        Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
+        Route::delete('/ratings/{rating}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 
         // Services Management
         Route::resource('services', ServicesController::class)->except(['show']);
@@ -100,10 +105,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
         Route::get('/subscribers', [MailSubscriberController::class, 'index'])->name('subscribers.index');
+        Route::delete('/subscribers/{subscriberUid}', [MailSubscriberController::class, 'destroy'])->name('subscribers.destroy');
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
         // Job Management
-        Route::resource('carrers', CarrerController::class)->except(['show']);
+        Route::resource('carrers', CareerController::class)->except(['show']);
 
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
