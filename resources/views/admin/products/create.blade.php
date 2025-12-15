@@ -79,15 +79,32 @@
                 <!-- Stripe Price ID -->
                 <div class="mb-6">
                     <label for="stripe_price_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        Stripe Price ID
+                        Stripe Price ID <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" id="stripe_price_id" name="stripe_price_id" value="{{ old('stripe_price_id') }}"
+                    <input type="text" id="stripe_price_id" name="stripe_price_id" value="{{ old('stripe_price_id') }}" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('stripe_price_id') border-red-500 @enderror"
                         placeholder="e.g., price_1SZtv4Jg4Qxq8pC4yT9kDMrG">
                     @error('stripe_price_id')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-1 text-sm text-gray-500">Required for checkout functionality. Get this from your Stripe Dashboard → Products → Prices</p>
+                </div>
+
+                <!-- Payment Type -->
+                <div class="mb-6">
+                    <label for="payment_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Payment Type
+                    </label>
+                    <select id="payment_type" name="payment_type"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('payment_type') border-red-500 @enderror">
+                        <option value="">Auto-detect from Stripe (default)</option>
+                        <option value="subscription" {{ old('payment_type') === 'subscription' ? 'selected' : '' }}>Subscription (Recurring)</option>
+                        <option value="one_time" {{ old('payment_type') === 'one_time' ? 'selected' : '' }}>One-Time Payment</option>
+                    </select>
+                    @error('payment_type')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-sm text-gray-500">Explicitly set payment type, or leave empty to auto-detect from Stripe price type</p>
                 </div>
 
                 <!-- Highlights -->

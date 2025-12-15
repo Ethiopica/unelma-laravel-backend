@@ -47,10 +47,9 @@ class ProductController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Products API Error: '.$e->getMessage(), [
+            \Log::error('Products API Error: ' . $e->getMessage(), [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([

@@ -152,7 +152,7 @@
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-all @if (request()->routeIs('admin.subscribers.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif">
                     <i class="fa-solid fa-envelope-circle-check text-sm"></i>
                 </div>
-                Subscribers
+                Newsletter Subscribers
             </a>
             <a href="{{ route('admin.contact-messages.index') }}"
                 class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.contact-messages.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">

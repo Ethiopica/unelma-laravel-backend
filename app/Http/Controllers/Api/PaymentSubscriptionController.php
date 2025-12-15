@@ -10,11 +10,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
-class SubscriptionController extends Controller
+class PaymentSubscriptionController extends Controller
 {
     /**
-     * Get all available subscription options (products and plans) with their Stripe price IDs
-     * This allows the frontend to fetch price IDs from the backend instead of hardcoding them
+     * Get all available payment subscription options (products and plans) with their Stripe price IDs.
+     * Note: This is for payment subscriptions (Stripe), not newsletter/email subscriptions (Unelma Mail).
+     * This allows the frontend to fetch price IDs from the backend instead of hardcoding them.
      */
     public function options(Request $request): JsonResponse
     {
@@ -37,6 +38,7 @@ class SubscriptionController extends Controller
                         'description' => $product->description,
                         'price' => $product->price,
                         'stripe_price_id' => $product->stripe_price_id,
+                        'payment_type' => $product->payment_type, // 'subscription', 'one_time', or null (auto-detect)
                         'type' => 'product',
                     ];
                 });
@@ -60,6 +62,7 @@ class SubscriptionController extends Controller
                             'period' => $plan->period,
                             'features' => $plan->features,
                             'stripe_price_id' => $plan->stripe_price_id,
+                            'payment_type' => 'subscription', // Plans are always subscriptions
                             'service_id' => $plan->service_id,
                             'service_name' => $plan->service->name ?? null,
                             'type' => 'plan',
@@ -78,20 +81,19 @@ class SubscriptionController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Subscription Options API Error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+            \Log::error('Subscription Options API Error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to fetch subscription options',
+                'error' => 'Failed to fetch payment subscription options',
                 'message' => config('app.debug') ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }
 
     /**
-     * Get a specific subscription option by ID (product or plan)
+     * Get a specific payment subscription option by ID (product or plan).
+     * Note: This is for payment subscriptions (Stripe), not newsletter/email subscriptions.
      */
     public function show(Request $request, string $type, int $id): JsonResponse
     {
@@ -110,6 +112,7 @@ class SubscriptionController extends Controller
                         'description' => $product->description,
                         'price' => $product->price,
                         'stripe_price_id' => $product->stripe_price_id,
+                        'payment_type' => $product->payment_type, // 'subscription', 'one_time', or null (auto-detect)
                         'type' => 'product',
                     ],
                 ]);
@@ -142,6 +145,7 @@ class SubscriptionController extends Controller
                         'period' => $plan->period,
                         'features' => $plan->features,
                         'stripe_price_id' => $plan->stripe_price_id,
+                        'payment_type' => 'subscription', // Plans are always subscriptions
                         'service_id' => $plan->service_id,
                         'service_name' => $plan->service->name ?? null,
                         'type' => 'plan',
@@ -159,13 +163,11 @@ class SubscriptionController extends Controller
                 'message' => ucfirst($type) . ' not found',
             ], 404);
         } catch (\Exception $e) {
-            \Log::error('Subscription Option API Error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+            \Log::error('Subscription Option API Error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to fetch subscription option',
+                'error' => 'Failed to fetch payment subscription option',
                 'message' => config('app.debug') ? $e->getMessage() : 'An error occurred',
             ], 500);
         }

@@ -125,6 +125,23 @@
                     <p class="mt-1 text-sm text-gray-500">Required for direct service checkout. Get this from your Stripe Dashboard → Products → Prices. Leave empty if using plans only.</p>
                 </div>
 
+                <!-- Payment Type -->
+                <div class="mb-6">
+                    <label for="payment_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Payment Type
+                    </label>
+                    <select id="payment_type" name="payment_type"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('payment_type') border-red-500 @enderror">
+                        <option value="">Auto-detect from Stripe (default)</option>
+                        <option value="subscription" {{ old('payment_type', $service->payment_type) === 'subscription' ? 'selected' : '' }}>Subscription (Recurring)</option>
+                        <option value="one_time" {{ old('payment_type', $service->payment_type) === 'one_time' ? 'selected' : '' }}>One-Time Payment</option>
+                    </select>
+                    @error('payment_type')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-sm text-gray-500">Explicitly set payment type, or leave empty to auto-detect from Stripe price type</p>
+                </div>
+
                  <!-- Service Plans Section -->
                  <div class="border-t pt-6 mb-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Service Plans</h3>
@@ -144,10 +161,13 @@
                             <h4 class="font-medium text-gray-700">Plan #{{$planIndex}}</h4>
                             <button type="button" class="removePlanBtn text-red-500 hover:text-red-700">&times;</button>
                             </div>
+                            @if(isset($plan['id']))
+                                <input type="hidden" name="plans[{{$planIndex}}][id]" value="{{ $plan['id'] }}">
+                            @endif
                             <input type="text" name="plans[{{$planIndex}}][name]" value="{{ $plan['name'] ?? '' }}" placeholder="Plan Name *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <input type="number" name="plans[{{$planIndex}}][price]" value="{{ $plan['price'] ?? '' }}" placeholder="Price *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <input type="text" name="plans[{{$planIndex}}][period]" value="{{ $plan['period'] ?? '' }}" placeholder="Period" class="mb-3 mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <input type="text" name="plans[{{$planIndex}}][stripePriceId]" value="{{ $plan['stripePriceId'] ?? '' }}" placeholder="Stripe Price ID " class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <input type="text" name="plans[{{$planIndex}}][stripePriceId]" value="{{ $plan['stripePriceId'] ?? ($plan['stripe_price_id'] ?? '') }}" placeholder="Stripe Price ID *" required class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <input type="text" name="plans[{{$planIndex}}][features]" value="{{ is_array($plan['features'] ?? null) ? implode(',', $plan['features']) : ($plan['features'] ?? '') }}" placeholder="Features (comma-separated)" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                             @php $planIndex++; @endphp
@@ -270,7 +290,7 @@
                 <input type="text" name="plans[${planIndex}][name]" placeholder="Plan Name *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <input type="number" name="plans[${planIndex}][price]" placeholder="Price *" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" >
                 <input type="text" name="plans[${planIndex}][period]" placeholder="Period" class="mb-3 mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <input type="text" name="plans[${planIndex}][stripePriceId]" placeholder="Stripe Price ID " class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="text" name="plans[${planIndex}][stripePriceId]" placeholder="Stripe Price ID *" required class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <input type="text" name="plans[${planIndex}][features]" placeholder="Features (comma-separated)" class="mb-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
     
         `;

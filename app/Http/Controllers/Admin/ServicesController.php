@@ -42,6 +42,7 @@ class ServicesController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'image_url'=>['nullable','string'],
             'stripe_price_id' => ['nullable', 'string', 'max:255'],
+            'payment_type' => ['nullable', 'string', 'in:subscription,one_time'],
             'is_featured' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'order' => ['nullable', 'integer', 'min:0'],
@@ -49,7 +50,7 @@ class ServicesController extends Controller
             'plans.*.name'=>['required_with:plans.*','string'],
             'plans.*.price'=>['required_with:plans.*','numeric'],
             'plans.*.period'=>['nullable','string'],
-            'plans.*.stripePriceId'=>['nullable','string'],
+            'plans.*.stripePriceId'=>['required_with:plans.*','string'],
             'plans.*.features'=>['nullable','string'],
         ]);
 
@@ -108,6 +109,7 @@ class ServicesController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'image_url'=>['nullable','string'],
             'stripe_price_id' => ['nullable', 'string', 'max:255'],
+            'payment_type' => ['nullable', 'string', 'in:subscription,one_time'],
             'is_featured' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'order' => ['nullable', 'integer', 'min:0'],
@@ -116,7 +118,7 @@ class ServicesController extends Controller
             'plans.*.name'=>['required_with:plans.*','string'],
             'plans.*.price'=>['required_with:plans.*','numeric'],
             'plans.*.period'=>['nullable','string'],
-            'plans.*.stripePriceId'=>['nullable','string'],
+            'plans.*.stripePriceId'=>['required_with:plans.*','string'],
             'plans.*.features'=>['nullable','string'],
         ]);
 
