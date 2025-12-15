@@ -89,6 +89,8 @@ Route::post('/contact', [ApiContactController::class, 'submit']); // Alias for f
 
 // Public Vacancy Routes
 Route::get('/vacancies', [ApiCareerController::class, 'index']);
+Route::post('/vacancies', [ApiCareerController::class, 'apply']);
+
 
 // Handle successful checkout - process subscription if webhook didn't
 // Note: This route works without auth by finding user from Stripe session
