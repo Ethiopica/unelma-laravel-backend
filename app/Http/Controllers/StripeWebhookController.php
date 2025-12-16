@@ -18,24 +18,13 @@ class StripeWebhookController extends Controller
         $webhookSecret = config('services.stripe.webhook_secret');
         $isLocal = app()->environment('local');
 
-        // Log all incoming webhook attempts (even if they fail)
-        Log::info('=== WEBHOOK RECEIVED ===', [
-            'environment' => app()->environment(),
-            'is_local' => $isLocal,
-            'has_signature' => !empty($signature),
-            'has_webhook_secret' => !empty($webhookSecret),
-            'webhook_secret_length' => strlen($webhookSecret ?? ''),
-            'payload_length' => strlen($payload),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'url' => $request->fullUrl(),
-            'method' => $request->method(),
-            'headers' => [
-                'stripe-signature' => $signature ? substr($signature, 0, 50) . '...' : null,
-                'content-type' => $request->header('Content-Type'),
-            ],
-            'payload_preview' => substr($payload, 0, 500),
-        ]);
+        // Log webhook receipt (only in local environment)
+        if ($isLocal) {
+            Log::info('Webhook received', [
+                'has_signature' => !empty($signature),
+                'payload_length' => strlen($payload),
+            ]);
+        }
 
         // For local development with Stripe CLI, try to verify but allow fallback
         if ($isLocal) {
@@ -169,12 +158,9 @@ class StripeWebhookController extends Controller
 
     protected function processEvent($event): Response
     {
-        Log::info('=== PROCESSING WEBHOOK EVENT ===', [
-            'event_type' => $event->type ?? 'unknown',
-            'event_id' => $event->id ?? null,
-            'has_data' => isset($event->data),
-            'has_object' => isset($event->data->object),
-        ]);
+        // Initialize Stripe client for use throughout event processing
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+        $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
         
         switch ($event->type) {
             case 'checkout.session.completed':
@@ -189,9 +175,8 @@ class StripeWebhookController extends Controller
                 // Retrieve the full session from Stripe API with expansions
                 // This ensures we get subscription and customer data even if not in webhook payload
                 try {
-                    $stripe = \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
                     $session = \Stripe\Checkout\Session::retrieve($sessionId, [
-                        'expand' => ['subscription', 'customer', 'subscription.latest_invoice'],
+                        'expand' => ['subscription', 'customer', 'subscription.latest_invoice', 'line_items'],
                     ]);
                 } catch (\Exception $e) {
                     Log::error('Failed to retrieve checkout session from Stripe', [
@@ -215,13 +200,16 @@ class StripeWebhookController extends Controller
                     }
                 }
                 
+                $sessionMode = $session->mode ?? 'subscription'; // Default to subscription for backward compatibility
+                
                 Log::info('Checkout session completed', [
                     'session_id' => $session->id ?? null,
                     'client_reference_id' => $session->client_reference_id ?? null,
                     'metadata' => $metadata,
                     'subscription' => $session->subscription ?? null,
                     'customer' => $session->customer ?? null,
-                    'mode' => $session->mode ?? null,
+                    'mode' => $sessionMode,
+                    'payment_status' => $session->payment_status ?? null,
                 ]);
 
                 // Try to get user from metadata first, then from customer
@@ -245,7 +233,106 @@ class StripeWebhookController extends Controller
                     }
                 }
 
-                // For subscription mode, we need subscription ID
+                // Handle based on checkout mode
+                if ($sessionMode === 'payment') {
+                    // One-time payment mode
+                    if ($user) {
+                        // Retrieve payment intent to get amount and details
+                        $paymentIntentId = $session->payment_intent ?? null;
+                        $amount = null;
+                        $currency = null;
+                        
+                        if ($paymentIntentId) {
+                            try {
+                                $paymentIntent = is_string($paymentIntentId) 
+                                    ? \Stripe\PaymentIntent::retrieve($paymentIntentId)
+                                    : $paymentIntentId;
+                                
+                                $amount = isset($paymentIntent->amount) ? $paymentIntent->amount / 100 : null;
+                                $currency = $paymentIntent->currency ?? null;
+                            } catch (\Exception $e) {
+                                Log::warning('Failed to retrieve payment intent', [
+                                    'payment_intent_id' => $paymentIntentId,
+                                    'error' => $e->getMessage(),
+                                ]);
+                            }
+                        }
+                        
+                        // Extract product/service/plan info from metadata
+                        $productId = $metadata['product_id'] ?? null;
+                        $serviceId = $metadata['service_id'] ?? null;
+                        $planId = $metadata['plan_id'] ?? null;
+                        
+                        // Get price ID and quantity from line items using allLineItems() method
+                        // This ensures we get the actual quantity that was purchased
+                        $priceId = null;
+                        $quantity = 1; // Default to 1
+                        try {
+                            $lineItems = $stripe->checkout->sessions->allLineItems($sessionId, ['limit' => 10]);
+                            
+                            if (count($lineItems->data) > 0) {
+                                $lineItem = $lineItems->data[0];
+                                $priceId = $lineItem->price->id ?? null;
+                                $quantity = isset($lineItem->quantity) ? (int) $lineItem->quantity : 1;
+                            }
+                        } catch (\Exception $e) {
+                            Log::warning('Failed to retrieve line items in webhook for purchase', [
+                                'session_id' => $sessionId,
+                                'error' => $e->getMessage(),
+                            ]);
+                            // Fallback: try to get from expanded line_items if available
+                            if (isset($session->line_items) && isset($session->line_items->data) && count($session->line_items->data) > 0) {
+                                $lineItem = $session->line_items->data[0];
+                                $priceId = $lineItem->price->id ?? null;
+                                $quantity = isset($lineItem->quantity) ? (int) $lineItem->quantity : 1;
+                                
+                                // Using fallback expanded line_items
+                            }
+                        }
+                        
+                        // Create purchase record for one-time payment
+                        try {
+                            $purchase = \App\Models\Purchase::create([
+                                'user_id' => $user->id,
+                                'stripe_payment_intent_id' => is_string($paymentIntentId) ? $paymentIntentId : ($paymentIntentId->id ?? null),
+                                'stripe_session_id' => $session->id,
+                                'stripe_price_id' => $priceId,
+                                'amount' => $amount ?? 0,
+                                'currency' => $currency ?? 'usd',
+                                'status' => 'completed',
+                                'product_id' => $productId ? (int) $productId : null,
+                                'service_id' => $serviceId ? (int) $serviceId : null,
+                                'plan_id' => $planId ? (int) $planId : null,
+                                'quantity' => $quantity, // Use actual quantity from Stripe line item
+                                'metadata' => $metadata,
+                                'purchased_at' => now(),
+                            ]);
+                            
+                            Log::info('One-time payment purchase record created', [
+                                'purchase_id' => $purchase->id,
+                                'user_id' => $user->id,
+                                'amount' => $amount,
+                                'quantity' => $quantity,
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Failed to create purchase record for one-time payment', [
+                                'user_id' => $user->id,
+                                'session_id' => $session->id,
+                                'error' => $e->getMessage(),
+                            ]);
+                        }
+                    } else {
+                        Log::warning('One-time payment completed but user not found', [
+                            'session_id' => $session->id,
+                            'customer_id' => $session->customer ?? null,
+                        ]);
+                    }
+                    
+                    // Return success for one-time payments
+                    return response('One-time payment processed', 200);
+                }
+
+                // Subscription mode handling (existing logic)
                 $subscriptionId = null;
                 if (isset($session->subscription)) {
                     $subscriptionId = is_string($session->subscription) ? $session->subscription : $session->subscription->id ?? null;
@@ -421,7 +508,6 @@ class StripeWebhookController extends Controller
                             'user_id' => $user->id,
                             'subscription_id' => $stripeSubscription->id ?? null,
                             'error' => $e->getMessage(),
-                            'trace' => $e->getTraceAsString(),
                         ]);
                     }
                 } else {
@@ -537,7 +623,7 @@ class StripeWebhookController extends Controller
                         ]);
                     }
                 }
-                // TODO: notify user / downgrade service
+                // Note: User should be notified and service downgraded when subscription is canceled
                 break;
 
             case 'charge.succeeded':
@@ -553,16 +639,123 @@ class StripeWebhookController extends Controller
                 break;
 
             case 'payment_intent.succeeded':
-            case 'payment_intent.created':
                 $paymentIntent = $event->data->object;
-                Log::info('Payment intent event', [
+                Log::info('Payment intent succeeded event', [
                     'payment_intent_id' => $paymentIntent->id,
                     'customer' => $paymentIntent->customer ?? null,
                     'status' => $paymentIntent->status ?? null,
-                    'event_type' => $event->type,
+                    'amount' => $paymentIntent->amount ?? null,
                 ]);
-                // Payment intents are typically part of checkout flow
-                // The actual subscription creation happens via checkout.session.completed
+                
+                // For one-time payments, create purchase record if checkout.session.completed didn't handle it
+                // This is a fallback in case the checkout.session.completed webhook didn't fire or failed
+                if ($paymentIntent->status === 'succeeded' && $paymentIntent->customer) {
+                    $user = User::where('stripe_id', $paymentIntent->customer)->first();
+                    
+                    if ($user) {
+                        // Check if purchase already exists
+                        $existingPurchase = \App\Models\Purchase::where('stripe_payment_intent_id', $paymentIntent->id)->first();
+                        
+                        if (!$existingPurchase) {
+                            // Try to get checkout session from payment intent metadata
+                            $sessionId = $paymentIntent->metadata->checkout_session_id ?? null;
+                            
+                            if ($sessionId) {
+                                try {
+                                    $session = \Stripe\Checkout\Session::retrieve($sessionId, [
+                                        'expand' => ['line_items'],
+                                    ]);
+                                    
+                                    if ($session->mode === 'payment') {
+                                        // Extract metadata
+                                        $metadata = [];
+                                        if (isset($session->metadata)) {
+                                            if (is_object($session->metadata)) {
+                                                $metadataArray = (array) $session->metadata;
+                                                $metadata = array_filter($metadataArray, function($key) {
+                                                    return !str_starts_with($key, "\0*\0");
+                                                }, ARRAY_FILTER_USE_KEY);
+                                            } elseif (is_array($session->metadata)) {
+                                                $metadata = $session->metadata;
+                                            }
+                                        }
+                                        
+                                        $productId = $metadata['product_id'] ?? null;
+                                        $serviceId = $metadata['service_id'] ?? null;
+                                        $planId = $metadata['plan_id'] ?? null;
+                                        
+                                        // Get price ID and quantity from line items using allLineItems() method
+                                        $priceId = null;
+                                        $quantity = 1;
+                                        try {
+                                            $lineItems = $stripe->checkout->sessions->allLineItems($sessionId, ['limit' => 1]);
+                                            if (count($lineItems->data) > 0) {
+                                                $lineItem = $lineItems->data[0];
+                                                $priceId = $lineItem->price->id ?? null;
+                                                $quantity = $lineItem->quantity ?? 1;
+                                            }
+                                        } catch (\Exception $e) {
+                                            Log::warning('Failed to retrieve line items in payment_intent.succeeded fallback', [
+                                                'session_id' => $sessionId,
+                                                'error' => $e->getMessage(),
+                                            ]);
+                                            // Fallback: try to get from expanded line_items if available
+                                            if (isset($session->line_items) && isset($session->line_items->data) && count($session->line_items->data) > 0) {
+                                                $lineItem = $session->line_items->data[0];
+                                                $priceId = $lineItem->price->id ?? null;
+                                                $quantity = $lineItem->quantity ?? 1;
+                                            }
+                                        }
+                                        
+                                        try {
+                                            \App\Models\Purchase::create([
+                                                'user_id' => $user->id,
+                                                'stripe_payment_intent_id' => $paymentIntent->id,
+                                                'stripe_session_id' => $sessionId,
+                                                'stripe_price_id' => $priceId,
+                                                'amount' => ($paymentIntent->amount ?? 0) / 100,
+                                                'currency' => $paymentIntent->currency ?? 'usd',
+                                                'status' => 'completed',
+                                                'product_id' => $productId ? (int) $productId : null,
+                                                'service_id' => $serviceId ? (int) $serviceId : null,
+                                                'plan_id' => $planId ? (int) $planId : null,
+                                                'quantity' => $quantity, // Use actual quantity from Stripe line item
+                                                'metadata' => $metadata,
+                                                'purchased_at' => now(),
+                                            ]);
+                                            
+                                            Log::info('Purchase record created from payment_intent.succeeded fallback', [
+                                                'user_id' => $user->id,
+                                                'quantity' => $quantity,
+                                            ]);
+                                        } catch (\Exception $e) {
+                                            Log::error('Failed to create purchase from payment_intent.succeeded', [
+                                                'user_id' => $user->id,
+                                                'payment_intent_id' => $paymentIntent->id,
+                                                'error' => $e->getMessage(),
+                                            ]);
+                                        }
+                                    }
+                                } catch (\Exception $e) {
+                                    Log::warning('Failed to retrieve session from payment_intent.succeeded', [
+                                        'session_id' => $sessionId,
+                                        'error' => $e->getMessage(),
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+                
+            case 'payment_intent.created':
+                $paymentIntent = $event->data->object;
+                Log::info('Payment intent created event', [
+                    'payment_intent_id' => $paymentIntent->id,
+                    'customer' => $paymentIntent->customer ?? null,
+                    'status' => $paymentIntent->status ?? null,
+                ]);
+                // Just log, don't create purchase until succeeded
                 break;
 
             case 'charge.updated':
@@ -580,9 +773,7 @@ class StripeWebhookController extends Controller
                 ]);
         }
 
-        Log::info('=== WEBHOOK PROCESSED SUCCESSFULLY ===', [
-            'event_type' => $event->type ?? 'unknown',
-        ]);
+        // Webhook processed successfully
         
         return response('Webhook handled', 200);
     }

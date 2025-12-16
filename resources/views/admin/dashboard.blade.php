@@ -655,7 +655,7 @@
                             <i class="fa-solid fa-envelope-circle-check text-cyan-600 text-lg"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-900 mb-1">Newsletter Subscribers</h4>
-                        <p class="text-xs text-gray-600">Manage subscribers</p>
+                        <p class="text-xs text-gray-600">Manage newsletter subscribers</p>
                     </a>
                     <a href="{{ route('admin.reports.index') }}"
                         class="group bg-gray-50 rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col items-center text-center">

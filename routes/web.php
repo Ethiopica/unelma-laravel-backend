@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     // Confirm email verification (user clicks link in email)
     Route::get('verify-user/{link}/confirm', [VerifyUserController::class, 'confirmUser'])->name('verify.confirm');
 
+    // Payment subscription route (Stripe), not newsletter subscription (Unelma Mail)
     Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
 });
 

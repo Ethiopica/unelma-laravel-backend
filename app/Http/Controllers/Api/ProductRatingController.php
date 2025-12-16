@@ -45,13 +45,22 @@ class ProductRatingController extends Controller
                 ], 422);
             }
 
-            // Also accept rating as string and convert
+// Also accept rating as string and convert
             $ratingValue = $request->input('rating');
             if (is_string($ratingValue)) {
                 $ratingValue = (int) $ratingValue;
             }
             
             $request->merge(['rating' => $ratingValue]);
+
+            // Check if user has purchased this product (optional - uncomment to enable)
+            // if (!$user->hasPurchasedProduct($product)) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'You can only rate products you have purchased.',
+            //         'error' => 'purchase_required',
+            //     ], 403);
+            // }
 
             $validated = $request->validate([
                 'rating' => ['required', 'integer', 'min:1', 'max:5'],

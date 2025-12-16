@@ -13,6 +13,7 @@ class Product extends Model
         'description',
         'price',
         'stripe_price_id',
+        'payment_type', // 'subscription', 'one_time', or null (auto-detect from Stripe)
         'image',
         'is_featured',
         'is_active',

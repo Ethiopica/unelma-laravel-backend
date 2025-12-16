@@ -51,9 +51,7 @@ class AuthController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            \Log::error('Registration error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+            \Log::error('Registration error: ' . $e->getMessage());
 
             return response()->json([
                 'error' => 'Registration failed',
@@ -128,15 +126,6 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
-        \Log::info('=== /api/user ENDPOINT CALLED ===', [
-            'has_user' => $request->user() ? true : false,
-            'user_id' => $request->user()?->id,
-            'auth_header' => $request->header('Authorization') ? 'present' : 'missing',
-            'auth_header_preview' => $request->header('Authorization') ? substr($request->header('Authorization'), 0, 20) . '...' : null,
-            'bearer_token' => $request->bearerToken() ? 'present' : 'missing',
-            'all_headers' => $request->headers->all(),
-        ]);
-
         $user = $request->user();
         
         if (!$user) {

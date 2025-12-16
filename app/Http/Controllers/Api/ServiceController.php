@@ -52,9 +52,7 @@ class ServiceController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Services API Error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+            \Log::error('Services API Error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,

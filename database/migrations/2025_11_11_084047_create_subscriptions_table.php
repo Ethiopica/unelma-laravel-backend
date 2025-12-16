@@ -8,6 +8,9 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 
+     * Note: This table stores payment subscriptions (Stripe) for products/services.
+     * This is NOT for newsletter/email subscriptions (those use newsletter_subscribers table).
      */
     public function up(): void
     {

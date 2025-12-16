@@ -342,7 +342,7 @@
                     <h4 class="font-medium text-gray-700">Plan #${planIndex}</h4>
                     <button type="button" class="removePlanBtn text-red-500 hover:text-red-700 text-xl font-bold">&times;</button>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-1">Plan Name *</label>
                         <input type="text" name="plans[${planIndex}][name]" value="${existingData?.name || ''}" placeholder="e.g., Basic, Pro, Enterprise" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">

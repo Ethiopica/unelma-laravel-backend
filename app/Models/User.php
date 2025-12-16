@@ -62,6 +62,46 @@ class User extends Authenticatable
         return $this->hasMany(Favorite::class);
     }
 
+
+    /**
+     * Get all product ratings by this user
+     */
+    public function productRatings(): HasMany
+    {
+        return $this->hasMany(ProductRating::class);
+    }
+
+    /**
+     * Get all one-time purchases by this user
+     */
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    /**
+     * Check if user has purchased a specific product.
+     * 
+     * Note: This checks payment subscriptions (Stripe), not newsletter/email subscriptions (Unelma Mail).
+     * A product is considered purchased if the user has an active payment subscription
+     * with the product's stripe_price_id.
+     */
+    public function hasPurchasedProduct(Product $product): bool
+    {
+        // If product doesn't have a stripe_price_id, it's free or not purchasable
+        if (!$product->stripe_price_id) {
+            return false;
+        }
+
+        // Check if user has any payment subscription (active or completed) with this product's price
+        // Note: subscriptions() is Laravel Cashier's relationship for payment subscriptions
+        return $this->subscriptions()
+            ->where('stripe_price', $product->stripe_price_id)
+            ->whereIn('stripe_status', ['active', 'trialing', 'past_due', 'canceled', 'complete'])
+            ->exists();
+    }
+
+
     public function hasFavorited(string $type, int $itemId): bool
     {
         return $this->favorites()

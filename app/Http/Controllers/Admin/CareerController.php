@@ -35,6 +35,7 @@ class CareerController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
+            'location' => 'required'
         ]);
 
         $service = Career::create($validated);
@@ -60,6 +61,7 @@ class CareerController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
+            'location' => 'required',
         ]);
 
         $carrer->update($validated);
@@ -75,7 +77,6 @@ class CareerController extends Controller
     public function destroy(Career $carrer)
     {
         $carrer->delete();
-
         return redirect()
             ->route('admin.carrers.index')
             ->with('success', 'Job deleted successfully!');

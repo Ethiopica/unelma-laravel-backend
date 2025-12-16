@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 class SubscriptionController extends Controller
 {
     /**
-     * Create a subscription checkout session for the authenticated user.
+     * Create a payment subscription checkout session for the authenticated user.
+     * Note: This is for payment subscriptions (Stripe), not newsletter/email subscriptions (Unelma Mail).
      */
     public function subscribe(Request $request)
     {
