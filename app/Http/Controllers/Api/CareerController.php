@@ -28,6 +28,7 @@ class CareerController extends Controller
             'email' => 'required',
             'CV' => 'required|mimes:pdf|max:10000',
             'cover_letter' => 'required',
+            'career_id' => 'required',
         ]);
         $cv = $apply_data['CV'];
         $cv_name = $cv->getClientOriginalname();
@@ -37,7 +38,7 @@ class CareerController extends Controller
                 [
                     'name' => $request->name,
                     'email' => $request->email,
-                    "career_id" => 2,
+                    "career_id" => $request->career_id,
                     // "career_id" => $request->user()->id,
                     'user_id' => 2,
                     // 'user_id' => $request->user()->id,
