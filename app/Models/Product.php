@@ -22,7 +22,8 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
-        'rating'=>'decimal:1',
+        'rating' => 'decimal:2',
+        'rating_count' => 'integer',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'order' => 'integer',
@@ -61,5 +62,30 @@ class Product extends Model
     public function ratings(): HasMany
     {
         return $this->hasMany(ProductRating::class);
+    }
+
+    /**
+     * Update average rating and count
+     */
+    public function updateAverageRating(): void
+    {
+        // Get fresh count and average from database
+        $stats = ProductRating::where('product_id', $this->id)
+            ->selectRaw('COUNT(*) as count, AVG(rating) as average')
+            ->first();
+        
+        $count = $stats->count ?? 0;
+        $average = $count > 0 ? round($stats->average, 2) : 0;
+        
+        $this->update([
+            'rating' => $average,
+            'rating_count' => $count,
+        ]);
+
+        \Log::info('Product rating updated', [
+            'product_id' => $this->id,
+            'rating' => $average,
+            'rating_count' => $count,
+        ]);
     }
 }

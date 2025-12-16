@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController as ApiBlogController;
 use App\Http\Controllers\Api\BlogCommentController;
-use App\Http\Controllers\Api\CarrerController as ApiCarrerController;
+use App\Http\Controllers\Api\CareerController as ApiCareerController;
 use App\Http\Controllers\Api\CommentController as ApiCommentController;
 use App\Http\Controllers\Api\ContactController as ApiContactController;
 use App\Http\Controllers\Api\ContactMessageController as ApiContactMessageController;
@@ -59,8 +59,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/blogs/{id}/comments', [ApiCommentController::class, 'store']);
 
     // Product Ratings (authenticated)
+    Route::post('/products/rate', [ProductRatingController::class, 'rate']);
+    Route::put('/products/rate', [ProductRatingController::class, 'rate']);  // Also allow PUT for updates
+    Route::patch('/products/rate', [ProductRatingController::class, 'rate']); // Also allow PATCH for updates
     Route::get('/products/{productId}/ratings/mine', [ProductRatingController::class, 'show']);
-    Route::post('/products/{productId}/ratings', [ProductRatingController::class, 'store']);
     Route::delete('/products/{productId}/ratings', [ProductRatingController::class, 'destroy']);
 });
 
@@ -71,6 +73,22 @@ Route::get('/products/featured/list', [ApiProductController::class, 'featured'])
 
 // Public Product Ratings (view ratings)
 Route::get('/products/{productId}/ratings', [ProductRatingController::class, 'index']);
+
+// Debug endpoint to test rating (remove in production)
+Route::post('/products/{productId}/ratings/test', function (Request $request, $productId) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Rating endpoint is reachable',
+        'received' => [
+            'productId' => $productId,
+            'body' => $request->all(),
+            'headers' => [
+                'content_type' => $request->header('Content-Type'),
+                'authorization' => $request->header('Authorization') ? 'present' : 'missing',
+            ],
+        ],
+    ]);
+});
 
 // Public Page Routes
 Route::get('/pages', [ApiPageController::class, 'index']);
@@ -91,7 +109,7 @@ Route::post('/contact/submit', [ApiContactController::class, 'submit']);
 Route::post('/contact', [ApiContactController::class, 'submit']); // Alias for frontend compatibility
 
 // Public Vacancy Routes
-Route::get('/vacancies', [ApiCarrerController::class, 'index']);
+Route::get('/vacancies', [ApiCareerController::class, 'index']);
 
 // Handle successful checkout - process subscription if webhook didn't
 // Note: This route works without auth by finding user from Stripe session

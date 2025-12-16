@@ -208,7 +208,8 @@ class StripeController extends Controller
         ]);
 
         try {
-            $session = $stripe->checkout->sessions->create([
+            // Build checkout session data
+            $sessionData = [
                 'mode' => 'subscription',
                 'customer' => $customer->id,
                 'payment_method_types' => ['card'],
@@ -218,14 +219,21 @@ class StripeController extends Controller
                 ]],
                 'success_url' => $successUrl.'?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => $cancelUrl,
-                'client_reference_id' => $data['product_id'] ?? null,
                 'metadata' => $metadata,
                 'subscription_data' => [
                     'metadata' => array_merge($metadata, [
                         'type' => $subscriptionName,
                     ]),
                 ],
-            ]);
+            ];
+
+            // Only add client_reference_id if we have a valid value
+            $clientReferenceId = $resolvedProductId ?? $resolvedServiceId ?? $resolvedPlanId;
+            if ($clientReferenceId) {
+                $sessionData['client_reference_id'] = $clientReferenceId;
+            }
+
+            $session = $stripe->checkout->sessions->create($sessionData);
 
             Log::info('Stripe checkout session created', [
                 'session_id' => $session->id,

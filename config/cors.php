@@ -21,13 +21,20 @@ return [
 
     'allowed_origins' => [
         'http://localhost:3000',
+        'http://localhost:3001',
         'http://localhost:5173',
         'http://localhost:5174',
+        'http://localhost:8080',
         'http://127.0.0.1:3000',
         'http://127.0.0.1:5173',
+        env('FRONTEND_URL', 'http://localhost:3000'),
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https?://.*\.vercel\.app$#',      // Vercel deployments
+        '#^https?://.*\.netlify\.app$#',     // Netlify deployments
+        '#^https?://localhost:\d+$#',         // Any localhost port
+    ],
 
     'allowed_headers' => ['*'],
 

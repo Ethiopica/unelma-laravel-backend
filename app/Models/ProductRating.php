@@ -30,10 +30,10 @@ class ProductRating extends Model
     }
 
     /**
-     * Get the user who rated (includes name and profile_picture)
+     * Get the user who rated
      */
     public function user()
     {
-        return $this->belongsTo(User::class)->select(['id', 'name', 'profile_picture']);
+        return $this->belongsTo(User::class);
     }
 }

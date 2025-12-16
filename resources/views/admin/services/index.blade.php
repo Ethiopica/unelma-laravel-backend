@@ -76,7 +76,7 @@
                         <!-- Service Info -->
                         <div class="p-5">
                             <!-- Badges -->
-                            <div class="flex items-center space-x-2 mb-3">
+                            <div class="flex flex-wrap items-center gap-2 mb-3">
                                 @if ($service->is_featured)
                                     <span
                                         class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
@@ -93,6 +93,28 @@
                                         class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">
                                         Inactive
                                     </span>
+                                @endif
+                                @php
+                                    $plans = $service->getPlansSafely();
+                                    $connectedPlans = $plans->filter(fn($p) => !empty($p->stripe_price_id))->count();
+                                    $totalPlans = $plans->count();
+                                @endphp
+                                @if ($totalPlans > 0)
+                                    @if ($connectedPlans === $totalPlans)
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full flex items-center gap-1">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/>
+                                            </svg>
+                                            {{ $connectedPlans }}/{{ $totalPlans }} Plans
+                                        </span>
+                                    @else
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full flex items-center gap-1">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/>
+                                            </svg>
+                                            {{ $connectedPlans }}/{{ $totalPlans }} Plans
+                                        </span>
+                                    @endif
                                 @endif
                             </div>
 
@@ -145,7 +167,16 @@
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mt-8">
+            @php
+                $totalPlansCount = 0;
+                $connectedPlansCount = 0;
+                foreach ($services as $s) {
+                    $servicePlans = $s->getPlansSafely();
+                    $totalPlansCount += $servicePlans->count();
+                    $connectedPlansCount += $servicePlans->filter(fn($p) => !empty($p->stripe_price_id))->count();
+                }
+            @endphp
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-6 mt-8">
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -192,6 +223,22 @@
                                 <path
                                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
                                 </path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium uppercase">Stripe Connected</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-2">
+                                {{ $connectedPlansCount }}/{{ $totalPlansCount }}</p>
+                            <p class="text-xs text-gray-500">plans</p>
+                        </div>
+                        <div class="bg-purple-100 rounded-full p-3">
+                            <svg class="w-8 h-8 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/>
                             </svg>
                         </div>
                     </div>

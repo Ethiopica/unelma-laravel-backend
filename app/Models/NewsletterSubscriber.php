@@ -45,3 +45,16 @@ class NewsletterSubscriber extends Model
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+

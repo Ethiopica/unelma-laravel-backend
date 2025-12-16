@@ -133,6 +133,17 @@ class UserSeeder extends Seeder
                 'created_at' => '2025-11-10 18:25:59',
                 'updated_at' => '2025-11-10 18:25:59',
             ],
+            [
+                'name' => 'Elio Bais',
+                'email' => 'eliobais@gmail.com',
+                'password' => bcrypt('elio123'),
+                'is_admin' => true,
+                'role' => 'admin',
+                "profile_picture" => 'profile_pictures/photo1.jpg',
+
+                'created_at' => '2025-11-11 10:00:00',
+                'updated_at' => '2025-11-11 10:00:00',
+            ],
         ];
         User::insert($data);
     }
