@@ -19,7 +19,7 @@ use App\Http\Controllers\Admin\UserController;
 
 use App\Http\Controllers\Admin\VerifyUserController;
 use App\Http\Controllers\ContactController;
-
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -176,3 +176,5 @@ Route::get('/webhook/stripe', function () {
         'message' => 'Stripe webhook endpoint ready. Use POST for event delivery.',
     ]);
 });
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index']);

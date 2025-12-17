@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Career;
-use App\Models\career;
 use Illuminate\Http\Request;
 
 class CareerController extends Controller
