@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Career;
-use App\Models\Carrer;
+use App\Models\career;
 use Illuminate\Http\Request;
 
 class CareerController extends Controller
@@ -14,9 +14,9 @@ class CareerController extends Controller
      */
     public function index()
     {
-        $carrers = Career::all();
+        $careers = Career::all();
 
-        return view('admin.carrers.index', compact('carrers'));
+        return view('admin.careers.index', compact('careers'));
     }
 
     /**
@@ -24,7 +24,7 @@ class CareerController extends Controller
      */
     public function create()
     {
-        return view('admin.carrers.create');
+        return view('admin.careers.create');
     }
 
     /**
@@ -41,22 +41,22 @@ class CareerController extends Controller
         $service = Career::create($validated);
 
         return redirect()
-            ->route('admin.carrers.index')
+            ->route('admin.careers.index')
             ->with('success', 'Job created successfully!');
     }
 
     /**
      * Show the form for editing a service
      */
-    public function edit(Career $carrer)
+    public function edit(Career $career)
     {
-        return view('admin.carrers.edit', compact('carrer'));
+        return view('admin.careers.edit', compact('career'));
     }
 
     /**
      * Update the specified service
      */
-    public function update(Request $request, Career $carrer)
+    public function update(Request $request, Career $career)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -64,21 +64,21 @@ class CareerController extends Controller
             'location' => 'required',
         ]);
 
-        $carrer->update($validated);
+        $career->update($validated);
 
         return redirect()
-            ->route('admin.carrers.index')
+            ->route('admin.careers.index')
             ->with('success', 'Job updated successfully!');
     }
 
     /**
      * Remove the specified service
      */
-    public function destroy(Career $carrer)
+    public function destroy(Career $career)
     {
-        $carrer->delete();
+        $career->delete();
         return redirect()
-            ->route('admin.carrers.index')
+            ->route('admin.careers.index')
             ->with('success', 'Job deleted successfully!');
     }
 }

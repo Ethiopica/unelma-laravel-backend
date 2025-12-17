@@ -118,7 +118,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/ratings/{rating}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 
         // Job Management
-        Route::resource('carrers', CareerController::class)->except(['show']);
+        Route::resource('careers', CareerController::class)->except(['show']);
 
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');

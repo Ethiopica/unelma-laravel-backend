@@ -50,10 +50,10 @@
             <p class="px-3 text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
                 Manage
             </p>
-            <a href="{{ route('admin.carrers.index') }}"
-                class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.carrers.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
+            <a href="{{ route('admin.careers.index') }}"
+                class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.careers.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
                 <div
-                    class="w-8 h-8 rounded-lg flex items-center justify-center @if (request()->routeIs('admin.carrers.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif transition-all">
+                    class="w-8 h-8 rounded-lg flex items-center justify-center @if (request()->routeIs('admin.careers.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif transition-all">
                     <i class="fa-solid fa-briefcase text-sm"></i>
                 </div>
                 Vacancies & Careers

@@ -8,7 +8,7 @@
             <div class="flex items-center space-x-2 text-sm text-gray-600 mb-2">
                 <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-900">Dashboard</a>
                 <span>/</span>
-                <a href="{{ route('admin.carrers.index') }}" class="hover:text-gray-900">Vacancies</a>
+                <a href="{{ route('admin.careers.index') }}" class="hover:text-gray-900">Vacancies</a>
                 <span>/</span>
                 <span class="text-gray-900">Create</span>
             </div>
@@ -18,7 +18,7 @@
 
         <!-- Form Card -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
-            <form method="POST" action="{{ route('admin.carrers.store') }}">
+            <form method="POST" action="{{ route('admin.careers.store') }}">
                 @csrf
                 <!-- Vacancy Name -->
                 <div class="mb-6">
@@ -80,7 +80,7 @@
                 <!-- Form Actions -->
                 <div
                     class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-4 pt-6 border-t">
-                    <a href="{{ route('admin.carrers.index') }}"
+                    <a href="{{ route('admin.careers.index') }}"
                         class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                         Cancel
                     </a>

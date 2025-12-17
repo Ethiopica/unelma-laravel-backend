@@ -8,9 +8,9 @@
             <div class="flex items-center space-x-2 text-sm text-gray-600 mb-2">
                 <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-900">Dashboard</a>
                 <span>/</span>
-                <a href="{{ route('admin.carrers.index') }}" class="hover:text-gray-900">Vacancies</a>
+                <a href="{{ route('admin.careers.index') }}" class="hover:text-gray-900">Vacancies</a>
                 <span>/</span>
-                <span class="text-gray-900">Edit: {{ $carrer->name }}</span>
+                <span class="text-gray-900">Edit: {{ $career->name }}</span>
             </div>
             <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Edit Vacancy</h1>
             <p class="text-sm sm:text-base text-gray-600 mt-1">Update vacancy information and settings</p>
@@ -18,7 +18,7 @@
 
         <!-- Form Card -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
-            <form method="POST" action="{{ route('admin.carrers.update', $carrer) }}">
+            <form method="POST" action="{{ route('admin.careers.update', $career) }}">
                 @csrf
                 @method('PUT')
 
@@ -27,7 +27,7 @@
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                         Vacancy Name <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" id="name" name="name" value="{{ old('name', $carrer->name) }}"
+                    <input type="text" id="name" name="name" value="{{ old('name', $career->name) }}"
                         required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('name') border-red-500 @enderror"
                         placeholder="e.g., Full Stack Developer">
@@ -43,7 +43,7 @@
                     </label>
                     <textarea id="description" name="description" rows="4"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
-                        placeholder="Describe the role responsibility...">{{ old('description', $carrer->description) }}</textarea>
+                        placeholder="Describe the role responsibility...">{{ old('description', $career->description) }}</textarea>
                     @error('description')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -56,7 +56,7 @@
                     <input type='text' type id="description" name="location"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('location') border-red-500 @enderror"
                         placeholder="Describe the location separeted by comma e.g: Helsinki, Tampere, ... responsibility..."
-                        value="{{ old('location', $carrer->location) }}" />
+                        value="{{ old('location', $career->location) }}" />
                     @error('location')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -71,7 +71,7 @@
                         <label for="order" class="block text-sm font-medium text-gray-700 mb-2">
                             Display Order
                         </label>
-                        <input type="number" id="order" name="order" value="{{ old('order', $carrer->order) }}"
+                        <input type="number" id="order" name="order" value="{{ old('order', $career->order) }}"
                             min="0"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('order') border-red-500 @enderror"
                             placeholder="0">
@@ -88,12 +88,12 @@
                         <div>
                             <p class="text-gray-600">Created:</p>
                             <p class="font-medium text-gray-900">
-                                {{ $carrer->created_at->format('M d, Y \a\t h:i A') }}</p>
+                                {{ $career->created_at->format('M d, Y \a\t h:i A') }}</p>
                         </div>
                         <div>
                             <p class="text-gray-600">Last Updated:</p>
                             <p class="font-medium text-gray-900">
-                                {{ $carrer->updated_at->format('M d, Y \a\t h:i A') }}</p>
+                                {{ $career->updated_at->format('M d, Y \a\t h:i A') }}</p>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                 <!-- Form Actions -->
                 <div
                     class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-4 pt-6 border-t">
-                    <a href="{{ route('admin.carrers.index') }}"
+                    <a href="{{ route('admin.careers.index') }}"
                         class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                         Cancel
                     </a>

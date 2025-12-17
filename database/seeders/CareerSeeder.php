@@ -3,17 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\Career;
-use App\Models\Carrer;
 use Illuminate\Database\Seeder;
 
-class CarrerSeeder extends Seeder
+class CareerSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $carrers = [
+        $careers = [
             [
                 'name' => 'Software Engineer',
                 'description' => '👋 About Us:\nWe are a fast-growing tech company powered by coffee, Wi-Fi, and occasional panic before deadlines. We believe in clean code, messy whiteboards, and the idea that every bug is just a misunderstood feature.\n\n💼 What You Will Do:\nAs a Software Engineer, you will heroically battle bugs, wrestle with APIs, and argue politely with your compiler. You will design, develop, test, deploy, break, fix, and re-fix software applications for web, mobile, and backend platforms. You will collaborate with designers who love colors, product managers who love deadlines, and other developers who love semicolons.\n\n🧠 What We Expect:\nWe expect you to write clean, efficient, and readable code that future you (and future teammates) will not hate. You will review code, optimize performance, refactor legacy code written by someone who has clearly left the company, and occasionally explain to non-technical people why “just a small change” takes three days.\n\n🛠 What You Need:\nExperience with modern programming languages, frameworks, Git, debugging skills, and the emotional strength to handle merge conflicts. Ability to Google efficiently is considered a superpower.\n\n🎁 What You Get:\nCompetitive salary, flexible working hours, remote-friendly culture, learning opportunities, and the satisfaction of seeing your code work (sometimes).\n\n📩 How to Apply:\nFill out the form below and send us your CV and cover letter. Bonus points if your cover letter includes a joke about JavaScript.',
@@ -60,6 +59,6 @@ class CarrerSeeder extends Seeder
         ];
 
 
-        Career::insert($carrers);
+        Career::insert($careers);
     }
 }

@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PageSeeder::class,
             ContactMessageSeeder::class,
-            CarrerSeeder::class,
+            careerSeeder::class,
             ProductSeeder::class,
             BlogSeeder::class,
             ServiceSeeder::class,
