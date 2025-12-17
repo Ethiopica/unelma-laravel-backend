@@ -92,13 +92,23 @@ class User extends Authenticatable
         if (!$product->stripe_price_id) {
             return false;
         }
+         // Check **one-time purchases**
+        $oneTime = $this->purchases()
+        ->where('stripe_price_id', $product->stripe_price_id)
+        ->where('status', 'completed')
+        ->exists();
 
+        // Check **subscriptions** if needed
         // Check if user has any payment subscription (active or completed) with this product's price
         // Note: subscriptions() is Laravel Cashier's relationship for payment subscriptions
-        return $this->subscriptions()
+        $subscription = $this->subscriptions()
             ->where('stripe_price', $product->stripe_price_id)
             ->whereIn('stripe_status', ['active', 'trialing', 'past_due', 'canceled', 'complete'])
             ->exists();
+
+        return $oneTime || $subscription;
+        
+       
     }
 
 

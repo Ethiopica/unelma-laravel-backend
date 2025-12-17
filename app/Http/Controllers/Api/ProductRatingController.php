@@ -53,14 +53,7 @@ class ProductRatingController extends Controller
             
             $request->merge(['rating' => $ratingValue]);
 
-            // Check if user has purchased this product (optional - uncomment to enable)
-            // if (!$user->hasPurchasedProduct($product)) {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'You can only rate products you have purchased.',
-            //         'error' => 'purchase_required',
-            //     ], 403);
-            // }
+            
 
             $validated = $request->validate([
                 'rating' => ['required', 'integer', 'min:1', 'max:5'],
@@ -83,6 +76,15 @@ class ProductRatingController extends Controller
                     'success' => false,
                     'message' => 'Authentication required',
                 ], 401);
+            }
+
+            // Check if user has purchased this product (optional - uncomment to enable)
+            if (!$user->hasPurchasedProduct($product)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You can only rate products you have purchased.',
+                    'error' => 'purchase_required',
+                ], 403);
             }
 
             Log::info('Rating submission attempt', [
