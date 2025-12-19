@@ -25,7 +25,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    try {
+        return view('welcome');
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ], 500);
+    }
+});
+
+// Simple test route
+Route::get('/test', function () {
+    return response()->json(['status' => 'ok', 'message' => 'Laravel is working!']);
 });
 
 // Email Verification Routes
