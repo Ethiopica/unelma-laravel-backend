@@ -25,26 +25,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    try {
-        return view('welcome');
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-        ], 500);
-    }
+    return view('welcome');
 });
-
-// Simple test route
-Route::get('/test', function () {
-    return response()->json(['status' => 'ok', 'message' => 'Laravel is working!']);
-});
-
-// Raw test without middleware
-Route::get('/raw-test', function () {
-    return 'OK';
-})->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
 
 // Email Verification Routes
 Route::middleware('auth')->group(function () {
