@@ -62,6 +62,23 @@ Route::get('/debug-db', function () {
     ]);
 });
 
+// Check if migrations ran
+Route::get('/debug-tables', function () {
+    try {
+        $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
+        return response()->json([
+            'status' => 'ok',
+            'tables' => $tables,
+            'count' => count($tables),
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ]);
+    }
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);
