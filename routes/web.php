@@ -41,6 +41,11 @@ Route::get('/test', function () {
     return response()->json(['status' => 'ok', 'message' => 'Laravel is working!']);
 });
 
+// Raw test without middleware
+Route::get('/raw-test', function () {
+    return 'OK';
+})->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+
 // Email Verification Routes
 Route::middleware('auth')->group(function () {
 

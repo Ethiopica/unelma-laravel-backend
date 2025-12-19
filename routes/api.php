@@ -79,6 +79,19 @@ Route::get('/debug-tables', function () {
     }
 });
 
+// Full debug
+Route::get('/debug-full', function () {
+    return response()->json([
+        'app_key_set' => env('APP_KEY') ? 'YES' : 'NO',
+        'app_env' => env('APP_ENV'),
+        'app_debug' => env('APP_DEBUG'),
+        'session_driver' => config('session.driver'),
+        'cache_driver' => config('cache.default'),
+        'queue_connection' => config('queue.default'),
+        'app_url' => config('app.url'),
+    ]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);
