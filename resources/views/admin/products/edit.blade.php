@@ -35,15 +35,28 @@
                     @enderror
                 </div>
 
-                <!-- Description -->
+                <!-- Product category -->
                 <div class="mb-6">
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                        Description
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                        Category
                     </label>
-                    <textarea id="description" name="description" rows="4"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
-                        placeholder="Describe your product features and benefits...">{{ old('description', $product->description) }}</textarea>
-                    @error('description')
+                    <input type="text" id="category" name="category" value="{{ old('category',$product->category) }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category') border-red-500 @enderror"
+                        placeholder="e.g., Open source">
+                    @error('category')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <!-- Product sku -->
+                <div class="mb-6">
+                    <label for="sku" class="block text-sm font-medium text-gray-700 mb-2">
+                        Sku <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="sku" name="sku" value="{{ old('sku',$product->sku) }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('sku') border-red-500 @enderror"
+                        placeholder="e.g., 123456_UnelmaPlatforms_OpenSource">
+                    @error('sku')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -65,16 +78,88 @@
                     @enderror
                 </div>
 
+                <!-- Stripe Price ID -->
+                <div class="mb-6">
+                    <label for="stripe_price_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Stripe Price ID <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="stripe_price_id" name="stripe_price_id" value="{{ old('stripe_price_id', $product->stripe_price_id) }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('stripe_price_id') border-red-500 @enderror"
+                        placeholder="e.g., price_1SZtv4Jg4Qxq8pC4yT9kDMrG">
+                    @error('stripe_price_id')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-sm text-gray-500">Required for checkout functionality. Get this from your Stripe Dashboard → Products → Prices</p>
+                </div>
+
+                <!-- Payment Type -->
+                <div class="mb-6">
+                    <label for="payment_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Payment Type
+                    </label>
+                    <select id="payment_type" name="payment_type"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('payment_type') border-red-500 @enderror">
+                        <option value="">Auto-detect from Stripe (default)</option>
+                        <option value="subscription" {{ old('payment_type', $product->payment_type) === 'subscription' ? 'selected' : '' }}>Subscription (Recurring)</option>
+                        <option value="one_time" {{ old('payment_type', $product->payment_type) === 'one_time' ? 'selected' : '' }}>One-Time Payment</option>
+                    </select>
+                    @error('payment_type')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-sm text-gray-500">Explicitly set payment type, or leave empty to auto-detect from Stripe price type</p>
+                </div>
+
+                <!-- Highlights -->
+                <div class="mb-6">
+                    <label for="highlights" class="block text-sm font-medium text-gray-700 mb-2">
+                        Highlights
+                    </label>
+                    <textarea id="highlights" name="highlights" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                        placeholder="Product highlights...">{{ old('highlights',$product->highlights) }}</textarea>
+                    @error('highlights')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                    </label>
+                    <textarea id="description" name="description" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                        placeholder="Describe your product features and benefits...">{{ old('description', $product->description) }}</textarea>
+                    @error('description')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                
+                <!-- Rating -->
+                <div class="mb-6">
+                    <label for="rating" class="block text-sm font-medium text-gray-700 mb-2">
+                        Rating 
+                    </label>
+                    <input type="number" id="rating" name="rating" value="{{ old('rating',$product->rating) }}" step="0.01" min="0" max="5"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('rating') border-red-500 @enderror"
+                    placeholder="0">
+                 
+                    @error('rating')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Product Image -->
                 <div class="mb-6">
                     <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
                         Product Image
                     </label>
 
-                    @if ($product->image)
+                    @if ($product->image_local_url || $product->image)
                         <div class="mb-4">
                             <p class="text-sm text-gray-600 mb-2">Current Image:</p>
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                            <img src="{{ $product->image_local_url ?? '/storage/' . $product->image }}" alt="{{ $product->name }}"
                                 class="w-48 h-32 object-cover rounded border-2 border-gray-300">
                         </div>
                     @endif
@@ -89,6 +174,27 @@
                         {{ $product->image ? 'Upload a new image to replace the current one. ' : '' }}
                         Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB
                     </p>
+                </div>
+
+                <!--Product Image Url -->
+                <div class="mb-6">
+                    <label for="image_url" class="block text-sm font-medium text-gray-700 mb-2">
+                       Or Image Url
+                    </label>
+                    @if ($product->image_url)
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2">Current Image:</p>
+                            <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->name }}"
+                                class="w-48 h-32 object-cover rounded border-2 border-gray-300">
+                        </div>
+                    @endif
+                    <input type="text" id="image_url" name="image_url" value="{{ old('image_url',$product->image_url) }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image_url') border-red-500 @enderror"
+                        placeholder="e.g., https://www.example.com/images/product1.jpg">
+                    @error('image_url')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    
                 </div>
 
                 <!-- Settings Section -->

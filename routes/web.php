@@ -2,20 +2,24 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BlogController;
-use App\Http\Controllers\Admin\CarrerController;
+use App\Http\Controllers\Admin\CareerController;
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MailSubscriberController;
+use App\Http\Controllers\Admin\FavoriteController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\StripeController as AdminStripeController;
 use App\Http\Controllers\Admin\UserController;
 
 use App\Http\Controllers\Admin\VerifyUserController;
 use App\Http\Controllers\ContactController;
-
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -25,6 +29,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Default login route - redirects to admin login
+// This is required for Laravel's auth middleware
+Route::get('/login', function () {
+    return redirect()->route('admin.login');
+})->name('login');
 
 // Email Verification Routes
 Route::middleware('auth')->group(function () {
@@ -45,9 +55,13 @@ Route::middleware('auth')->group(function () {
         return back()->with('success', 'Verification link sent!');
     })->middleware(['throttle:6,1'])->name('verification.send');
 
-    Route::get('verify-user/{link?}', [VerifyUserController::class, 'verifyUser'])->name('verify.user');
-    Route::get('verify-user/{link}/confirm', [VerifyUserController::class, 'confirmUser'])->name('verify.user');
+    // Send verification email (user clicks "Verify Email" button)
+    Route::get('send-verification-email', [VerifyUserController::class, 'sendVerificationEmail'])->name('verify.send');
+    
+    // Confirm email verification (user clicks link in email)
+    Route::get('verify-user/{link}/confirm', [VerifyUserController::class, 'confirmUser'])->name('verify.confirm');
 
+    // Payment subscription route (Stripe), not newsletter subscription (Unelma Mail)
     Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
 });
 
@@ -81,6 +95,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
             return \App\Models\Blog::where('slug', $value)->firstOrFail();
         });
         Route::resource('blogs', BlogController::class)->except(['show']);
+
+
+        // comments for blog
+        Route::get('/blogs/{blog}/comments', [CommentController::class, 'showByBlog'])->name('blogs.comments');
+
+        // Delete a comment
+        Route::delete('/admin/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
         // Product Management
         Route::resource('products', AdminProductController::class)->except(['show']);
 
@@ -90,9 +112,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
         Route::get('/subscribers', [MailSubscriberController::class, 'index'])->name('subscribers.index');
+        Route::delete('/subscribers/{subscriberUid}', [MailSubscriberController::class, 'destroy'])->name('subscribers.destroy');
+        Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+        Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
+        Route::delete('/ratings/{rating}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 
         // Job Management
-        Route::resource('carrers', CarrerController::class)->except(['show']);
+        Route::resource('careers', CareerController::class)->except(['show']);
 
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
@@ -107,6 +133,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Reports
         Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportsController::class, 'export'])->name('reports.export');
+
+        // Stripe Management
+        Route::prefix('stripe')->name('stripe.')->group(function () {
+            Route::get('/prices', [AdminStripeController::class, 'getPrices'])->name('prices');
+            Route::get('/products', [AdminStripeController::class, 'getProducts'])->name('products');
+            Route::post('/create-product-price', [AdminStripeController::class, 'createProductWithPrice'])->name('create-product-price');
+            Route::post('/validate-price', [AdminStripeController::class, 'validatePriceId'])->name('validate-price');
+        });
     });
 });
 
@@ -126,8 +160,21 @@ Route::get('/checkout/cancel', function () {
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
     ->name('stripe.webhook');
 
+// Alternative webhook route for Stripe CLI/Shell compatibility
+Route::post('/webhook/stripe', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook.alternative');
+
+// GET routes for webhook endpoint verification
 Route::get('/stripe/webhook', function () {
     return response()->json([
         'message' => 'Stripe webhook endpoint ready. Use POST for event delivery.',
     ]);
 });
+
+Route::get('/webhook/stripe', function () {
+    return response()->json([
+        'message' => 'Stripe webhook endpoint ready. Use POST for event delivery.',
+    ]);
+});
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index']);

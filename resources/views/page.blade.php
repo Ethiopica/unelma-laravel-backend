@@ -182,10 +182,13 @@
                         @foreach($products as $product)
                             <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-2xl">
                                 <!-- Product Image -->
-                                @if($product->image)
+                                @php
+                                    $productImage = $product->image_local_url ?? ($product->image ? '/storage/' . $product->image : null);
+                                @endphp
+                                @if($productImage)
                                     <div class="h-64 overflow-hidden bg-gray-200">
                                         <img 
-                                            src="{{ asset('storage/' . $product->image) }}" 
+                                            src="{{ $productImage }}" 
                                             alt="{{ $product->name }}"
                                             class="w-full h-full object-cover"
                                         >

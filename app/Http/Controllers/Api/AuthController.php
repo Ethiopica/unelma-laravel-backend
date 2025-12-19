@@ -43,6 +43,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'is_admin' => $user->is_admin,
+                    'profile_picture' => $user->profile_picture_url,
                     'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
                 ],
                 'token' => $token,
@@ -50,9 +51,7 @@ class AuthController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            \Log::error('Registration error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+            \Log::error('Registration error: ' . $e->getMessage());
 
             return response()->json([
                 'error' => 'Registration failed',
@@ -69,7 +68,8 @@ class AuthController extends Controller
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-            'remember' => ['boolean']
+            'remember'=>['boolean']
+
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -84,10 +84,12 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         // Create new token
-        // Token expiration based on "remember me"
-        $expiresAt = $request->boolean('remember')
-            ? now()->addWeeks(2)
-            : now()->addHours(2);
+        // $token = $user->createToken('auth-token')->plainTextToken;
+
+         // Token expiration based on "remember me"
+         $expiresAt = $request->boolean('remember') 
+         ? now()->addWeeks(2)
+         : now()->addHours(2);
 
         $tokenResult = $user->createToken('auth-token', [], $expiresAt);
         $token = $tokenResult->plainTextToken;
@@ -99,6 +101,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
+                'profile_picture' => $user->profile_picture_url,
                 'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
             ],
             'token' => $token,
@@ -124,6 +127,13 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         $user = $request->user();
+        
+        if (!$user) {
+            \Log::warning('User endpoint called without authentication', [
+                'auth_header' => $request->header('Authorization'),
+                'bearer_token' => $request->bearerToken(),
+            ]);
+        }
 
         return response()->json([
             'user' => [
@@ -131,6 +141,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
+                'profile_picture' => $user->profile_picture_url,
                 'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
                 'updated_at' => $user->updated_at?->toISOString() ?? $user->updated_at,
             ],
@@ -241,6 +252,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
+                'profile_picture' => $user->profile_picture_url,
                 'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
             ],
             'token' => $token,

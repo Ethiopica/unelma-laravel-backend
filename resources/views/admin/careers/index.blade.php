@@ -19,9 +19,9 @@
                         <p class="text-sm sm:text-base text-gray-600 mt-1">Manage your employee hiring</p>
                     </div>
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                        <a href="{{ route('admin.carrers.create') }}"
-                            class="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            <i class="fa-solid fa-plus text-xs"></i>
+                        <a href="{{ route('admin.careers.create') }}"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/90 px-5 py-3 text-indigo-700 font-semibold hover:bg-white transition">
+                            <i class="fa-solid fa-plus"></i>
                             <span>Add New Vacancy</span>
                         </a>
                     </div>
@@ -47,7 +47,7 @@
                     </div>
                 @endif
 
-                @if ($carrers->count() > 0)
+                @if ($careers->count() > 0)
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                         <!-- Header with Icon - Mobile First -->
                         <div
@@ -67,27 +67,27 @@
 
                         <!-- Desktop Grid View -->
                         <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 sm:p-6">
-                            @foreach ($carrers as $carrer)
+                            @foreach ($careers as $career)
                                 <div
                                     class="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition duration-200">
                                     <!-- Vacancy Name -->
-                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $carrer->name }}</h3>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $career->name }}</h3>
 
                                     <!-- Description -->
-                                    @if ($carrer->description)
+                                    @if ($career->description)
                                         <p class="text-sm text-gray-600 mb-4 line-clamp-3">
-                                            {{ $carrer->description }}
+                                            {{ $career->description }}
                                         </p>
                                     @endif
 
                                     <!-- Actions -->
                                     <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                                        <a href="{{ route('admin.carrers.edit', $carrer) }}"
+                                        <a href="{{ route('admin.careers.edit', $career) }}"
                                             class="inline-flex items-center rounded-md border border-blue-200 px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-50">
                                             <i class="fa-solid fa-edit mr-1"></i>
                                             Edit
                                         </a>
-                                        <form method="POST" action="{{ route('admin.carrers.destroy', $carrer) }}"
+                                        <form method="POST" action="{{ route('admin.careers.destroy', $career) }}"
                                             class="inline"
                                             onsubmit="return confirm('Are you sure you want to delete this Job?');">
                                             @csrf
@@ -105,26 +105,26 @@
 
                         <!-- Mobile Card View -->
                         <div class="md:hidden divide-y divide-gray-200">
-                            @foreach ($carrers as $carrer)
+                            @foreach ($careers as $career)
                                 <div class="p-4 space-y-3">
                                     <!-- Vacancy Info -->
                                     <div>
-                                        <h3 class="text-base font-semibold text-gray-900 mb-2">{{ $carrer->name }}</h3>
-                                        @if ($carrer->description)
+                                        <h3 class="text-base font-semibold text-gray-900 mb-2">{{ $career->name }}</h3>
+                                        @if ($career->description)
                                             <p class="text-sm text-gray-600 line-clamp-3">
-                                                {{ $carrer->description }}
+                                                {{ $career->description }}
                                             </p>
                                         @endif
                                     </div>
 
                                     <!-- Actions -->
                                     <div class="flex flex-col gap-2 pt-2">
-                                        <a href="{{ route('admin.carrers.edit', $carrer) }}"
+                                        <a href="{{ route('admin.careers.edit', $career) }}"
                                             class="w-full inline-flex items-center justify-center gap-2 rounded-md border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-50">
                                             <i class="fa-solid fa-edit"></i>
                                             Edit Vacancy
                                         </a>
-                                        <form method="POST" action="{{ route('admin.carrers.destroy', $carrer) }}"
+                                        <form method="POST" action="{{ route('admin.careers.destroy', $career) }}"
                                             onsubmit="return confirm('Are you sure you want to delete this Job?');">
                                             @csrf
                                             @method('DELETE')
@@ -150,9 +150,9 @@
                                 <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No Vacancies Yet</h3>
                                 <p class="text-sm text-gray-500 mb-6">Start by creating your first job opening</p>
                             </div>
-                            <a href="{{ route('admin.carrers.create') }}"
-                                class="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                <i class="fa-solid fa-plus text-xs"></i>
+                            <a href="{{ route('admin.careers.create') }}"
+                                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/90 px-5 py-3 text-indigo-700 font-semibold hover:bg-white transition">
+                                <i class="fa-solid fa-plus"></i>
                                 <span>Create First Vacancy</span>
                             </a>
                         </div>

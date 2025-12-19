@@ -89,7 +89,15 @@
             <!-- Service Image -->
             <div class="h-full">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
-                    @if($service->image_url)
+                    @if($service->image)
+                        <div class="w-full flex-1">
+                            <img 
+                                src="{{ $service->image }}" 
+                                alt="{{ $service->name }}"
+                                class="w-full h-full object-cover"
+                            >
+                        </div>
+                    @elseif($service->image_url)
                         <div class="w-full flex-1">
                             <img 
                                 src="{{ $service->image_url }}" 

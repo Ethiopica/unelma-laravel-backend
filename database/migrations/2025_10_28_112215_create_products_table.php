@@ -14,10 +14,14 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->string('category')->nullable();
             $table->decimal('price', 10, 2);
+            $table->string('sku');
+            $table->text('highlights')->nullable();
+            $table->text('description')->nullable();
+            $table->decimal('rating', 2, 1)->nullable();
             $table->string('image')->nullable();
-            $table->string('image_url')->nullable();
+            $table->text('image_url')->nullable();
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_active')->default(true);
             $table->integer('order')->default(0);

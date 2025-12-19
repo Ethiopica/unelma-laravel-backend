@@ -21,6 +21,7 @@ class Blog extends Model
         'is_published',
         'published_at',
         'views',
+        'favorite_count',
         'meta_title',
         'meta_description',
         'meta_keywords',
@@ -32,6 +33,7 @@ class Blog extends Model
         'is_published' => 'boolean',
         'published_at' => 'datetime',
         'views' => 'integer',
+        'favorite_count' => 'integer',
         'order' => 'integer',
     ];
 
@@ -70,9 +72,10 @@ class Blog extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
+    // All comments for this blog
     public function comments(): HasMany
     {
-        return $this->hasMany(BlogComment::class)->latest();
+        return $this->hasMany(Comment::class)->latest();
     }
 
     /**
@@ -101,9 +104,9 @@ class Blog extends Model
                 return null;
             }
 
-            return asset('storage/'.$this->featured_image);
+            return asset('storage/' . $this->featured_image);
         } catch (\Exception $e) {
-            \Log::warning('Failed to generate featured image URL for blog: '.$e->getMessage());
+            \Log::warning('Failed to generate featured image URL for blog: ' . $e->getMessage());
 
             return null;
         }

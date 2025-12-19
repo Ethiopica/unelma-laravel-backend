@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class ServiceController extends Controller
 {
@@ -17,6 +18,10 @@ class ServiceController extends Controller
             $query = Service::where('is_active', true)
                 ->orderBy('order', 'asc')
                 ->orderBy('created_at', 'desc');
+
+            if (Schema::hasTable('plans')) {
+                $query->with('plans');
+            }
 
             // Filter by featured if provided
             if ($request->has('featured') && $request->boolean('featured')) {
@@ -47,9 +52,7 @@ class ServiceController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Services API Error: '.$e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+            \Log::error('Services API Error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -64,9 +67,15 @@ class ServiceController extends Controller
      */
     public function show($id)
     {
-        $service = Service::where('id', $id)
+        $serviceQuery = Service::where('id', $id)
             ->where('is_active', true)
-            ->firstOrFail();
+            ->orderByDesc('created_at');
+
+        if (Schema::hasTable('plans')) {
+            $serviceQuery->with('plans');
+        }
+
+        $service = $serviceQuery->firstOrFail();
 
         return response()->json([
             'success' => true,

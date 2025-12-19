@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('carrers', function (Blueprint $table) {
+        Schema::create('career_applied', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description');
+            $table->string('email');
+            $table->foreignId('career_id')->constrained();
+            $table->foreignId('user_id')->constrained();
+            $table->string('CV');
+            $table->longText('cover_text');
             $table->timestamps();
         });
     }
@@ -24,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('carrers');
+        Schema::dropIfExists('career_applied');
     }
 };

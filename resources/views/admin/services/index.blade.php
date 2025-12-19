@@ -4,15 +4,15 @@
     </x-slot:title>
     
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <!-- Header - Mobile First -->
+        <div class="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0 mb-6">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">Services Management</h1>
-                <p class="text-gray-600 mt-1">Manage your service offerings</p>
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Services Management</h1>
+                <p class="text-sm sm:text-base text-gray-600 mt-1">Manage your service offerings</p>
             </div>
             <a href="{{ route('admin.services.create') }}"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center space-x-2">
+                class="inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition duration-200 text-sm sm:text-base">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -52,6 +52,11 @@
                                 <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->name }}"
                                     class="w-full h-full object-cover">
                             </div>
+                        @elseif ($service->image_url)
+                            <div class="h-48 overflow-hidden bg-gray-200">
+                                <img src="{{ $service->image_url }}" alt="{{ $service->name }}"
+                                    class="w-full h-full object-cover">
+                            </div>
                         @else
                             <div
                                 class="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
@@ -71,7 +76,7 @@
                         <!-- Service Info -->
                         <div class="p-5">
                             <!-- Badges -->
-                            <div class="flex items-center space-x-2 mb-3">
+                            <div class="flex flex-wrap items-center gap-2 mb-3">
                                 @if ($service->is_featured)
                                     <span
                                         class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
@@ -88,6 +93,28 @@
                                         class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">
                                         Inactive
                                     </span>
+                                @endif
+                                @php
+                                    $plans = $service->getPlansSafely();
+                                    $connectedPlans = $plans->filter(fn($p) => !empty($p->stripe_price_id))->count();
+                                    $totalPlans = $plans->count();
+                                @endphp
+                                @if ($totalPlans > 0)
+                                    @if ($connectedPlans === $totalPlans)
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full flex items-center gap-1">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/>
+                                            </svg>
+                                            {{ $connectedPlans }}/{{ $totalPlans }} Plans
+                                        </span>
+                                    @else
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full flex items-center gap-1">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/>
+                                            </svg>
+                                            {{ $connectedPlans }}/{{ $totalPlans }} Plans
+                                        </span>
+                                    @endif
                                 @endif
                             </div>
 
@@ -108,10 +135,10 @@
                             </div>
 
                             <!-- Actions -->
-                            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                            <div class="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-gray-200">
                                 <a href="{{ route('admin.services.edit', $service) }}"
                                     class="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1 service-edit-link">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                         </path>
@@ -124,8 +151,8 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="text-[#E3E174] hover:text-[#E3E174]/80 font-medium flex items-center space-x-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        class="content-delete-action font-medium flex items-center space-x-1">
+                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                                             </path>
@@ -140,7 +167,16 @@
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+            @php
+                $totalPlansCount = 0;
+                $connectedPlansCount = 0;
+                foreach ($services as $s) {
+                    $servicePlans = $s->getPlansSafely();
+                    $totalPlansCount += $servicePlans->count();
+                    $connectedPlansCount += $servicePlans->filter(fn($p) => !empty($p->stripe_price_id))->count();
+                }
+            @endphp
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-6 mt-8">
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -187,6 +223,22 @@
                                 <path
                                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
                                 </path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium uppercase">Stripe Connected</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-2">
+                                {{ $connectedPlansCount }}/{{ $totalPlansCount }}</p>
+                            <p class="text-xs text-gray-500">plans</p>
+                        </div>
+                        <div class="bg-purple-100 rounded-full p-3">
+                            <svg class="w-8 h-8 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/>
                             </svg>
                         </div>
                     </div>

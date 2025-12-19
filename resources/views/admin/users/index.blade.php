@@ -52,7 +52,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-blue-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Total Users</p>
-                    <div class="bg-blue-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-users text-blue-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-green-200 p-4 sm:p-5">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Admin Users</p>
-                    <div class="bg-green-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-user-shield text-green-600 text-sm sm:text-base"></i>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-purple-200 p-4 sm:p-5 col-span-2 md:col-span-1">
                 <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <p class="text-xs font-semibold uppercase text-gray-500">Customers</p>
-                    <div class="bg-purple-100 rounded-full p-2 sm:p-3 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-user-group text-purple-600 text-sm sm:text-base"></i>
                     </div>
                 </div>

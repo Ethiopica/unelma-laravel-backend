@@ -38,11 +38,30 @@ class MailSubscriberController extends Controller
                 $subscribersData = $response;
             }
 
+            // Log the first subscriber's fields to help debug date field name
+            if (!empty($subscribersData) && isset($subscribersData[0])) {
+                \Log::info('Unelma Mail subscriber fields available', [
+                    'fields' => array_keys($subscribersData[0]),
+                    'sample_data' => $subscribersData[0],
+                ]);
+            }
+
             $subscribers = collect($subscribersData)
                 ->map(function (array $subscriber): array {
+                    // Try multiple date field variations from Unelma Mail API
                     $createdAt = data_get($subscriber, 'created_at') 
                         ?? data_get($subscriber, 'createdAt')
-                        ?? data_get($subscriber, 'CREATED_AT');
+                        ?? data_get($subscriber, 'CREATED_AT')
+                        ?? data_get($subscriber, 'date_added')
+                        ?? data_get($subscriber, 'DATE_ADDED')
+                        ?? data_get($subscriber, 'dateAdded')
+                        ?? data_get($subscriber, 'subscribed_at')
+                        ?? data_get($subscriber, 'SUBSCRIBED_AT')
+                        ?? data_get($subscriber, 'subscribedAt')
+                        ?? data_get($subscriber, 'subscribe_date')
+                        ?? data_get($subscriber, 'SUBSCRIBE_DATE')
+                        ?? data_get($subscriber, 'updated_at')
+                        ?? data_get($subscriber, 'UPDATED_AT');
 
                     try {
                         $createdAt = $createdAt ? Carbon::parse($createdAt) : null;
@@ -92,10 +111,7 @@ class MailSubscriberController extends Controller
             ];
         } catch (\RuntimeException $exception) {
             $error = $exception->getMessage();
-            \Log::error('MailSubscriberController RuntimeException', [
-                'message' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString(),
-            ]);
+            \Log::error('MailSubscriberController RuntimeException: ' . $exception->getMessage());
         } catch (RequestException $exception) {
             $response = optional($exception->response);
             $errorMessage = data_get($response->json(), 'message', 'Failed to load subscribers from Unelma Mail.');
@@ -120,7 +136,6 @@ class MailSubscriberController extends Controller
             $error = 'Something went wrong while loading subscribers. Please check the logs for details.';
             \Log::error('MailSubscriberController Exception', [
                 'message' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString(),
             ]);
         }
 
@@ -133,6 +148,60 @@ class MailSubscriberController extends Controller
                 'per_page' => $perPage,
             ],
         ]);
+    }
+
+    /**
+     * Delete a subscriber from Unelma Mail.
+     */
+    public function destroy(Request $request, string $subscriberUid)
+    {
+        try {
+            $this->unelmaMail->deleteSubscriber($subscriberUid);
+
+            return redirect()
+                ->route('admin.subscribers.index')
+                ->with('success', 'Subscriber deleted successfully.');
+        } catch (\RuntimeException $exception) {
+            \Log::error('MailSubscriberController Delete RuntimeException', [
+                'message' => $exception->getMessage(),
+                'subscriber_uid' => $subscriberUid,
+            ]);
+
+            return redirect()
+                ->route('admin.subscribers.index')
+                ->with('error', 'Failed to delete subscriber: ' . $exception->getMessage());
+        } catch (RequestException $exception) {
+            $response = optional($exception->response);
+            $errorMessage = data_get($response->json(), 'message', 'Failed to delete subscriber from Unelma Mail.');
+
+            if ($response && $response->status() === 404) {
+                $errorMessage = 'Subscriber not found. It may have already been deleted.';
+            } elseif ($response && $response->status() === 401) {
+                $errorMessage = 'Unauthorized: Invalid API key. Please check your UNELMA_MAIL_API_KEY in .env file.';
+            } elseif ($response && $response->status() === 403) {
+                $errorMessage = 'Forbidden: Access denied. Please check your API credentials and permissions.';
+            }
+
+            \Log::error('MailSubscriberController Delete RequestException', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'subscriber_uid' => $subscriberUid,
+            ]);
+
+            return redirect()
+                ->route('admin.subscribers.index')
+                ->with('error', $errorMessage);
+        } catch (\Throwable $exception) {
+            report($exception);
+            \Log::error('MailSubscriberController Delete Exception', [
+                'message' => $exception->getMessage(),
+                'subscriber_uid' => $subscriberUid,
+            ]);
+
+            return redirect()
+                ->route('admin.subscribers.index')
+                ->with('error', 'Something went wrong while deleting the subscriber. Please check the logs for details.');
+        }
     }
 }
 
