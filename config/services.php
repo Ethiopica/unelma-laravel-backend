@@ -41,4 +41,16 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET'),
+        'public' => env('STRIPE_PUBLIC_KEY'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
+    'unelma_mail' => [
+        'base_url' => env('UNELMA_MAIL_BASE_URL', 'https://core.unelmamail.com/api/v1'),
+        'api_key' => env('UNELMA_MAIL_API_KEY'),
+        'list_uid' => env('UNELMA_MAIL_LIST_UID'),
+    ],
+
 ];

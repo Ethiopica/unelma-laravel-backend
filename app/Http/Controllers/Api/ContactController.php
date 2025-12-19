@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ContactMessage;
 use App\Mail\ContactFormSubmitted;
+use App\Models\ContactMessage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -17,6 +17,11 @@ class ContactController extends Controller
     public function submit(Request $request)
     {
         try {
+            Log::info('Contact form submission received', [
+                'ip' => $request->ip(),
+                'data' => $request->except(['password', '_token']),
+            ]);
+
             $validated = $request->validate([
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email', 'max:255'],
@@ -32,13 +37,18 @@ class ContactController extends Controller
                 'is_read' => false,
             ]);
 
+            Log::info('Contact message saved successfully', [
+                'message_id' => $message->id,
+                'email' => $message->email,
+            ]);
+
             // Send email notification to admin
             try {
                 $adminEmail = config('mail.from.address', env('MAIL_FROM_ADDRESS', 'admin@example.com'));
                 Mail::to($adminEmail)->send(new ContactFormSubmitted($message));
             } catch (\Exception $e) {
                 // Log email error but don't fail the request
-                Log::error('Failed to send contact form email: ' . $e->getMessage());
+                Log::error('Failed to send contact form email: '.$e->getMessage());
             }
 
             return response()->json([
@@ -58,7 +68,8 @@ class ContactController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Contact form submission error: ' . $e->getMessage());
+            Log::error('Contact form submission error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while submitting your message. Please try again.',
@@ -66,8 +77,3 @@ class ContactController extends Controller
         }
     }
 }
-
-
-
-
-

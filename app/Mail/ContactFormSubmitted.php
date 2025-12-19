@@ -29,7 +29,7 @@ class ContactFormSubmitted extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Contact Form Submission - ' . $this->contactMessage->name,
+            subject: 'New Contact Form Submission - '.$this->contactMessage->name,
         );
     }
 
@@ -53,4 +53,3 @@ class ContactFormSubmitted extends Mailable
         return [];
     }
 }
-

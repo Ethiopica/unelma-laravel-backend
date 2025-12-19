@@ -16,18 +16,15 @@ class IsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         // Check if user is authenticated
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('admin.login')->with('error', 'Please login to access the admin panel.');
         }
 
         // Check if user is an admin
-        if (!auth()->user()->is_admin) {
+        if (! auth()->user()->is_admin) {
             abort(403, 'Unauthorized access. Admin privileges required.');
         }
 
         return $next($request);
     }
 }
-
-
-

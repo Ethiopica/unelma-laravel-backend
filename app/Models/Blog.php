@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Blog extends Model
@@ -20,6 +21,7 @@ class Blog extends Model
         'is_published',
         'published_at',
         'views',
+        'favorite_count',
         'meta_title',
         'meta_description',
         'meta_keywords',
@@ -31,6 +33,7 @@ class Blog extends Model
         'is_published' => 'boolean',
         'published_at' => 'datetime',
         'views' => 'integer',
+        'favorite_count' => 'integer',
         'order' => 'integer',
     ];
 
@@ -49,13 +52,13 @@ class Blog extends Model
             if (empty($blog->slug)) {
                 $blog->slug = Str::slug($blog->title);
             }
-            if ($blog->is_published && !$blog->published_at) {
+            if ($blog->is_published && ! $blog->published_at) {
                 $blog->published_at = now();
             }
         });
 
         static::updating(function ($blog) {
-            if ($blog->is_published && !$blog->published_at) {
+            if ($blog->is_published && ! $blog->published_at) {
                 $blog->published_at = now();
             }
         });
@@ -67,6 +70,12 @@ class Blog extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    // All comments for this blog
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->latest();
     }
 
     /**
@@ -91,12 +100,14 @@ class Blog extends Model
     public function getFeaturedImageUrlAttribute(): ?string
     {
         try {
-            if (!$this->featured_image) {
+            if (! $this->featured_image) {
                 return null;
             }
+
             return asset('storage/' . $this->featured_image);
         } catch (\Exception $e) {
             \Log::warning('Failed to generate featured image URL for blog: ' . $e->getMessage());
+
             return null;
         }
     }

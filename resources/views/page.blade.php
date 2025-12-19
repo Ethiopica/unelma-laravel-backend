@@ -16,28 +16,112 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Futuristic Fonts -->
+    <!-- 
+        Font Loading Optimization for All Screen Sizes (Mobile + Desktop)
+        Improves FCP (First Contentful Paint) and reduces CLS (Cumulative Layout Shift)
+    -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Preload critical fonts for faster FCP on all screen sizes -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/rajdhani/v15/LDIxapCSOBg7S-QT7q4AOeekWPrP.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/rajdhani/v15/LDI2apCSOBg7S-QT7pb0EPOqeeHkkbIxyyg.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6xpmIyXjU1pg.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        /* 
+         * Font Metric Overrides for Minimal Layout Shift on All Screens
+         * Uses font-display: swap for immediate text visibility (better FCP)
+         */
+        
+        /* Inline critical @font-face with font-display: swap */
+        @font-face {
+            font-family: 'Rajdhani';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/rajdhani/v15/LDIxapCSOBg7S-QT7q4AOeekWPrP.woff2) format('woff2');
+        }
+        
+        @font-face {
+            font-family: 'Rajdhani';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/rajdhani/v15/LDI2apCSOBg7S-QT7pb0EPOqeeHkkbIxyyg.woff2) format('woff2');
+        }
+        
+        @font-face {
+            font-family: 'Orbitron';
+            font-style: normal;
+            font-weight: 400 900;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6xpmIyXjU1pg.woff2) format('woff2');
+        }
+        
+        /* Fallback fonts with matched metrics */
+        @font-face {
+            font-family: 'Rajdhani Fallback';
+            src: local('Arial'), local('Helvetica Neue'), local('Helvetica'), local('sans-serif');
+            font-display: swap;
+            font-weight: 400;
+            size-adjust: 105%;
+            ascent-override: 100%;
+            descent-override: 30%;
+            line-gap-override: 5%;
+        }
+        
+        @font-face {
+            font-family: 'Rajdhani Fallback';
+            src: local('Arial Bold'), local('Helvetica Neue Bold'), local('Arial'), local('sans-serif');
+            font-display: swap;
+            font-weight: 600;
+            size-adjust: 103%;
+            ascent-override: 98%;
+            descent-override: 28%;
+            line-gap-override: 4%;
+        }
+        
+        @font-face {
+            font-family: 'Orbitron Fallback';
+            src: local('Arial Black'), local('Impact'), local('Arial Bold'), local('Arial'), local('sans-serif');
+            font-display: swap;
+            size-adjust: 95%;
+            ascent-override: 95%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+        
+        /* Prevent FOIT on all screen sizes */
+        .fonts-loading * {
+            visibility: visible !important;
+        }
+        
+        .fonts-loaded body {
+            transition: opacity 0.1s ease-out;
+        }
+        
         body {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Rajdhani', 'Rajdhani Fallback', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .page-title {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', 'Orbitron Fallback', sans-serif;
             font-weight: 900;
             letter-spacing: 2px;
             text-transform: uppercase;
         }
         .content-area {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Rajdhani', 'Rajdhani Fallback', sans-serif;
             font-size: 1.125rem;
             line-height: 1.8;
         }
         .content-area h1, .content-area h2, .content-area h3 {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', 'Orbitron Fallback', sans-serif;
             font-weight: 700;
             margin-top: 1.5rem;
             margin-bottom: 1rem;
@@ -55,13 +139,53 @@
             margin: 1.5rem 0;
         }
         .nav-link {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', 'Orbitron Fallback', sans-serif;
             font-weight: 600;
             letter-spacing: 1px;
             text-transform: uppercase;
             font-size: 0.875rem;
         }
+        
+        /* Mobile-specific font optimization */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+            .content-area {
+                font-size: 1rem;
+                line-height: 1.7;
+            }
+            .content-area h1 { font-size: 1.5rem; }
+            .content-area h2 { font-size: 1.25rem; }
+            .content-area h3 { font-size: 1.125rem; }
+            .nav-link {
+                font-size: 0.75rem;
+            }
+        }
     </style>
+    
+    <!-- Font loading detection for FCP optimization on all screen sizes -->
+    <script>
+        document.documentElement.classList.add('fonts-loading');
+        if ('fonts' in document) {
+            Promise.all([
+                document.fonts.load('400 1em Rajdhani'),
+                document.fonts.load('600 1em Rajdhani'),
+                document.fonts.load('900 1em Orbitron')
+            ]).then(function() {
+                document.documentElement.classList.remove('fonts-loading');
+                document.documentElement.classList.add('fonts-loaded');
+            }).catch(function() {
+                document.documentElement.classList.remove('fonts-loading');
+            });
+            // Timeout fallback for slow connections
+            setTimeout(function() {
+                document.documentElement.classList.remove('fonts-loading');
+            }, 3000);
+        } else {
+            document.documentElement.classList.remove('fonts-loading');
+        }
+    </script>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Navigation -->
@@ -182,10 +306,13 @@
                         @foreach($products as $product)
                             <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-2xl">
                                 <!-- Product Image -->
-                                @if($product->image)
+                                @php
+                                    $productImage = $product->image_local_url ?? ($product->image ? '/storage/' . $product->image : null);
+                                @endphp
+                                @if($productImage)
                                     <div class="h-64 overflow-hidden bg-gray-200">
                                         <img 
-                                            src="{{ asset('storage/' . $product->image) }}" 
+                                            src="{{ $productImage }}" 
                                             alt="{{ $product->name }}"
                                             class="w-full h-full object-cover"
                                         >

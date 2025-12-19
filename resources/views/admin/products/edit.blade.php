@@ -1,49 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Edit Product - {{ config('app.name') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gruppo&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: "Montserrat", sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 min-h-screen">
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-gray-800">Admin Panel</a>
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="{{ route('admin.users.index') }}" class="text-gray-600 hover:text-gray-900">Users</a>
-                    <a href="{{ route('admin.products.index') }}" class="text-blue-600 font-semibold">Products</a>
-                    <a href="{{ route('admin.settings.index') }}" class="text-gray-600 hover:text-gray-900">Settings</a>
-                    <a href="{{ route('admin.reports.index') }}" class="text-gray-600 hover:text-gray-900">Reports</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button 
-                            type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200"
-                        >
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-
+<x-layout>
+    <x-slot:title>Edit Product - {{ config('app.name') }}</x-slot:title>
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
@@ -70,33 +26,37 @@
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                         Product Name <span class="text-red-500">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        value="{{ old('name', $product->name) }}"
+                    <input type="text" id="name" name="name" value="{{ old('name', $product->name) }}"
                         required
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('name') border-red-500 @enderror"
-                        placeholder="e.g., Cloud Server Pro"
-                    >
+                        placeholder="e.g., Cloud Server Pro">
                     @error('name')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Description -->
+                <!-- Product category -->
                 <div class="mb-6">
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                        Description
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                        Category
                     </label>
-                    <textarea 
-                        id="description" 
-                        name="description" 
-                        rows="4"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
-                        placeholder="Describe your product features and benefits..."
-                    >{{ old('description', $product->description) }}</textarea>
-                    @error('description')
+                    <input type="text" id="category" name="category" value="{{ old('category',$product->category) }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category') border-red-500 @enderror"
+                        placeholder="e.g., Open source">
+                    @error('category')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <!-- Product sku -->
+                <div class="mb-6">
+                    <label for="sku" class="block text-sm font-medium text-gray-700 mb-2">
+                        Sku <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="sku" name="sku" value="{{ old('sku',$product->sku) }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('sku') border-red-500 @enderror"
+                        placeholder="e.g., 123456_UnelmaPlatforms_OpenSource">
+                    @error('sku')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -108,19 +68,84 @@
                     </label>
                     <div class="relative">
                         <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                        <input 
-                            type="number" 
-                            id="price" 
-                            name="price" 
-                            value="{{ old('price', $product->price) }}"
-                            step="0.01"
-                            min="0"
-                            required
+                        <input type="number" id="price" name="price" value="{{ old('price', $product->price) }}"
+                            step="0.01" min="0" required
                             class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('price') border-red-500 @enderror"
-                            placeholder="0.00"
-                        >
+                            placeholder="0.00">
                     </div>
                     @error('price')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Stripe Price ID -->
+                <div class="mb-6">
+                    <label for="stripe_price_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Stripe Price ID <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="stripe_price_id" name="stripe_price_id" value="{{ old('stripe_price_id', $product->stripe_price_id) }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('stripe_price_id') border-red-500 @enderror"
+                        placeholder="e.g., price_1SZtv4Jg4Qxq8pC4yT9kDMrG">
+                    @error('stripe_price_id')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-sm text-gray-500">Required for checkout functionality. Get this from your Stripe Dashboard → Products → Prices</p>
+                </div>
+
+                <!-- Payment Type -->
+                <div class="mb-6">
+                    <label for="payment_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Payment Type
+                    </label>
+                    <select id="payment_type" name="payment_type"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('payment_type') border-red-500 @enderror">
+                        <option value="">Auto-detect from Stripe (default)</option>
+                        <option value="subscription" {{ old('payment_type', $product->payment_type) === 'subscription' ? 'selected' : '' }}>Subscription (Recurring)</option>
+                        <option value="one_time" {{ old('payment_type', $product->payment_type) === 'one_time' ? 'selected' : '' }}>One-Time Payment</option>
+                    </select>
+                    @error('payment_type')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-sm text-gray-500">Explicitly set payment type, or leave empty to auto-detect from Stripe price type</p>
+                </div>
+
+                <!-- Highlights -->
+                <div class="mb-6">
+                    <label for="highlights" class="block text-sm font-medium text-gray-700 mb-2">
+                        Highlights
+                    </label>
+                    <textarea id="highlights" name="highlights" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                        placeholder="Product highlights...">{{ old('highlights',$product->highlights) }}</textarea>
+                    @error('highlights')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                    </label>
+                    <textarea id="description" name="description" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                        placeholder="Describe your product features and benefits...">{{ old('description', $product->description) }}</textarea>
+                    @error('description')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                
+                <!-- Rating -->
+                <div class="mb-6">
+                    <label for="rating" class="block text-sm font-medium text-gray-700 mb-2">
+                        Rating 
+                    </label>
+                    <input type="number" id="rating" name="rating" value="{{ old('rating',$product->rating) }}" step="0.01" min="0" max="5"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('rating') border-red-500 @enderror"
+                    placeholder="0">
+                 
+                    @error('rating')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -131,24 +156,17 @@
                         Product Image
                     </label>
 
-                    @if($product->image)
+                    @if ($product->image_local_url || $product->image)
                         <div class="mb-4">
                             <p class="text-sm text-gray-600 mb-2">Current Image:</p>
-                            <img 
-                                src="{{ asset('storage/' . $product->image) }}" 
-                                alt="{{ $product->name }}" 
-                                class="w-48 h-32 object-cover rounded border-2 border-gray-300"
-                            >
+                            <img src="{{ $product->image_local_url ?? '/storage/' . $product->image }}" alt="{{ $product->name }}"
+                                class="w-48 h-32 object-cover rounded border-2 border-gray-300">
                         </div>
                     @endif
 
-                    <input 
-                        type="file" 
-                        id="image" 
-                        name="image"
+                    <input type="file" id="image" name="image"
                         accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image') border-red-500 @enderror"
-                    >
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image') border-red-500 @enderror">
                     @error('image')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -156,6 +174,27 @@
                         {{ $product->image ? 'Upload a new image to replace the current one. ' : '' }}
                         Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB
                     </p>
+                </div>
+
+                <!--Product Image Url -->
+                <div class="mb-6">
+                    <label for="image_url" class="block text-sm font-medium text-gray-700 mb-2">
+                       Or Image Url
+                    </label>
+                    @if ($product->image_url)
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2">Current Image:</p>
+                            <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->name }}"
+                                class="w-48 h-32 object-cover rounded border-2 border-gray-300">
+                        </div>
+                    @endif
+                    <input type="text" id="image_url" name="image_url" value="{{ old('image_url',$product->image_url) }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image_url') border-red-500 @enderror"
+                        placeholder="e.g., https://www.example.com/images/product1.jpg">
+                    @error('image_url')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    
                 </div>
 
                 <!-- Settings Section -->
@@ -167,15 +206,10 @@
                         <label for="order" class="block text-sm font-medium text-gray-700 mb-2">
                             Display Order
                         </label>
-                        <input 
-                            type="number" 
-                            id="order" 
-                            name="order" 
-                            value="{{ old('order', $product->order) }}"
+                        <input type="number" id="order" name="order" value="{{ old('order', $product->order) }}"
                             min="0"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('order') border-red-500 @enderror"
-                            placeholder="0"
-                        >
+                            placeholder="0">
                         @error('order')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -187,14 +221,9 @@
                         <!-- Featured -->
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
-                                <input 
-                                    type="checkbox" 
-                                    id="is_featured" 
-                                    name="is_featured"
-                                    value="1"
+                                <input type="checkbox" id="is_featured" name="is_featured" value="1"
                                     {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}
-                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                >
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             </div>
                             <div class="ml-3">
                                 <label for="is_featured" class="font-medium text-gray-700">
@@ -209,14 +238,9 @@
                         <!-- Active Status -->
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
-                                <input 
-                                    type="checkbox" 
-                                    id="is_active" 
-                                    name="is_active"
-                                    value="1"
+                                <input type="checkbox" id="is_active" name="is_active" value="1"
                                     {{ old('is_active', $product->is_active) ? 'checked' : '' }}
-                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                >
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             </div>
                             <div class="ml-3">
                                 <label for="is_active" class="font-medium text-gray-700">
@@ -235,29 +259,28 @@
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
                             <p class="text-gray-600">Created:</p>
-                            <p class="font-medium text-gray-900">{{ $product->created_at->format('M d, Y \a\t h:i A') }}</p>
+                            <p class="font-medium text-gray-900">
+                                {{ $product->created_at->format('M d, Y \a\t h:i A') }}</p>
                         </div>
                         <div>
                             <p class="text-gray-600">Last Updated:</p>
-                            <p class="font-medium text-gray-900">{{ $product->updated_at->format('M d, Y \a\t h:i A') }}</p>
+                            <p class="font-medium text-gray-900">
+                                {{ $product->updated_at->format('M d, Y \a\t h:i A') }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form Actions -->
                 <div class="flex items-center justify-between pt-6 border-t">
-                    <a 
-                        href="{{ route('admin.products.index') }}"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200"
-                    >
+                    <a href="{{ route('admin.products.index') }}"
+                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
                         Cancel
                     </a>
-                    <button 
-                        type="submit"
-                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center space-x-2"
-                    >
+                    <button type="submit"
+                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
                         </svg>
                         <span>Update Product</span>
                     </button>
@@ -265,13 +288,4 @@
             </form>
         </div>
     </div>
-</body>
-</html>
-
-
-
-
-
-
-
-
+</x-layout>

@@ -28,7 +28,7 @@ class ProductController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             }
 
@@ -50,8 +50,8 @@ class ProductController extends Controller
             \Log::error('Products API Error: ' . $e->getMessage(), [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to fetch products',
@@ -83,7 +83,7 @@ class ProductController extends Controller
     public function featured(Request $request)
     {
         $limit = $request->get('limit', 5);
-        
+
         $products = Product::where('is_active', true)
             ->where('is_featured', true)
             ->orderBy('order')
@@ -97,10 +97,3 @@ class ProductController extends Controller
         ]);
     }
 }
-
-
-
-
-
-
-

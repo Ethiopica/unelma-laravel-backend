@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class ServiceController extends Controller
 {
@@ -18,6 +19,10 @@ class ServiceController extends Controller
                 ->orderBy('order', 'asc')
                 ->orderBy('created_at', 'desc');
 
+            if (Schema::hasTable('plans')) {
+                $query->with('plans');
+            }
+
             // Filter by featured if provided
             if ($request->has('featured') && $request->boolean('featured')) {
                 $query->where('is_featured', true);
@@ -28,7 +33,7 @@ class ServiceController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             }
 
@@ -47,9 +52,8 @@ class ServiceController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
-            \Log::error('Services API Error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+            \Log::error('Services API Error: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to fetch services',
@@ -63,9 +67,15 @@ class ServiceController extends Controller
      */
     public function show($id)
     {
-        $service = Service::where('id', $id)
+        $serviceQuery = Service::where('id', $id)
             ->where('is_active', true)
-            ->firstOrFail();
+            ->orderByDesc('created_at');
+
+        if (Schema::hasTable('plans')) {
+            $serviceQuery->with('plans');
+        }
+
+        $service = $serviceQuery->firstOrFail();
 
         return response()->json([
             'success' => true,
@@ -79,7 +89,7 @@ class ServiceController extends Controller
     public function featured(Request $request)
     {
         $limit = $request->get('limit', 5);
-        
+
         $services = Service::where('is_active', true)
             ->where('is_featured', true)
             ->orderBy('order')
@@ -93,10 +103,3 @@ class ServiceController extends Controller
         ]);
     }
 }
-
-
-
-
-
-
-

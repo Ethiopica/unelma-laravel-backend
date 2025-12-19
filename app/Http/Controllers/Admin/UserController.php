@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Mail\UserCreatedSuccessfully;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -16,20 +17,34 @@ class UserController extends Controller
     /**
      * Display a listing of users
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->paginate(10);
-        
+        $filter = $request->query('filter', 'all');
+
+        $usersQuery = User::query()->latest();
+
+        if ($filter === 'admin') {
+            $usersQuery->where('is_admin', true);
+        } elseif ($filter === 'customer') {
+            $usersQuery->where(function ($query) {
+                $query->where('is_admin', false)
+                    ->orWhereNull('is_admin');
+            });
+        }
+
+        // $users = $usersQuery->paginate(10)->withQueryString();
+        $users = $usersQuery->paginate(10);
+
         $stats = [
             'total_users' => User::count(),
             'admin_users' => User::where('is_admin', true)->count(),
-            'regular_users' => User::where(function($query) {
+            'customers' => User::where(function ($query) {
                 $query->where('is_admin', false)
-                      ->orWhereNull('is_admin');
+                    ->orWhereNull('is_admin');
             })->count(),
         ];
-        
-        return view('admin.users.index', compact('users', 'stats'));
+
+        return view('admin.users.index', compact('users', 'stats', 'filter'));
     }
 
     /**
@@ -67,6 +82,7 @@ class UserController extends Controller
             'profile_picture' => $profilePicturePath,
         ]);
 
+
         // Send login details email (existing)
         try {
             Mail::to($user->email)->send(new UserCreatedSuccessfully($user));
@@ -77,7 +93,7 @@ class UserController extends Controller
 
         // Trigger email verification notification
         try {
-            if (method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail()) {
+            if (method_exists($user, 'hasVerifiedEmail') && ! $user->hasVerifiedEmail()) {
                 $user->sendEmailVerificationNotification();
             }
         } catch (\Exception $e) {
@@ -123,7 +139,7 @@ class UserController extends Controller
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'is_admin' => $request->boolean('is_admin'),
+            'is_admin' => $user->is_admin,
         ]);
 
         // Only update password if provided
@@ -162,4 +178,3 @@ class UserController extends Controller
             ->with('success', 'User deleted successfully!');
     }
 }
-

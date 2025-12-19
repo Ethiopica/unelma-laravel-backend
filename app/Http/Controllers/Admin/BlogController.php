@@ -15,7 +15,8 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $blogs = Blog::with('author')->orderBy('order')->orderBy('created_at', 'desc')->get();
+        $blogs = Blog::with('author')->withCount('comments')->orderBy('order')->orderBy('created_at', 'desc')->get();
+
         return view('admin.blogs.index', compact('blogs'));
     }
 
@@ -87,14 +88,14 @@ class BlogController extends Controller
     {
         // Ensure blog has all relationships loaded
         $blog->load('author');
-        
+
         // Convert tags array to comma-separated string for form display
         // Don't modify the model directly to avoid issues with array casting
         $formattedTags = '';
         if ($blog->tags && is_array($blog->tags)) {
             $formattedTags = implode(', ', $blog->tags);
         }
-        
+
         return view('admin.blogs.edit', compact('blog', 'formattedTags'));
     }
 
@@ -105,7 +106,7 @@ class BlogController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:blogs,slug,' . $blog->id],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:blogs,slug,'.$blog->id],
             'excerpt' => ['nullable', 'string', 'max:500'],
             'content' => ['required', 'string'],
             'featured_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],

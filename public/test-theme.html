@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html[data-theme="dark"] .bg-\[#102B27\] {
+            background-color: #102B27 !important;
+        }
+        html[data-theme="light"] .bg-\[#102B27\] {
+            background-color: #F9FDFC !important;
+        }
+        html[data-theme="dark"] .text-\[#75D7CB\] {
+            color: #75D7CB !important;
+        }
+        html[data-theme="light"] .text-\[#75D7CB\] {
+            color: #102B27 !important;
+        }
+    </style>
+</head>
+<body class="bg-[#102B27] min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-[#75D7CB] text-3xl font-bold mb-4">Theme Test</h1>
+        <p class="text-[#75D7CB]/60 mb-4">Current theme: <span id="current-theme">dark</span></p>
+        <button onclick="toggleTheme()" class="bg-[#27413C] text-[#75D7CB] px-4 py-2 rounded">
+            Toggle Theme
+        </button>
+    </div>
+    <script>
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('current-theme').textContent = newTheme;
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        // Load saved theme
+        const saved = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        document.getElementById('current-theme').textContent = saved;
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

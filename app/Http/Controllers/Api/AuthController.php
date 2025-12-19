@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
@@ -42,6 +43,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'is_admin' => $user->is_admin,
+                    'profile_picture' => $user->profile_picture_url,
                     'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
                 ],
                 'token' => $token,
@@ -49,9 +51,8 @@ class AuthController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            \Log::error('Registration error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+            \Log::error('Registration error: ' . $e->getMessage());
+
             return response()->json([
                 'error' => 'Registration failed',
                 'message' => config('app.debug') ? $e->getMessage() : 'An error occurred during registration',
@@ -67,11 +68,13 @@ class AuthController extends Controller
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+            'remember'=>['boolean']
+
         ]);
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -81,15 +84,24 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         // Create new token
-        $token = $user->createToken('auth-token')->plainTextToken;
+        // $token = $user->createToken('auth-token')->plainTextToken;
+
+         // Token expiration based on "remember me"
+         $expiresAt = $request->boolean('remember') 
+         ? now()->addWeeks(2)
+         : now()->addHours(2);
+
+        $tokenResult = $user->createToken('auth-token', [], $expiresAt);
+        $token = $tokenResult->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => 'Login successfully',
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
+                'profile_picture' => $user->profile_picture_url,
                 'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
             ],
             'token' => $token,
@@ -105,7 +117,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logout successful',
+            'message' => 'Logout successfully',
         ]);
     }
 
@@ -115,6 +127,13 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         $user = $request->user();
+        
+        if (!$user) {
+            \Log::warning('User endpoint called without authentication', [
+                'auth_header' => $request->header('Authorization'),
+                'bearer_token' => $request->bearerToken(),
+            ]);
+        }
 
         return response()->json([
             'user' => [
@@ -122,6 +141,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
+                'profile_picture' => $user->profile_picture_url,
                 'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
                 'updated_at' => $user->updated_at?->toISOString() ?? $user->updated_at,
             ],
@@ -129,95 +149,113 @@ class AuthController extends Controller
     }
 
     /**
-     * Redirect to Google OAuth
-     * Returns the Google OAuth URL for the frontend to redirect to
+     * Authenticate user via Google OAuth token
      */
-    public function redirectToGoogle()
+    public function google(Request $request)
     {
-        try {
-            $url = Socialite::driver('google')
-                ->stateless()
-                ->redirect()
-                ->getTargetUrl();
-            
-            return response()->json([
-                'url' => $url,
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Google OAuth redirect error: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Failed to generate Google OAuth URL',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
+        $validated = $request->validate([
+            'token' => ['nullable', 'string'],
+            'email' => ['required_without:token', 'nullable', 'email'],
+            'name' => ['nullable', 'string', 'max:255'],
+        ]);
 
-    /**
-     * Handle Google OAuth callback
-     * Creates or updates user and returns authentication token
-     */
-    public function handleGoogleCallback(Request $request)
-    {
-        try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
+        if (! empty($validated['token'])) {
+            try {
+                $googleUser = Socialite::driver('google')
+                    ->stateless()
+                    ->userFromToken($validated['token']);
+            } catch (\Throwable $exception) {
+                \Log::warning('Google OAuth token validation failed.', [
+                    'error' => $exception->getMessage(),
+                ]);
 
-            // Check if user exists by email
-            $user = User::where('email', $googleUser->getEmail())->first();
+                return response()->json([
+                    'message' => 'Google authentication failed.',
+                ], 422);
+            }
+
+            if (! $googleUser || ! $googleUser->getEmail()) {
+                return response()->json([
+                    'message' => 'Unable to retrieve Google account details.',
+                ], 422);
+            }
+
+            $user = User::where('google_id', $googleUser->getId())->first();
+
+            if (! $user && $googleUser->getEmail()) {
+                $user = User::where('email', $googleUser->getEmail())->first();
+            }
 
             if ($user) {
-                // User exists - update Google ID if not set
-                if (!$user->google_id) {
-                    $user->update(['google_id' => $googleUser->getId()]);
-                }
-            } else {
-                // Create new user
-                $user = User::create([
-                    'name' => $googleUser->getName(),
+                $user->fill([
+                    'name' => $googleUser->getName() ?: $user->name,
                     'email' => $googleUser->getEmail(),
-                    'google_id' => $googleUser->getId(),
-                    'password' => null, // OAuth users don't need password
+                ]);
+            } else {
+                $user = new User([
+                    'name' => $googleUser->getName() ?: ($googleUser->getEmail() ?? 'Google User'),
+                    'email' => $googleUser->getEmail(),
                     'is_admin' => false,
-                    'email_verified_at' => now(), // Google emails are verified
                 ]);
             }
 
-            // Delete old tokens
-            $user->tokens()->delete();
+            if (! $user->google_id) {
+                $user->google_id = $googleUser->getId();
+            }
 
-            // Create new token
-            $token = $user->createToken('auth-token')->plainTextToken;
+            if (! $user->email_verified_at) {
+                $user->email_verified_at = now();
+            }
 
-            // Redirect to frontend with token and user data
-            // Frontend should handle the token from the URL
-            $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
-            $userData = [
+            if (! $user->password) {
+                $user->password = Hash::make(Str::random(32));
+            }
+
+            if ($avatar = $googleUser->getAvatar()) {
+                $user->profile_picture = $avatar;
+            }
+        } else {
+            $user = User::where('email', $validated['email'])->first();
+
+            if ($user) {
+                if (! empty($validated['name'])) {
+                    $user->name = $validated['name'];
+                }
+            } else {
+                $user = new User([
+                    'email' => $validated['email'],
+                    'name' => $validated['name'] ?: Str::before($validated['email'], '@'),
+                    'is_admin' => false,
+                ]);
+            }
+
+            if (! $user->password) {
+                $user->password = Hash::make(Str::random(32));
+            }
+
+            if (! $user->email_verified_at) {
+                $user->email_verified_at = now();
+            }
+        }
+
+        $user->save();
+
+        // Invalidate existing tokens before issuing a new one
+        $user->tokens()->delete();
+
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'is_admin' => $user->is_admin,
-                'created_at' => $user->created_at->toISOString(),
-            ];
-
-            return redirect("{$frontendUrl}/auth/callback?" . http_build_query([
-                'token' => $token,
-                'user' => json_encode($userData),
-            ]));
-        } catch (\Exception $e) {
-            // Redirect to frontend with error
-            $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
-            return redirect("{$frontendUrl}/auth/callback?" . http_build_query([
-                'error' => $e->getMessage(),
-            ]));
-        }
+                'profile_picture' => $user->profile_picture_url,
+                'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
+            ],
+            'token' => $token,
+        ]);
     }
 }
-
-
-
-
-
-
-
-
-
-

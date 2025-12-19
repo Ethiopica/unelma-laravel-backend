@@ -15,6 +15,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::orderBy('order')->orderBy('created_at', 'desc')->get();
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -33,9 +34,16 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'category' => ['string', 'max:255'],
+            'sku' => ['required', 'string', 'max:255'],
+            'highlights' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'stripe_price_id' => ['required', 'string', 'max:255'],
+            'payment_type' => ['nullable', 'string', 'in:subscription,one_time'],
+            'rating' => ['nullable','numeric', 'min:0','max:5'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'image_url' => ['nullable', 'string'],
             'is_featured' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'order' => ['nullable', 'integer', 'min:0'],
@@ -48,6 +56,8 @@ class ProductController extends Controller
 
         $validated['is_featured'] = $request->boolean('is_featured');
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['category'] = $validated['category'] ?? 'uncategorized';
+
 
         $product = Product::create($validated);
 
@@ -71,9 +81,16 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'category' => ['string', 'max:255'],
+            'sku' => ['required', 'string', 'max:255'],
+            'highlights' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'stripe_price_id' => ['required', 'string', 'max:255'],
+            'payment_type' => ['nullable', 'string', 'in:subscription,one_time'],
+            'rating' => ['nullable','numeric', 'min:0','max:5'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'image_url' => ['nullable', 'string'],
             'is_featured' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'order' => ['nullable', 'integer', 'min:0'],
