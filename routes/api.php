@@ -44,6 +44,24 @@ Route::get('/health', function () {
     ]);
 });
 
+// Debug database config - REMOVE AFTER DEBUGGING
+Route::get('/debug-db', function () {
+    return response()->json([
+        'env_connection' => env('DB_CONNECTION'),
+        'env_host' => env('DB_HOST'),
+        'env_port' => env('DB_PORT'),
+        'env_database' => env('DB_DATABASE'),
+        'env_username' => env('DB_USERNAME'),
+        'env_password_set' => env('DB_PASSWORD') ? 'YES' : 'NO',
+        'env_url_set' => env('DB_URL') ? 'YES' : 'NO',
+        'config_default' => config('database.default'),
+        'config_host' => config('database.connections.mysql.host'),
+        'config_port' => config('database.connections.mysql.port'),
+        'config_database' => config('database.connections.mysql.database'),
+        'config_username' => config('database.connections.mysql.username'),
+    ]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);
