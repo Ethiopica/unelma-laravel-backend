@@ -6,14 +6,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Fonts -->
+    <!-- 
+        Font Loading Optimization for All Screen Sizes (Mobile + Desktop)
+        Improves FCP (First Contentful Paint) and reduces CLS (Cumulative Layout Shift)
+    -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    
+    <!-- Preload critical fonts for faster FCP on all screen sizes -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/rajdhani/v15/LDIxapCSOBg7S-QT7q4AOeekWPrP.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/rajdhani/v15/LDI2apCSOBg7S-QT7pb0EPOqeeHkkbIxyyg.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6xpmIyXjU1pg.woff2" as="font" type="font/woff2" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* 
+         * Font Metric Overrides for Minimal Layout Shift
+         * ================================================
+         * Calibrated fallback fonts that match web font metrics,
+         * preventing text reflow on both mobile and desktop screens.
+         * Uses font-display: swap for immediate text visibility (better FCP).
+         */
+        
+        /* Rajdhani with font-display: swap for immediate visibility */
+        @font-face {
+            font-family: 'Rajdhani';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/rajdhani/v15/LDIxapCSOBg7S-QT7q4AOeekWPrP.woff2) format('woff2');
+        }
+        
+        @font-face {
+            font-family: 'Rajdhani';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/rajdhani/v15/LDI2apCSOBg7S-QT7pb0EPOqeeHkkbIxyyg.woff2) format('woff2');
+        }
+        
+        /* Orbitron with font-display: swap */
+        @font-face {
+            font-family: 'Orbitron';
+            font-style: normal;
+            font-weight: 400 900;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6xpmIyXjU1pg.woff2) format('woff2');
+        }
+        
+        /* Rajdhani fallback with matched metrics */
+        @font-face {
+            font-family: 'Rajdhani Fallback';
+            src: local('Arial'), local('Helvetica Neue'), local('Helvetica'), local('sans-serif');
+            font-display: swap;
+            font-weight: 400;
+            size-adjust: 105%;
+            ascent-override: 100%;
+            descent-override: 30%;
+            line-gap-override: 5%;
+        }
+        
+        @font-face {
+            font-family: 'Rajdhani Fallback';
+            src: local('Arial Bold'), local('Helvetica Neue Bold'), local('Arial'), local('sans-serif');
+            font-display: swap;
+            font-weight: 600;
+            size-adjust: 103%;
+            ascent-override: 98%;
+            descent-override: 28%;
+            line-gap-override: 4%;
+        }
+        
+        /* Orbitron fallback with matched metrics */
+        @font-face {
+            font-family: 'Orbitron Fallback';
+            src: local('Arial Black'), local('Impact'), local('Arial Bold'), local('Arial'), local('sans-serif');
+            font-display: swap;
+            size-adjust: 95%;
+            ascent-override: 95%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+        
+        /* Prevent FOIT - ensure text is always visible */
+        .fonts-loading * {
+            visibility: visible !important;
+        }
+        
+        /* Smooth transition when fonts load */
+        .fonts-loaded body {
+            transition: opacity 0.1s ease-out;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -21,7 +107,9 @@
         }
 
         body {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Rajdhani', 'Rajdhani Fallback', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -229,6 +317,29 @@
             animation: float 6s ease-in-out infinite;
         }
     </style>
+    
+    <!-- Font loading detection for FCP optimization on all screen sizes -->
+    <script>
+        document.documentElement.classList.add('fonts-loading');
+        if ('fonts' in document) {
+            Promise.all([
+                document.fonts.load('400 1em Rajdhani'),
+                document.fonts.load('600 1em Rajdhani'),
+                document.fonts.load('900 1em Orbitron')
+            ]).then(function() {
+                document.documentElement.classList.remove('fonts-loading');
+                document.documentElement.classList.add('fonts-loaded');
+            }).catch(function() {
+                document.documentElement.classList.remove('fonts-loading');
+            });
+            // Timeout fallback for slow connections
+            setTimeout(function() {
+                document.documentElement.classList.remove('fonts-loading');
+            }, 3000);
+        } else {
+            document.documentElement.classList.remove('fonts-loading');
+        }
+    </script>
 </head>
 
 <body>
