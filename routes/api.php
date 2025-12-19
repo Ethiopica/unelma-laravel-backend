@@ -116,23 +116,46 @@ Route::get('/reset-admin/{email}/{password}', function ($email, $password) {
 
 // TEMPORARY: Make user admin - REMOVE AFTER USE
 Route::get('/make-admin/{email}', function ($email) {
-    $user = \App\Models\User::where('email', $email)->first();
-    
-    if (!$user) {
-        return response()->json(['status' => 'error', 'message' => 'User not found']);
+    try {
+        $user = \App\Models\User::where('email', $email)->first();
+        
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'User not found']);
+        }
+        
+        // Check what admin fields exist and set them
+        $user->is_admin = true;
+        $user->role = 'admin';
+        $user->save();
+        
+        return response()->json([
+            'status' => 'success', 
+            'email' => $email,
+            'is_admin' => $user->is_admin,
+            'role' => $user->role,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ]);
     }
-    
-    // Check what admin fields exist and set them
-    $user->is_admin = true;
-    $user->role = 'admin';
-    $user->save();
-    
-    return response()->json([
-        'status' => 'success', 
-        'email' => $email,
-        'is_admin' => $user->is_admin,
-        'role' => $user->role,
-    ]);
+});
+
+// Debug user columns
+Route::get('/debug-user/{email}', function ($email) {
+    try {
+        $user = \App\Models\User::where('email', $email)->first();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'User not found']);
+        }
+        return response()->json([
+            'user' => $user->toArray(),
+            'columns' => array_keys($user->toArray()),
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
 });
 
 Route::middleware('auth:sanctum')->group(function () {
