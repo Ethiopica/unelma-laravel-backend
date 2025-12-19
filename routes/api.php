@@ -158,6 +158,17 @@ Route::get('/debug-user/{email}', function ($email) {
     }
 });
 
+// Verify user email
+Route::get('/verify-user/{email}', function ($email) {
+    $user = \App\Models\User::where('email', $email)->first();
+    if (!$user) {
+        return response()->json(['status' => 'error', 'message' => 'User not found']);
+    }
+    $user->email_verified_at = now();
+    $user->save();
+    return response()->json(['status' => 'verified', 'email' => $email]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);
