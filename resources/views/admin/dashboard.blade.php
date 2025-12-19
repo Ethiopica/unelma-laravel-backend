@@ -383,19 +383,22 @@
         /* Speech bubble */
         .olaf-speech {
             position: absolute;
-            top: -50px;
+            top: -60px;
             left: 50%;
             transform: translateX(-50%) translateY(10px);
             background: white;
-            padding: 8px 12px;
+            padding: 10px 16px;
             border-radius: 15px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
             white-space: nowrap;
             box-shadow: 0 3px 10px rgba(0,0,0,0.15);
             opacity: 0;
             transition: all 0.3s ease;
             color: #333;
+            z-index: 9999;
+            min-width: 180px;
+            text-align: center;
         }
         .olaf-speech::after {
             content: '';
@@ -428,7 +431,7 @@
     
     {{-- Olaf Character --}}
     <div class="olaf-container" id="olafContainer" onclick="olafSpeak()">
-        <div class="olaf-speech" id="olafSpeech">Hi, I'm Olaf! ⛄</div>
+        <div class="olaf-speech" id="olafSpeech">🎄 Click me! ⛄</div>
         <div class="olaf">
             {{-- Head --}}
             <div class="olaf-head">
@@ -486,8 +489,8 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
         
-        {{-- Christmas Banner --}}
-        <div class="christmas-banner rounded-xl p-4 sm:p-6 text-white shadow-lg">
+        {{-- Christmas Banner with Jingle Bell Sound --}}
+        <div id="christmasBanner" class="christmas-banner rounded-xl p-4 sm:p-6 text-white shadow-lg cursor-pointer transition-transform hover:scale-[1.02]">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3 sm:gap-4">
                     <span class="text-3xl sm:text-4xl">🎄</span>
@@ -500,10 +503,15 @@
                 <div class="flex gap-2 text-2xl sm:text-3xl">
                     <span>⛄</span>
                     <span>🦌</span>
-                    <span>🔔</span>
+                    <span id="jingleBell" class="animate-bounce">🔔</span>
                 </div>
             </div>
         </div>
+        
+        {{-- Jingle Bell Audio --}}
+        <audio id="jingleBellSound" preload="auto">
+            <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+        </audio>
 
         <!-- Header Section - Mobile First -->
         <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -689,33 +697,30 @@
     <script>
         // Olaf's quotes
         const olafQuotes = [
-            "Hi, I'm Olaf and I like warm hugs! 🤗",
-            "Some people are worth melting for! ❤️",
-            "I don't have a skull... or bones! 💀",
-            "Winter's a good time to stay in! ❄️",
-            "Oh look, I've been impaled! 😅",
-            "Let it go, let it go! 🎵",
-            "I'm Olaf and I love summer! ☀️",
-            "Do you want to build a snowman? ⛄",
-            "Hands down, this is the best day of my life! 🎉",
-            "Love is putting someone else's needs before yours! 💕",
-            "Merry Christmas! 🎄",
-            "Happy Holidays! 🎁",
-            "You're doing great today! ⭐",
-            "Keep up the awesome work! 💪"
+            "Chúc Mừng Giáng Sinh! 🇻🇳🎄",
+            "क्रिसमसको शुभकामना! 🇳🇵🎄",
+            "እንኳን አደረሳችሁ! 🇪🇹🎄"
         ];
 
+        let olafTimeout = null;
         function olafSpeak() {
             const speech = document.getElementById('olafSpeech');
+            if (!speech) return;
+            
+            // Clear any existing timeout
+            if (olafTimeout) clearTimeout(olafTimeout);
+            
             const randomQuote = olafQuotes[Math.floor(Math.random() * olafQuotes.length)];
             speech.textContent = randomQuote;
             speech.style.opacity = '1';
+            speech.style.visibility = 'visible';
             speech.style.transform = 'translateX(-50%) translateY(0)';
             
-            setTimeout(() => {
+            // Hide after 5 seconds
+            olafTimeout = setTimeout(() => {
                 speech.style.opacity = '0';
                 speech.style.transform = 'translateX(-50%) translateY(10px)';
-            }, 3000);
+            }, 5000);
         }
 
         // Random Olaf speech every 15-30 seconds
@@ -764,7 +769,52 @@
                 // Initial greeting after 3 seconds
                 setTimeout(olafSpeak, 3000);
             }
+            
+            // Jingle Bell Sound on Banner Hover
+            const christmasBanner = document.getElementById('christmasBanner');
+            const jingleBellSound = document.getElementById('jingleBellSound');
+            const jingleBell = document.getElementById('jingleBell');
+            let canPlaySound = true;
+            
+            if (christmasBanner && jingleBellSound) {
+                // Set volume
+                jingleBellSound.volume = 0.3;
+                
+                christmasBanner.addEventListener('mouseenter', function() {
+                    if (canPlaySound && snowEnabled !== 'false') {
+                        // Reset and play sound
+                        jingleBellSound.currentTime = 0;
+                        jingleBellSound.play().catch(e => console.log('Audio play blocked:', e));
+                        
+                        // Add shake animation to bell
+                        if (jingleBell) {
+                            jingleBell.style.animation = 'none';
+                            setTimeout(() => {
+                                jingleBell.style.animation = 'jingleShake 0.5s ease-in-out 3';
+                            }, 10);
+                        }
+                        
+                        // Cooldown to prevent sound spam
+                        canPlaySound = false;
+                        setTimeout(() => {
+                            canPlaySound = true;
+                        }, 2000);
+                    }
+                });
+            }
         });
+        
+        // Jingle bell shake animation
+        const jingleStyle = document.createElement('style');
+        jingleStyle.textContent = `
+            @keyframes jingleShake {
+                0%, 100% { transform: rotate(0deg); }
+                25% { transform: rotate(15deg); }
+                50% { transform: rotate(-15deg); }
+                75% { transform: rotate(10deg); }
+            }
+        `;
+        document.head.appendChild(jingleStyle);
     </script>
 
 </x-layout>

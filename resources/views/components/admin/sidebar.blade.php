@@ -45,19 +45,55 @@
                 request()->routeIs('admin.products.*') ||
                 request()->routeIs('admin.services.*') ||
                 request()->routeIs('admin.blogs.*');
+            $isCareersSection =
+                request()->routeIs('admin.careers.*') ||
+                request()->routeIs('admin.applicants.*');
         @endphp
-        <div x-data="{ openUsers: {{ $isUsersSection ? 'true' : 'false' }}, openContent: {{ $isContentSection ? 'true' : 'false' }} }">
+        <div x-data="{ openUsers: {{ $isUsersSection ? 'true' : 'false' }}, openContent: {{ $isContentSection ? 'true' : 'false' }}, openCareers: {{ $isCareersSection ? 'true' : 'false' }} }">
             <p class="px-3 text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
                 Manage
             </p>
-            <a href="{{ route('admin.careers.index') }}"
-                class="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 @if (request()->routeIs('admin.careers.*')) bg-blue-50 text-blue-700 border-l-4 border-blue-600 @else text-gray-700 hover:bg-gray-50 hover:text-gray-900 @endif">
-                <div
-                    class="w-8 h-8 rounded-lg flex items-center justify-center @if (request()->routeIs('admin.careers.*')) bg-blue-100 text-blue-600 @else bg-gray-100 text-gray-600 group-hover:bg-gray-200 @endif transition-all">
-                    <i class="fa-solid fa-briefcase text-sm"></i>
+
+            <!-- Vacancies & Careers Dropdown -->
+            <div>
+                <button type="button"
+                    class="group flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    @click="openCareers = !openCareers"
+                    :class="openCareers ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' :
+                        'text-gray-700 hover:bg-gray-50 hover:text-gray-900'">
+                    <span class="inline-flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                            :class="openCareers ? 'bg-blue-100 text-blue-600' :
+                                'bg-gray-100 text-gray-600 group-hover:bg-gray-200'">
+                            <i class="fa-solid fa-briefcase text-sm"></i>
+                        </div>
+                        Vacancies & Careers
+                    </span>
+                    <svg class="h-4 w-4 transition-transform duration-200"
+                        :class="openCareers ? 'rotate-180 text-blue-600' : 'text-gray-400'" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="openCareers" x-transition x-cloak
+                    class="mt-2 space-y-1 pl-4 ml-4 border-l-2 border-gray-200">
+                    <a href="{{ route('admin.careers.index') }}"
+                        class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 @if (request()->routeIs('admin.careers.index')) bg-blue-50 text-blue-700 @else text-gray-600 hover:bg-gray-50 hover:text-gray-900 @endif">
+                        <i class="fa-solid fa-list text-xs"></i>
+                        All Vacancies
+                    </a>
+                    <a href="{{ route('admin.careers.create') }}"
+                        class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 @if (request()->routeIs('admin.careers.create')) bg-blue-50 text-blue-700 @else text-gray-600 hover:bg-gray-50 hover:text-gray-900 @endif">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        Add New Vacancy
+                    </a>
+                    <a href="{{ route('admin.applicants.index') }}"
+                        class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 @if (request()->routeIs('admin.applicants.*')) bg-blue-50 text-blue-700 @else text-gray-600 hover:bg-gray-50 hover:text-gray-900 @endif">
+                        <i class="fa-solid fa-user-tie text-xs"></i>
+                        Job Applicants
+                    </a>
                 </div>
-                Vacancies & Careers
-            </a>
+            </div>
 
             <div>
                 <button type="button"
@@ -224,12 +260,12 @@
                     <p class="text-sm font-bold text-gray-900 truncate">{{ $user?->name }}</p>
                     @if ($user->email_verified_at)
                         <span
-                            class="inline-flex justify-center items-center px-2 py-0.5 rounded-full bg-green-100 text-[9px] font-semibold text-green-800 border border-green-200">
+                            class="verified-badge inline-flex justify-center items-center px-2 py-0.5 rounded-full bg-green-100 text-[9px] font-semibold text-green-800 border border-green-200">
                             <i class="fa-solid fa-check-circle text-[8px] mr-1"></i>Verified
                         </span>
                     @else
                         <span
-                            class="inline-flex items-center justify-center rounded-full bg-red-100 px-2 py-0.5 text-[9px] font-semibold text-red-800 border border-red-200">
+                            class="unverified-badge inline-flex items-center justify-center rounded-full bg-red-100 px-2 py-0.5 text-[9px] font-semibold text-red-800 border border-red-200">
                             <i class="fa-solid fa-exclamation-circle text-[8px] mr-1"></i>Unverified
                         </span>
                     @endif
@@ -307,13 +343,13 @@
                                 
                                 {{-- Verification Badge --}}
                                 @if ($user->email_verified_at)
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                    <span class="verified-badge inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                         <i class="fa-solid fa-check-circle mr-1.5 text-[10px]"></i>
                                         Verified
                                     </span>
                                 @else
                                     <a href="{{ route('verify.send') }}" 
-                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors">
+                                        class="unverified-badge inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors">
                                         <i class="fa-solid fa-exclamation-circle mr-1.5 text-[10px]"></i>
                                         Verify Email
                                     </a>

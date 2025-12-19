@@ -6,9 +6,165 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }}</title>
+    
+    <!-- 
+        Font Loading Optimization for All Screen Sizes
+        Strategy: 
+        - Preconnect early for fastest connection establishment
+        - Preload critical fonts to improve FCP (First Contentful Paint)
+        - Use font-display: swap for immediate text visibility
+        - Apply font metric overrides to minimize CLS (Cumulative Layout Shift)
+    -->
+    
+    <!-- DNS Prefetch + Preconnect for fastest possible font loading -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=General+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    
+    <!-- Preload critical font files - improves FCP on all screen sizes -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJfecg.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6Z1xlFQ.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFQ.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Load Google Fonts with display=swap for immediate text visibility -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Critical CSS for font loading - Inline for fastest FCP -->
+    <style>
+        /* 
+         * Font Metric Overrides for Reduced Layout Shift
+         * ================================================
+         * These @font-face rules define fallback fonts with adjusted metrics
+         * that closely match Poppins, preventing visible text reflow (CLS)
+         * when the web font loads on both mobile and desktop screens.
+         *
+         * font-display: swap - Text immediately visible with fallback,
+         * then swaps to Poppins when loaded. Best for FCP.
+         */
+        
+        /* Poppins Regular (400) - Primary body text */
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJfecg.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        
+        /* Poppins SemiBold (600) - Headings */
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6Z1xlFQ.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        
+        /* Poppins Medium (500) - UI elements */
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 500;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLGT9Z1xlFQ.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        
+        /* Fallback font with Poppins-matched metrics (Regular) */
+        @font-face {
+            font-family: 'Poppins Fallback';
+            src: local('Arial'), local('Helvetica Neue'), local('Helvetica'), local('sans-serif');
+            font-display: swap;
+            font-weight: 400;
+            /* Precisely calibrated metrics to match Poppins Regular */
+            size-adjust: 110%;
+            ascent-override: 105%;
+            descent-override: 35%;
+            line-gap-override: 10%;
+        }
+        
+        /* Fallback font with Poppins-matched metrics (SemiBold) */
+        @font-face {
+            font-family: 'Poppins Fallback';
+            src: local('Arial Bold'), local('Helvetica Neue Bold'), local('Arial'), local('sans-serif');
+            font-display: swap;
+            font-weight: 600;
+            /* Precisely calibrated metrics to match Poppins SemiBold */
+            size-adjust: 108%;
+            ascent-override: 103%;
+            descent-override: 33%;
+            line-gap-override: 8%;
+        }
+        
+        /* Fallback font with Poppins-matched metrics (Medium) */
+        @font-face {
+            font-family: 'Poppins Fallback';
+            src: local('Arial'), local('Helvetica Neue Medium'), local('Helvetica'), local('sans-serif');
+            font-display: swap;
+            font-weight: 500;
+            size-adjust: 109%;
+            ascent-override: 104%;
+            descent-override: 34%;
+            line-gap-override: 9%;
+        }
+        
+        /* System font stack fallback */
+        @font-face {
+            font-family: 'System Fallback';
+            src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI'), local('Roboto'), local('Oxygen'), local('Ubuntu'), local('Arial');
+            font-display: swap;
+            size-adjust: 100%;
+            ascent-override: 90%;
+            descent-override: 20%;
+            line-gap-override: normal;
+        }
+        
+        /* Prevent Flash of Invisible Text (FOIT) */
+        .fonts-loading * {
+            visibility: visible !important;
+        }
+        
+        /* Smooth font transition when loaded */
+        .fonts-loaded body {
+            transition: opacity 0.1s ease-out;
+        }
+    </style>
+    
+    <!-- Font loading detection for FCP optimization -->
+    <script>
+        // Immediately mark as loading to prevent FOIT
+        document.documentElement.classList.add('fonts-loading');
+        
+        // Use Font Loading API for precise control
+        if ('fonts' in document) {
+            Promise.all([
+                document.fonts.load('400 1em Poppins'),
+                document.fonts.load('500 1em Poppins'),
+                document.fonts.load('600 1em Poppins')
+            ]).then(function() {
+                document.documentElement.classList.remove('fonts-loading');
+                document.documentElement.classList.add('fonts-loaded');
+            }).catch(function() {
+                // Fallback: remove loading class after timeout
+                document.documentElement.classList.remove('fonts-loading');
+            });
+            
+            // Fallback timeout for slow connections (3 seconds)
+            setTimeout(function() {
+                if (document.documentElement.classList.contains('fonts-loading')) {
+                    document.documentElement.classList.remove('fonts-loading');
+                    document.documentElement.classList.add('fonts-timeout');
+                }
+            }, 3000);
+        } else {
+            // Browser doesn't support Font Loading API
+            document.documentElement.classList.remove('fonts-loading');
+        }
+    </script>
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -28,28 +184,40 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Poppins', 'sans-serif'],
+                        // Include fallback fonts with metric overrides for reduced layout shift
+                        sans: ['Poppins', 'Poppins Fallback', 'System Fallback', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
                     },
                 },
             },
         }
     </script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    <!-- Font Awesome - loaded asynchronously to not block render -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" 
+        onload="this.onload=null;this.rel='stylesheet'"
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer">
+    </noscript>
     <style>
         [x-cloak] {
             display: none !important;
         }
         body {
-            font-family: "Poppins", "General Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: "Poppins", "Poppins Fallback", "System Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-weight: 400;
             font-size: 17px;
+            /* Prevent layout shift on mobile */
+            text-rendering: optimizeSpeed;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .admin-shell {
-            font-family: "Poppins", "General Sans", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: "Poppins", "Poppins Fallback", "System Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 16px;
             letter-spacing: -0.01em;
             font-feature-settings: "ss01", "ss02", "cv02", "kern";
@@ -60,16 +228,32 @@
         .admin-shell h3,
         .admin-shell .section-heading,
         .admin-shell .card-title {
-            font-family: "Poppins", "Space Grotesk", "General Sans", sans-serif;
+            font-family: "Poppins", "Poppins Fallback", "System Fallback", sans-serif;
             font-weight: 600;
             letter-spacing: -0.02em;
         }
 
         .admin-shell .card-title-subtle,
         .admin-shell .text-muted-modern {
-            font-family: "Poppins", "General Sans", "Space Grotesk", sans-serif;
+            font-family: "Poppins", "Poppins Fallback", "System Fallback", sans-serif;
             font-weight: 500;
             letter-spacing: 0.015em;
+        }
+        
+        /* Mobile-specific font optimization */
+        @media (max-width: 768px) {
+            body, .admin-shell {
+                font-size: 15px;
+                /* Slightly tighter letter-spacing for mobile readability */
+                letter-spacing: -0.005em;
+            }
+            
+            .admin-shell h1,
+            .admin-shell h2,
+            .admin-shell h3 {
+                /* Prevent text from being too tight on mobile */
+                letter-spacing: -0.01em;
+            }
         }
 
         /* Theme Variables - Dark mode default */
@@ -224,6 +408,32 @@
         html[data-theme="dark"] .status-badge,
         body[data-theme="dark"] .status-badge {
             color: #75D7CB !important;
+        }
+
+        /* Verified badge styling for dark mode - use #75D7CB */
+        html[data-theme="dark"] .verified-badge,
+        body[data-theme="dark"] .verified-badge {
+            background-color: rgba(31, 93, 84, 0.4) !important;
+            color: #75D7CB !important;
+            border-color: rgba(117, 215, 203, 0.4) !important;
+        }
+
+        html[data-theme="dark"] .verified-badge i,
+        body[data-theme="dark"] .verified-badge i {
+            color: #75D7CB !important;
+        }
+
+        /* Unverified badge styling for dark mode */
+        html[data-theme="dark"] .unverified-badge,
+        body[data-theme="dark"] .unverified-badge {
+            background-color: rgba(185, 28, 28, 0.2) !important;
+            color: #F87171 !important;
+            border-color: rgba(248, 113, 113, 0.4) !important;
+        }
+
+        html[data-theme="dark"] .unverified-badge i,
+        body[data-theme="dark"] .unverified-badge i {
+            color: #F87171 !important;
         }
 
         /* Favorite type text color in light mode - use black */

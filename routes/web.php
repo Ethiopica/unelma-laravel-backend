@@ -10,16 +10,14 @@ use App\Http\Controllers\Admin\MailSubscriberController;
 use App\Http\Controllers\Admin\FavoriteController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
-use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\SettingsController;
-use App\Http\Controllers\Admin\StripeController as AdminStripeController;
 use App\Http\Controllers\Admin\UserController;
 
 use App\Http\Controllers\Admin\VerifyUserController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\SitemapController;
+
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -29,12 +27,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-// Default login route - redirects to admin login
-// This is required for Laravel's auth middleware
-Route::get('/login', function () {
-    return redirect()->route('admin.login');
-})->name('login');
 
 // Email Verification Routes
 Route::middleware('auth')->group(function () {
@@ -55,13 +47,9 @@ Route::middleware('auth')->group(function () {
         return back()->with('success', 'Verification link sent!');
     })->middleware(['throttle:6,1'])->name('verification.send');
 
-    // Send verification email (user clicks "Verify Email" button)
-    Route::get('send-verification-email', [VerifyUserController::class, 'sendVerificationEmail'])->name('verify.send');
-    
-    // Confirm email verification (user clicks link in email)
-    Route::get('verify-user/{link}/confirm', [VerifyUserController::class, 'confirmUser'])->name('verify.confirm');
+    Route::get('verify-user/{link?}', [VerifyUserController::class, 'verifyUser'])->name('verify.user');
+    Route::get('verify-user/{link}/confirm', [VerifyUserController::class, 'confirmUser'])->name('verify.user');
 
-    // Payment subscription route (Stripe), not newsletter subscription (Unelma Mail)
     Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
 });
 
@@ -114,11 +102,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/subscribers', [MailSubscriberController::class, 'index'])->name('subscribers.index');
         Route::delete('/subscribers/{subscriberUid}', [MailSubscriberController::class, 'destroy'])->name('subscribers.destroy');
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
-        Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
-        Route::delete('/ratings/{rating}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 
-        // Job Management
+        // Job Management (Careers)
         Route::resource('careers', CareerController::class)->except(['show']);
+        
+        // Job Applicants
+        Route::get('/applicants', [CareerController::class, 'applicants'])->name('applicants.index');
+        Route::get('/applicants/{id}', [CareerController::class, 'showApplicant'])->name('applicants.show');
+        Route::post('/applicants/reply', [CareerController::class, 'replyApplicant'])->name('applicants.reply');
+        
+        // Product Ratings Management
+        Route::get('/ratings', [\App\Http\Controllers\Admin\RatingController::class, 'index'])->name('ratings.index');
+        Route::delete('/ratings/{rating}', [\App\Http\Controllers\Admin\RatingController::class, 'destroy'])->name('ratings.destroy');
 
         // Contact Messages
         Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
@@ -133,14 +128,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Reports
         Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportsController::class, 'export'])->name('reports.export');
-
-        // Stripe Management
-        Route::prefix('stripe')->name('stripe.')->group(function () {
-            Route::get('/prices', [AdminStripeController::class, 'getPrices'])->name('prices');
-            Route::get('/products', [AdminStripeController::class, 'getProducts'])->name('products');
-            Route::post('/create-product-price', [AdminStripeController::class, 'createProductWithPrice'])->name('create-product-price');
-            Route::post('/validate-price', [AdminStripeController::class, 'validatePriceId'])->name('validate-price');
-        });
+        
+        // Stripe Price IDs API (for service/product forms)
+        Route::get('/stripe/prices', function () {
+            try {
+                $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+                $prices = $stripe->prices->all(['limit' => 100, 'active' => true]);
+                return response()->json([
+                    'success' => true,
+                    'prices' => collect($prices->data)->map(fn($p) => [
+                        'id' => $p->id,
+                        'nickname' => $p->nickname,
+                        'unit_amount' => $p->unit_amount,
+                        'currency' => $p->currency,
+                        'recurring' => $p->recurring,
+                    ])
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            }
+        })->name('stripe.prices');
     });
 });
 
@@ -148,13 +155,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::view('/user-register-email', 'mail.user');
 Route::view('/reply-message-mail', 'mail.mail');
 
-Route::get('/checkout/success', function () {
-    return 'Subscription successful!';
-})->name('checkout.success');
-
-Route::get('/checkout/cancel', function () {
-    return 'Subscription canceled.';
-})->name('checkout.cancel');
+// Note: checkout.success and checkout.cancel are defined above at lines 56-57
 
 // Stripe webhook - excluded from CSRF protection in bootstrap/app.php
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
@@ -176,5 +177,3 @@ Route::get('/webhook/stripe', function () {
         'message' => 'Stripe webhook endpoint ready. Use POST for event delivery.',
     ]);
 });
-
-Route::get('/sitemap.xml', [SitemapController::class, 'index']);

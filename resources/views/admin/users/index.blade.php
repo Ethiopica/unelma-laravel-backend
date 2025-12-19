@@ -2,6 +2,18 @@
     <x-slot:title>
         User Management - {{ config('app.name') }}
     </x-slot:title>
+    
+    <style>
+        /* Dark mode styling for Role header and Admin badge */
+        html[data-theme="dark"] .role-header {
+            color: #75D7CB !important;
+        }
+        html[data-theme="dark"] .admin-badge {
+            background-color: #173E37 !important;
+            color: #75D7CB !important;
+        }
+    </style>
+    
     @php
         $filter = $filter ?? 'all';
     @endphp
@@ -116,7 +128,7 @@
                                 class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 Email</th>
                             <th scope="col"
-                                class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                class="role-header px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 Role</th>
                             <th scope="col"
                                 class="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -156,7 +168,7 @@
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     @if ($user->is_admin)
                                         <span
-                                            class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-green-100 text-green-800">
+                                            class="admin-badge inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-green-100 text-green-800">
                                             Admin
                                         </span>
                                     @else
@@ -235,7 +247,7 @@
                             </div>
                             @if ($user->is_admin)
                                 <span
-                                    class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-green-100 text-green-700 flex-shrink-0">
+                                    class="admin-badge inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-green-100 text-green-700 flex-shrink-0">
                                     Admin
                                 </span>
                             @else
