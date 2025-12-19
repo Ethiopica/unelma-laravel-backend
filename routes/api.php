@@ -92,6 +92,28 @@ Route::get('/debug-full', function () {
     ]);
 });
 
+// TEMPORARY: Reset admin password - REMOVE AFTER USE
+Route::get('/reset-admin/{email}/{password}', function ($email, $password) {
+    $user = \App\Models\User::where('email', $email)->first();
+    
+    if (!$user) {
+        // Create user if doesn't exist
+        $user = \App\Models\User::create([
+            'name' => 'Admin',
+            'email' => $email,
+            'password' => bcrypt($password),
+            'email_verified_at' => now(),
+        ]);
+        return response()->json(['status' => 'created', 'email' => $email]);
+    }
+    
+    // Reset password
+    $user->password = bcrypt($password);
+    $user->save();
+    
+    return response()->json(['status' => 'password_reset', 'email' => $email]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);
