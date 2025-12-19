@@ -23,6 +23,27 @@ use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// Health check endpoint - no database required
+Route::get('/health', function () {
+    $dbStatus = 'not checked';
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        $dbStatus = 'connected';
+    } catch (\Exception $e) {
+        $dbStatus = 'error: ' . $e->getMessage();
+    }
+    
+    return response()->json([
+        'status' => 'ok',
+        'app' => config('app.name'),
+        'environment' => app()->environment(),
+        'php_version' => PHP_VERSION,
+        'laravel_version' => app()->version(),
+        'database' => $dbStatus,
+        'timestamp' => now()->toISOString(),
+    ]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);
