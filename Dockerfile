@@ -53,20 +53,29 @@ EXPOSE 8080
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
+echo "Starting Laravel application..."\n\
+\n\
 # Generate app key if not set\n\
 if [ -z "$APP_KEY" ]; then\n\
-    php artisan key:generate --force 2>/dev/null || true\n\
+    echo "Generating APP_KEY..."\n\
+    php artisan key:generate --force || true\n\
 fi\n\
 \n\
+# Create storage link\n\
+php artisan storage:link 2>/dev/null || true\n\
+\n\
 # Clear and cache config\n\
-php artisan config:clear 2>/dev/null || true\n\
-php artisan route:clear 2>/dev/null || true\n\
-php artisan view:clear 2>/dev/null || true\n\
+echo "Clearing caches..."\n\
+php artisan config:clear || true\n\
+php artisan route:clear || true\n\
+php artisan view:clear || true\n\
+php artisan cache:clear || true\n\
 \n\
-# Run migrations (skip if fails - might not have DB yet)\n\
-php artisan migrate --force 2>/dev/null || echo "Migration skipped"\n\
+# Run migrations\n\
+echo "Running migrations..."\n\
+php artisan migrate --force || echo "Migration failed or skipped"\n\
 \n\
-# Start the server\n\
+echo "Starting server on port ${PORT:-8080}..."\n\
 exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}\n\
 ' > /start.sh && chmod +x /start.sh
 
