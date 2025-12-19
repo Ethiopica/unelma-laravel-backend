@@ -114,6 +114,27 @@ Route::get('/reset-admin/{email}/{password}', function ($email, $password) {
     return response()->json(['status' => 'password_reset', 'email' => $email]);
 });
 
+// TEMPORARY: Make user admin - REMOVE AFTER USE
+Route::get('/make-admin/{email}', function ($email) {
+    $user = \App\Models\User::where('email', $email)->first();
+    
+    if (!$user) {
+        return response()->json(['status' => 'error', 'message' => 'User not found']);
+    }
+    
+    // Check what admin fields exist and set them
+    $user->is_admin = true;
+    $user->role = 'admin';
+    $user->save();
+    
+    return response()->json([
+        'status' => 'success', 
+        'email' => $email,
+        'is_admin' => $user->is_admin,
+        'role' => $user->role,
+    ]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);
