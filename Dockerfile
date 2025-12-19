@@ -43,8 +43,8 @@ RUN npm run build || true
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Create .env from .env.example if not exists
-RUN if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || touch .env; fi
+# Remove any .env file - Railway provides environment variables directly
+RUN rm -f .env .env.example 2>/dev/null || true
 
 # Expose port
 EXPOSE 8080
