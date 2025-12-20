@@ -59,12 +59,17 @@ class ContactMessageController extends Controller
             'reply' => ['required', 'string'],
         ]);
 
-        try {
-            Mail::to($validated['email'])->send(new ReplyToMessage($validated['reply']));
-            return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
-        } catch (\Exception $e) {
-            \Log::error('Failed to send contact reply email: ' . $e->getMessage());
-            return back()->with('error', 'Failed to send email. Please check mail configuration.');
+        // Try to send email only if MAIL_MAILER is not 'log'
+        if (config('mail.default') !== 'log') {
+            try {
+                Mail::to($validated['email'])->send(new ReplyToMessage($validated['reply']));
+                return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send contact reply email: ' . $e->getMessage());
+                return back()->with('error', 'Failed to send email: ' . $e->getMessage());
+            }
         }
+
+        return back()->with('success', 'Reply logged successfully (mail driver is set to log).');
     }
 }

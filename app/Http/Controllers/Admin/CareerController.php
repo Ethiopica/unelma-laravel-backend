@@ -114,20 +114,7 @@ class CareerController extends Controller
             'reply' => ['required', 'string'],
         ]);
 
-        $emailSent = false;
-        $errorMessage = null;
-
-        // Try to send the email with error handling
-        try {
-            \Illuminate\Support\Facades\Mail::to($validated['email'])
-                ->send(new \App\Mail\ReplyToMessage($validated['reply']));
-            $emailSent = true;
-        } catch (\Exception $e) {
-            \Log::error('Failed to send reply email: ' . $e->getMessage());
-            $errorMessage = $e->getMessage();
-        }
-
-        // Save the reply to database regardless of email status
+        // Save the reply to database first
         \App\Models\ApplicantReply::create([
             'career_apply_id' => $validated['applicant_id'],
             'user_id' => auth()->id(),
@@ -136,10 +123,18 @@ class CareerController extends Controller
             'sent_at' => now(),
         ]);
 
-        if ($emailSent) {
-            return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
-        } else {
-            return back()->with('warning', 'Reply saved but email could not be sent. Please check mail configuration.');
+        // Try to send email only if MAIL_MAILER is not 'log'
+        if (config('mail.default') !== 'log') {
+            try {
+                \Illuminate\Support\Facades\Mail::to($validated['email'])
+                    ->send(new \App\Mail\ReplyToMessage($validated['reply']));
+                return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send reply email: ' . $e->getMessage());
+                return back()->with('warning', 'Reply saved but email failed: ' . $e->getMessage());
+            }
         }
+
+        return back()->with('success', 'Reply saved successfully.');
     }
 }
