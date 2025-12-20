@@ -10,7 +10,7 @@ class ForceHttps
 {
     /**
      * Handle an incoming request.
-     * Forces HTTPS redirect in production environments.
+     * Forces HTTPS for URL generation in production environments.
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -19,14 +19,15 @@ class ForceHttps
                     $request->header('X-Forwarded-Proto') === 'https' ||
                     $request->header('X-Forwarded-Ssl') === 'on';
 
-        // If not secure and in production, redirect to HTTPS
-        if (!$isSecure && app()->environment('production')) {
-            return redirect()->secure($request->getRequestUri(), 301);
-        }
-
-        // Set the request as secure for URL generation
+        // Set the request as secure for URL generation when behind proxy
         if ($request->header('X-Forwarded-Proto') === 'https') {
             $request->server->set('HTTPS', 'on');
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
+        // Only redirect GET requests to HTTPS (don't redirect POST/PUT/DELETE)
+        if (!$isSecure && app()->environment('production') && $request->isMethod('GET')) {
+            return redirect()->secure($request->getRequestUri(), 302);
         }
 
         return $next($request);
