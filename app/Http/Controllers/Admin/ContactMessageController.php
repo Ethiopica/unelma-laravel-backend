@@ -59,8 +59,12 @@ class ContactMessageController extends Controller
             'reply' => ['required', 'string'],
         ]);
 
-        Mail::to($validated['email'])->send(new ReplyToMessage($validated['reply']));
-
-        return back()->with('success', 'Reply sent successfully');
+        try {
+            Mail::to($validated['email'])->send(new ReplyToMessage($validated['reply']));
+            return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send contact reply email: ' . $e->getMessage());
+            return back()->with('error', 'Failed to send email. Please check mail configuration.');
+        }
     }
 }
