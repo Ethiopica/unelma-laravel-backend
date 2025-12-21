@@ -114,7 +114,11 @@ class CareerController extends Controller
             'reply' => ['required', 'string'],
         ]);
 
-        // Save the reply to database first
+        // Send the email
+        \Illuminate\Support\Facades\Mail::to($validated['email'])
+            ->send(new \App\Mail\ReplyToMessage($validated['reply']));
+
+        // Save the reply to database
         \App\Models\ApplicantReply::create([
             'career_apply_id' => $validated['applicant_id'],
             'user_id' => auth()->id(),
@@ -123,25 +127,6 @@ class CareerController extends Controller
             'sent_at' => now(),
         ]);
 
-        // Try to send email via UnelmaMail API
-        try {
-            $unelmaMail = new \App\Services\UnelmaMailService();
-            
-            // Build HTML email content
-            $html = view('mail.mail', ['reply' => $validated['reply']])->render();
-            
-            $unelmaMail->sendEmail(
-                to: $validated['email'],
-                subject: 'Reply from Unelma Platforms',
-                html: $html,
-                fromEmail: config('mail.from.address'),
-                fromName: config('mail.from.name', 'Unelma Platforms')
-            );
-            
-            return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
-        } catch (\Exception $e) {
-            \Log::error('Failed to send reply email via UnelmaMail: ' . $e->getMessage());
-            return back()->with('warning', 'Reply saved but email failed: ' . $e->getMessage());
-        }
+        return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
     }
 }
