@@ -59,17 +59,25 @@ class ContactMessageController extends Controller
             'reply' => ['required', 'string'],
         ]);
 
-        // Try to send email only if MAIL_MAILER is not 'log'
-        if (config('mail.default') !== 'log') {
-            try {
-                Mail::to($validated['email'])->send(new ReplyToMessage($validated['reply']));
-                return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
-            } catch (\Exception $e) {
-                \Log::error('Failed to send contact reply email: ' . $e->getMessage());
-                return back()->with('error', 'Failed to send email: ' . $e->getMessage());
-            }
+        // Try to send email via UnelmaMail API
+        try {
+            $unelmaMail = new \App\Services\UnelmaMailService();
+            
+            // Build HTML email content
+            $html = view('mail.mail', ['reply' => $validated['reply']])->render();
+            
+            $unelmaMail->sendEmail(
+                to: $validated['email'],
+                subject: 'Reply from Unelma Platforms',
+                html: $html,
+                fromEmail: config('mail.from.address'),
+                fromName: config('mail.from.name', 'Unelma Platforms')
+            );
+            
+            return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send contact reply email via UnelmaMail: ' . $e->getMessage());
+            return back()->with('error', 'Failed to send email: ' . $e->getMessage());
         }
-
-        return back()->with('success', 'Reply logged successfully (mail driver is set to log).');
     }
 }
