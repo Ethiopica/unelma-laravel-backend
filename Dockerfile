@@ -5,17 +5,31 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    libsodium-dev \
     zip \
     unzip \
-    nodejs \
-    npm \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions including bcmath
-RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    sodium \
+    opcache
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -36,18 +50,18 @@ COPY . .
 RUN composer dump-autoload --optimize
 
 # Install npm dependencies and build assets
-RUN npm ci --omit=dev || npm install --omit=dev || true
-RUN npm run build || true
+RUN npm ci --omit=dev 2>/dev/null || npm install --omit=dev 2>/dev/null || true
+RUN npm run build 2>/dev/null || true
 
 # Create storage directories and set permissions
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Remove any .env file - Railway provides environment variables directly
+# Remove any .env file - Render provides environment variables directly
 RUN rm -f .env .env.example 2>/dev/null || true
 
-# Expose port
-EXPOSE 8080
+# Expose port (Render uses PORT env variable)
+EXPOSE 10000
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
@@ -75,8 +89,9 @@ php artisan cache:clear || true\n\
 echo "Running migrations..."\n\
 php artisan migrate --force || echo "Migration failed or skipped"\n\
 \n\
-echo "Starting server on port ${PORT:-8080}..."\n\
-exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}\n\
+# Render uses PORT env variable (default 10000)\n\
+echo "Starting server on port ${PORT:-10000}..."\n\
+exec php artisan serve --host=0.0.0.0 --port=${PORT:-10000}\n\
 ' > /start.sh && chmod +x /start.sh
 
 # Start command
