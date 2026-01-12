@@ -168,6 +168,84 @@ class UnelmaMailService
     }
 
     /**
+     * Send a transactional email via Unelma Mail.
+     *
+     * @param string $to Recipient email address
+     * @param string $subject Email subject
+     * @param string $html HTML content of the email
+     * @param string|null $fromEmail Sender email (optional)
+     * @param string|null $fromName Sender name (optional)
+     * @return array
+     * @throws \RuntimeException
+     * @throws RequestException
+     */
+    public function sendEmail(string $to, string $subject, string $html, ?string $fromEmail = null, ?string $fromName = null): array
+    {
+        if (!$this->apiKey) {
+            throw new \RuntimeException('Unelma Mail API key is not configured.');
+        }
+
+        $payload = [
+            'api_token' => $this->apiKey,
+            'to' => $to,
+            'subject' => $subject,
+            'html' => $html,
+        ];
+
+        if ($fromEmail) {
+            $payload['from_email'] = $fromEmail;
+        }
+        if ($fromName) {
+            $payload['from_name'] = $fromName;
+        }
+
+        \Log::info('Unelma Mail Send Email Request', [
+            'to' => $to,
+            'subject' => $subject,
+        ]);
+
+        // Try sending via transactional email endpoint
+        $response = Http::baseUrl($this->baseUrl)
+            ->asJson()
+            ->timeout(15)
+            ->post('/messages/send', $payload);
+
+        // If that endpoint doesn't exist, try alternative endpoints
+        if ($response->failed() && $response->status() === 404) {
+            $response = Http::baseUrl($this->baseUrl)
+                ->asJson()
+                ->timeout(15)
+                ->post('/mail/send', $payload);
+        }
+
+        if ($response->failed() && $response->status() === 404) {
+            $response = Http::baseUrl($this->baseUrl)
+                ->asJson()
+                ->timeout(15)
+                ->post('/transactional/send', $payload);
+        }
+
+        if ($response->failed()) {
+            \Log::error('Unelma Mail Send Email Error', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'to' => $to,
+            ]);
+            
+            throw new RequestException($response);
+        }
+
+        $result = $response->json() ?? [];
+        
+        \Log::info('Unelma Mail Send Email Success', [
+            'to' => $to,
+            'response' => $result,
+        ]);
+
+        return $result;
+    }
+
+    /**
      * Delete a subscriber from Unelma Mail.
      *
      * @param string $subscriberUid The subscriber UID

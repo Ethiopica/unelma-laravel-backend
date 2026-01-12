@@ -26,6 +26,22 @@
                 </div>
             @endif
 
+            <!-- Warning Message -->
+            @if (session('warning'))
+                <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-xl mb-4 sm:mb-6 flex items-start gap-3">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-0.5"></i>
+                    <span class="text-sm sm:text-base">{{ session('warning') }}</span>
+                </div>
+            @endif
+
+            <!-- Error Message -->
+            @if (session('error'))
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 sm:mb-6 flex items-start gap-3">
+                    <i class="fa-solid fa-circle-xmark text-red-500 mt-0.5"></i>
+                    <span class="text-sm sm:text-base">{{ session('error') }}</span>
+                </div>
+            @endif
+
             <!-- Applicant Card -->
             <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 <!-- Profile Header -->

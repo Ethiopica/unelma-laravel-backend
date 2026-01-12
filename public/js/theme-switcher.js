@@ -39,6 +39,7 @@
     };
 
     function applyTheme(theme) {
+        try {
         const themeColors = themes[theme];
         if (!themeColors) return;
 
@@ -50,41 +51,28 @@
 
         // Apply styles directly to elements
         Object.keys(themeColors).forEach(className => {
-            const escapedClass = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const elements = document.querySelectorAll(`.${escapedClass}`);
+                try {
+                    // Use attribute selector for classes with special characters
+                    const elements = document.querySelectorAll(`[class*="${className}"]`);
             
             elements.forEach(element => {
                 if (className.startsWith('bg-')) {
-                    const color = themeColors[className];
-                    element.style.backgroundColor = color;
+                            element.style.backgroundColor = themeColors[className];
                 } else if (className.startsWith('text-')) {
-                    const color = themeColors[className];
-                    element.style.color = color;
+                            element.style.color = themeColors[className];
                 } else if (className.startsWith('border-')) {
-                    const color = themeColors[className];
-                    element.style.borderColor = color;
+                            element.style.borderColor = themeColors[className];
+                        }
+                    });
+                } catch (e) {
+                    // Ignore selector errors for classes with special characters
                 }
-            });
-        });
-
-        // Also update computed styles for elements with inline styles
-        const allElements = document.querySelectorAll('*');
-        allElements.forEach(element => {
-            const classList = Array.from(element.classList);
-            classList.forEach(cls => {
-                if (themeColors[cls]) {
-                    if (cls.startsWith('bg-')) {
-                        element.style.setProperty('background-color', themeColors[cls], 'important');
-                    } else if (cls.startsWith('text-')) {
-                        element.style.setProperty('color', themeColors[cls], 'important');
-                    } else if (cls.startsWith('border-')) {
-                        element.style.setProperty('border-color', themeColors[cls], 'important');
-                    }
-                }
-            });
         });
 
         console.log('Theme applied:', theme);
+        } catch (e) {
+            console.warn('Theme application error:', e);
+        }
     }
 
     // Initialize theme

@@ -61,6 +61,6 @@ class ContactMessageController extends Controller
 
         Mail::to($validated['email'])->send(new ReplyToMessage($validated['reply']));
 
-        return back()->with('success', 'Reply sent successfully');
+        return back()->with('success', 'Reply sent successfully to ' . $validated['email']);
     }
 }
