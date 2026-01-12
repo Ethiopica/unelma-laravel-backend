@@ -40,36 +40,36 @@
 
     function applyTheme(theme) {
         try {
-            const themeColors = themes[theme];
-            if (!themeColors) return;
+        const themeColors = themes[theme];
+        if (!themeColors) return;
 
-            // Update data-theme attribute
-            document.documentElement.setAttribute('data-theme', theme);
-            if (document.body) {
-                document.body.setAttribute('data-theme', theme);
-            }
+        // Update data-theme attribute
+        document.documentElement.setAttribute('data-theme', theme);
+        if (document.body) {
+            document.body.setAttribute('data-theme', theme);
+        }
 
-            // Apply styles directly to elements
-            Object.keys(themeColors).forEach(className => {
+        // Apply styles directly to elements
+        Object.keys(themeColors).forEach(className => {
                 try {
                     // Use attribute selector for classes with special characters
                     const elements = document.querySelectorAll(`[class*="${className}"]`);
-                
-                    elements.forEach(element => {
-                        if (className.startsWith('bg-')) {
+            
+            elements.forEach(element => {
+                if (className.startsWith('bg-')) {
                             element.style.backgroundColor = themeColors[className];
-                        } else if (className.startsWith('text-')) {
+                } else if (className.startsWith('text-')) {
                             element.style.color = themeColors[className];
-                        } else if (className.startsWith('border-')) {
+                } else if (className.startsWith('border-')) {
                             element.style.borderColor = themeColors[className];
                         }
                     });
                 } catch (e) {
                     // Ignore selector errors for classes with special characters
                 }
-            });
+        });
 
-            console.log('Theme applied:', theme);
+        console.log('Theme applied:', theme);
         } catch (e) {
             console.warn('Theme application error:', e);
         }

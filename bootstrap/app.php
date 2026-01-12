@@ -12,9 +12,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Trust all proxies (required for Railway, Heroku, AWS ELB, etc.)
-        $middleware->trustProxies(at: '*');
-
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
@@ -22,7 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
         // Exclude Stripe webhook from CSRF protection
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
-            'webhook/stripe',
             'stripe/*',
         ]);
     })
@@ -38,16 +34,6 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => $firstError ?? 'The given data was invalid.',
                     'errors' => $errors,
                 ], 422);
-            }
-        });
-
-        // Handle authentication exceptions with proper 401 status
-        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
-            if ($request->is('api/*') || $request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthenticated.',
-                ], 401);
             }
         });
 
