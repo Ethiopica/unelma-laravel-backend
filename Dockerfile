@@ -69,11 +69,26 @@ set -e\n\
 \n\
 echo "Starting Laravel application..."\n\
 \n\
-# Generate app key if not set\n\
-if [ -z "$APP_KEY" ]; then\n\
-    echo "Generating APP_KEY..."\n\
-    php artisan key:generate --force || true\n\
+# Generate app key if not set or invalid\n\
+if [ -z "$APP_KEY" ] || [ ${#APP_KEY} -lt 40 ]; then\n\
+    echo "APP_KEY missing or invalid, generating new one..."\n\
+    export APP_KEY=$(php -r "echo \"base64:\" . base64_encode(random_bytes(32));")\n\
+    echo "Generated APP_KEY: $APP_KEY"\n\
 fi\n\
+\n\
+# Create .env file with APP_KEY for Laravel to read\n\
+echo "APP_KEY=$APP_KEY" > /var/www/html/.env\n\
+echo "APP_ENV=${APP_ENV:-production}" >> /var/www/html/.env\n\
+echo "APP_DEBUG=${APP_DEBUG:-false}" >> /var/www/html/.env\n\
+echo "APP_URL=${APP_URL:-http://localhost}" >> /var/www/html/.env\n\
+echo "DB_CONNECTION=${DB_CONNECTION:-mysql}" >> /var/www/html/.env\n\
+echo "DB_HOST=${DB_HOST:-127.0.0.1}" >> /var/www/html/.env\n\
+echo "DB_PORT=${DB_PORT:-3306}" >> /var/www/html/.env\n\
+echo "DB_DATABASE=${DB_DATABASE:-laravel}" >> /var/www/html/.env\n\
+echo "DB_USERNAME=${DB_USERNAME:-root}" >> /var/www/html/.env\n\
+echo "DB_PASSWORD=${DB_PASSWORD:-}" >> /var/www/html/.env\n\
+echo "LOG_CHANNEL=${LOG_CHANNEL:-stderr}" >> /var/www/html/.env\n\
+echo "MAIL_MAILER=${MAIL_MAILER:-log}" >> /var/www/html/.env\n\
 \n\
 # Create storage link\n\
 php artisan storage:link 2>/dev/null || true\n\
