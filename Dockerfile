@@ -60,8 +60,8 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
 # Remove any .env file - Render provides environment variables directly
 RUN rm -f .env .env.example 2>/dev/null || true
 
-# Expose port (Render uses PORT env variable)
-EXPOSE 10000
+# Expose port (Railway uses PORT env variable, default 8080)
+EXPOSE 8080
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
@@ -104,9 +104,9 @@ php artisan cache:clear || true\n\
 echo "Running migrations..."\n\
 php artisan migrate --force || echo "Migration failed or skipped"\n\
 \n\
-# Render uses PORT env variable (default 10000)\n\
-echo "Starting server on port ${PORT:-10000}..."\n\
-exec php artisan serve --host=0.0.0.0 --port=${PORT:-10000}\n\
+# Railway uses PORT env variable (default 8080)\n\
+echo "Starting server on port ${PORT:-8080}..."\n\
+exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}\n\
 ' > /start.sh && chmod +x /start.sh
 
 # Start command
