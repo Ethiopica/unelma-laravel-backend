@@ -32,7 +32,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     opcache
 
 # Verify bcmath is installed
-RUN php -m | grep bcmath
+RUN php -m | grep bcmath && echo "bcmath extension verified!"
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
