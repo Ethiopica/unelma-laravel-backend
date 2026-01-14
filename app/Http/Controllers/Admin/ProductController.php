@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     /**
+     * Get the storage disk for uploads.
+     * Uses S3 in production (Railway), local in development.
+     */
+    protected function getUploadDisk(): string
+    {
+        // Use environment variable to determine disk, fallback to 'public' for local dev
+        return config('filesystems.default') === 'local' ? 'public' : config('filesystems.default');
+    }
+
+    /**
      * Display a listing of products
      */
     public function index()
@@ -49,9 +59,10 @@ class ProductController extends Controller
             'order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        // Handle image upload
+        // Handle image upload - use configurable disk (S3 for production)
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $disk = $this->getUploadDisk();
+            $validated['image'] = $request->file('image')->store('products', $disk);
         }
 
         $validated['is_featured'] = $request->boolean('is_featured');
@@ -96,13 +107,14 @@ class ProductController extends Controller
             'order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        // Handle image upload
+        // Handle image upload - use configurable disk (S3 for production)
         if ($request->hasFile('image')) {
+            $disk = $this->getUploadDisk();
             // Delete old image if exists
             if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+                Storage::disk($disk)->delete($product->image);
             }
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $validated['image'] = $request->file('image')->store('products', $disk);
         }
 
         $validated['is_featured'] = $request->boolean('is_featured');
@@ -122,7 +134,8 @@ class ProductController extends Controller
     {
         // Delete image if exists
         if ($product->image) {
-            Storage::disk('public')->delete($product->image);
+            $disk = $this->getUploadDisk();
+            Storage::disk($disk)->delete($product->image);
         }
 
         $product->delete();

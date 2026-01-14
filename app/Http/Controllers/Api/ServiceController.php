@@ -41,9 +41,17 @@ class ServiceController extends Controller
             $perPage = $request->get('per_page', 10);
             $services = $query->paginate($perPage);
 
+            // Transform services to include consistent image URL
+            $transformedServices = collect($services->items())->map(function ($service) {
+                $serviceArray = $service->toArray();
+                // Ensure image_url is set to the full URL for frontend
+                $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $service->image_url ?? null;
+                return $serviceArray;
+            });
+
             return response()->json([
                 'success' => true,
-                'data' => $services->items(),
+                'data' => $transformedServices,
                 'meta' => [
                     'current_page' => $services->currentPage(),
                     'last_page' => $services->lastPage(),
@@ -77,9 +85,13 @@ class ServiceController extends Controller
 
         $service = $serviceQuery->firstOrFail();
 
+        $serviceData = $service->toArray();
+        // Ensure image_url is set to the full URL for frontend
+        $serviceData['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $service->image_url ?? null;
+
         return response()->json([
             'success' => true,
-            'data' => $service,
+            'data' => $serviceData,
         ]);
     }
 
@@ -97,9 +109,17 @@ class ServiceController extends Controller
             ->limit($limit)
             ->get();
 
+        // Transform services to include consistent image URL
+        $transformedServices = $services->map(function ($service) {
+            $serviceArray = $service->toArray();
+            // Ensure image_url is set to the full URL for frontend
+            $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $service->image_url ?? null;
+            return $serviceArray;
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $services,
+            'data' => $transformedServices,
         ]);
     }
 }

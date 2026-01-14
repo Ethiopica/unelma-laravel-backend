@@ -78,3 +78,4 @@ class NewsletterSubscriber extends Model
 
 
 
+

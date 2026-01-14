@@ -36,9 +36,17 @@ class ProductController extends Controller
             $perPage = $request->get('per_page', 10);
             $products = $query->paginate($perPage);
 
+            // Transform products to include consistent image URL
+            $transformedProducts = collect($products->items())->map(function ($product) {
+                $productArray = $product->toArray();
+                // Ensure image_url is set to the full URL for frontend
+                $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $product->image_url ?? null;
+                return $productArray;
+            });
+
             return response()->json([
                 'success' => true,
-                'data' => $products->items(),
+                'data' => $transformedProducts,
                 'meta' => [
                     'current_page' => $products->currentPage(),
                     'last_page' => $products->lastPage(),
@@ -71,9 +79,13 @@ class ProductController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
+        $productData = $product->toArray();
+        // Ensure image_url is set to the full URL for frontend
+        $productData['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $product->image_url ?? null;
+
         return response()->json([
             'success' => true,
-            'data' => $product,
+            'data' => $productData,
         ]);
     }
 
@@ -91,9 +103,17 @@ class ProductController extends Controller
             ->limit($limit)
             ->get();
 
+        // Transform products to include consistent image URL
+        $transformedProducts = $products->map(function ($product) {
+            $productArray = $product->toArray();
+            // Ensure image_url is set to the full URL for frontend
+            $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $product->image_url ?? null;
+            return $productArray;
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $products,
+            'data' => $transformedProducts,
         ]);
     }
 }

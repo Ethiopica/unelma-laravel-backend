@@ -221,6 +221,11 @@ class BlogController extends Controller
     {
         $blogArray = $blog->toArray();
 
+        // Ensure featured_image_url is set (already appended, but ensure it's available)
+        if (isset($blogArray['featured_image_url'])) {
+            $blogArray['featured_image_url'] = $blog->featured_image_url;
+        }
+
         // Transform author profile picture
         if ($blog->relationLoaded('author') && $blog->author) {
             $blogArray['author']['profile_picture'] = $blog->author->profile_picture_url;

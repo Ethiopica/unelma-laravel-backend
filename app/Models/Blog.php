@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Blog extends Model
@@ -104,7 +105,26 @@ class Blog extends Model
                 return null;
             }
 
-            return asset('storage/' . $this->featured_image);
+            // Check which disk is being used
+            $disk = config('filesystems.default');
+            
+            // For S3, Supabase, or cloud storage, return full URL
+            if (in_array($disk, ['s3', 'supabase', 'cloudinary'])) {
+                // Check if using Supabase (by checking if AWS_URL contains supabase.co)
+                $awsUrl = config('filesystems.disks.s3.url');
+                if ($awsUrl && str_contains($awsUrl, 'supabase.co')) {
+                    // Generate Supabase URL format: https://[PROJECT].supabase.co/storage/v1/object/public/[BUCKET]/[PATH]
+                    $baseUrl = rtrim($awsUrl, '/');
+                    $imagePath = ltrim($this->featured_image, '/');
+                    return "{$baseUrl}/{$imagePath}";
+                }
+                
+                return Storage::disk($disk)->url($this->featured_image);
+            }
+
+            // For local storage, use app URL + storage path
+            $appUrl = rtrim(config('app.url'), '/');
+            return $appUrl . '/storage/' . $this->featured_image;
         } catch (\Exception $e) {
             \Log::warning('Failed to generate featured image URL for blog: ' . $e->getMessage());
 

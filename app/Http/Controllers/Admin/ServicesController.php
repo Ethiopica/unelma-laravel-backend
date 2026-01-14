@@ -13,6 +13,15 @@ use Illuminate\Support\Facades\Storage;
 class ServicesController extends Controller
 {
     /**
+     * Get the storage disk for uploads.
+     * Uses S3 in production (Railway), local in development.
+     */
+    protected function getUploadDisk(): string
+    {
+        return config('filesystems.default') === 'local' ? 'public' : config('filesystems.default');
+    }
+
+    /**
      * Display a listing of services
      */
     public function index()
@@ -54,9 +63,10 @@ class ServicesController extends Controller
             'plans.*.features'=>['nullable','string'],
         ]);
 
-        // Handle image upload
+        // Handle image upload - use configurable disk (S3 for production)
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('services', 'public');
+            $disk = $this->getUploadDisk();
+            $validated['image'] = $request->file('image')->store('services', $disk);
         }
 
         $validated['is_featured'] = $request->boolean('is_featured');
@@ -122,13 +132,14 @@ class ServicesController extends Controller
             'plans.*.features'=>['nullable','string'],
         ]);
 
-        // Handle image upload
+        // Handle image upload - use configurable disk (S3 for production)
         if ($request->hasFile('image')) {
+            $disk = $this->getUploadDisk();
             // Delete old image if exists
             if ($service->image) {
-                Storage::disk('public')->delete($service->image);
+                Storage::disk($disk)->delete($service->image);
             }
-            $validated['image'] = $request->file('image')->store('services', 'public');
+            $validated['image'] = $request->file('image')->store('services', $disk);
         }
 
         $validated['is_featured'] = $request->boolean('is_featured');
@@ -182,7 +193,8 @@ class ServicesController extends Controller
     {
         // Delete image if exists
         if ($service->image) {
-            Storage::disk('public')->delete($service->image);
+            $disk = $this->getUploadDisk();
+            Storage::disk($disk)->delete($service->image);
         }
 
         $service->delete();

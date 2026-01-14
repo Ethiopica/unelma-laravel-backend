@@ -11,6 +11,15 @@ use Illuminate\Support\Str;
 class BlogController extends Controller
 {
     /**
+     * Get the storage disk for uploads.
+     * Uses S3 in production (Railway), local in development.
+     */
+    protected function getUploadDisk(): string
+    {
+        return config('filesystems.default') === 'local' ? 'public' : config('filesystems.default');
+    }
+
+    /**
      * Display a listing of blogs
      */
     public function index()
@@ -59,9 +68,10 @@ class BlogController extends Controller
             $validated['tags'] = array_map('trim', explode(',', $validated['tags']));
         }
 
-        // Handle featured image upload
+        // Handle featured image upload - use configurable disk (S3 for production)
         if ($request->hasFile('featured_image')) {
-            $validated['featured_image'] = $request->file('featured_image')->store('blogs', 'public');
+            $disk = $this->getUploadDisk();
+            $validated['featured_image'] = $request->file('featured_image')->store('blogs', $disk);
         }
 
         // Set author as current user
@@ -137,13 +147,14 @@ class BlogController extends Controller
             $validated['tags'] = [];
         }
 
-        // Handle featured image upload
+        // Handle featured image upload - use configurable disk (S3 for production)
         if ($request->hasFile('featured_image')) {
+            $disk = $this->getUploadDisk();
             // Delete old image if exists
             if ($blog->featured_image) {
-                Storage::disk('public')->delete($blog->featured_image);
+                Storage::disk($disk)->delete($blog->featured_image);
             }
-            $validated['featured_image'] = $request->file('featured_image')->store('blogs', 'public');
+            $validated['featured_image'] = $request->file('featured_image')->store('blogs', $disk);
         }
 
         $validated['is_published'] = $request->boolean('is_published');
@@ -167,7 +178,8 @@ class BlogController extends Controller
     {
         // Delete featured image if exists
         if ($blog->featured_image) {
-            Storage::disk('public')->delete($blog->featured_image);
+            $disk = $this->getUploadDisk();
+            Storage::disk($disk)->delete($blog->featured_image);
         }
 
         $blog->delete();

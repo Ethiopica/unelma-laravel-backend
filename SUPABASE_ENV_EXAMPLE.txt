@@ -1,0 +1,40 @@
+# Correct Supabase Storage Configuration for Railway
+# Copy these to your Railway environment variables
+
+FILESYSTEM_DISK=s3
+
+# Supabase S3 Access Keys (from Project Settings → Storage → S3 Access Keys)
+AWS_ACCESS_KEY_ID=620907a17d9124450b4ee6d018f74947
+AWS_SECRET_ACCESS_KEY=f1a557d95bdb1aeea719a40c65611e1d24a6838e94111f9bc7158fdff0a557b2
+
+# Supabase Configuration
+AWS_DEFAULT_REGION=auto
+AWS_BUCKET=images
+
+# IMPORTANT: Fix the endpoint - remove .storage. from the middle
+AWS_ENDPOINT=https://Yxwzynfceimoymtczjtat.supabase.co/storage/v1/s3
+
+# Public URL for accessing images
+AWS_URL=https://Yxwzynfceimoymtczjtat.supabase.co/storage/v1/object/public/images
+
+# REQUIRED: Must be true for Supabase S3-compatible storage
+AWS_USE_PATH_STYLE_ENDPOINT=true
+
+# ============================================
+# ISSUES FOUND IN YOUR CONFIG:
+# ============================================
+# 1. AWS_ENDPOINT was: https://xwzynfceimoymtczjtat.storage.supabase.co/storage/v1/s3
+#    Should be: https://Yxwzynfceimoymtczjtat.supabase.co/storage/v1/s3
+#    (Remove .storage. and ensure capital Y)
+#
+# 2. Missing AWS_USE_PATH_STYLE_ENDPOINT=true
+#    This is required for Supabase to work correctly
+#
+# ============================================
+# VERIFICATION:
+# ============================================
+# After updating, test with:
+# php artisan tinker
+# Storage::disk('s3')->put('test.txt', 'Hello');
+# Storage::disk('s3')->url('test.txt');
+
