@@ -87,26 +87,56 @@
             <div class="h-full">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
                     @php
+                        // Determine image source with priority: full_image_url > image_local_url > image > image_url
                         $imageSource = null;
-
-                        // First, try image_local_url (from model accessor - relative path)
-                        if ($product->image_local_url) {
-                            $imageSource = $product->image_local_url;
+                        
+                        // Priority 1: Use full_image_url (handles Supabase URLs correctly)
+                        try {
+                            $fullImageUrl = $product->getAttribute('full_image_url') ?? $product->full_image_url ?? null;
+                            if (!empty($fullImageUrl)) {
+                                $imageSource = $fullImageUrl;
+                            }
+                        } catch (\Exception $e) {
+                            // Fall through to next option
                         }
-
-                        // Fallback to image field with proper path handling
-                        if (! $imageSource && $product->image) {
-                            if (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://'])) {
-                                $imageSource = $product->image;
-                            } elseif (\Illuminate\Support\Str::startsWith($product->image, ['/storage/', 'storage/'])) {
-                                $imageSource = $product->image;
-                            } else {
-                                $imageSource = '/storage/' . ltrim($product->image, '/');
+                        
+                        // Priority 2: Use image_local_url accessor (most reliable)
+                        if (empty($imageSource)) {
+                            try {
+                                $localImageUrl = $product->getAttribute('image_local_url') ?? $product->image_local_url ?? null;
+                                if (!empty($localImageUrl)) {
+                                    $imageSource = $localImageUrl;
+                                }
+                            } catch (\Exception $e) {
+                                // Fall through to next option
                             }
                         }
-
-                        // Last resort: image_url field
-                        if (! $imageSource && $product->image_url) {
+                        
+                        // Priority 3: Fallback to image field - construct Supabase URL
+                        if (empty($imageSource) && !empty($product->image)) {
+                            // Handle different image path formats
+                            if (str_starts_with($product->image, 'http://') || str_starts_with($product->image, 'https://')) {
+                                $imageSource = $product->image;
+                            } else {
+                                // For Supabase, construct full URL if image field exists
+                                $disk = config('filesystems.default');
+                                $awsUrl = config('filesystems.disks.s3.url');
+                                if ($disk === 's3' && $awsUrl && str_contains($awsUrl, 'supabase.co')) {
+                                    // Remove any trailing spaces and slashes from base URL
+                                    $baseUrl = rtrim(trim($awsUrl), '/');
+                                    // Remove any leading spaces and slashes from image path
+                                    $imagePath = ltrim(trim($product->image), '/');
+                                    // Ensure no spaces in final URL
+                                    $imageSource = trim($baseUrl) . '/' . trim($imagePath);
+                                } else {
+                                    // Default: prepend /storage/ for local storage
+                                    $imageSource = '/storage/' . ltrim(trim($product->image), '/');
+                                }
+                            }
+                        }
+                        
+                        // Priority 4: Last resort: image_url field
+                        if (empty($imageSource) && !empty($product->image_url)) {
                             $imageSource = $product->image_url;
                         }
                     @endphp
