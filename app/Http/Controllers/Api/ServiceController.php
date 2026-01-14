@@ -42,10 +42,14 @@ class ServiceController extends Controller
             $services = $query->paginate($perPage);
 
             // Transform services to include consistent image URL
+            // Preserves existing valid URLs, only enhances if needed
             $transformedServices = collect($services->items())->map(function ($service) {
                 $serviceArray = $service->toArray();
-                // Ensure image_url is set to the full URL for frontend
-                $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $service->image_url ?? null;
+                // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
+                if (empty($serviceArray['image_url']) || !str_starts_with($serviceArray['image_url'] ?? '', 'http')) {
+                    $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceArray['image_url'] ?? null;
+                }
+                // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
                 return $serviceArray;
             });
 
@@ -86,8 +90,11 @@ class ServiceController extends Controller
         $service = $serviceQuery->firstOrFail();
 
         $serviceData = $service->toArray();
-        // Ensure image_url is set to the full URL for frontend
-        $serviceData['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $service->image_url ?? null;
+        // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
+        if (empty($serviceData['image_url']) || !str_starts_with($serviceData['image_url'] ?? '', 'http')) {
+            $serviceData['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceData['image_url'] ?? null;
+        }
+        // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
 
         return response()->json([
             'success' => true,
@@ -110,10 +117,14 @@ class ServiceController extends Controller
             ->get();
 
         // Transform services to include consistent image URL
+        // Preserves existing valid URLs, only enhances if needed
         $transformedServices = $services->map(function ($service) {
             $serviceArray = $service->toArray();
-            // Ensure image_url is set to the full URL for frontend
-            $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $service->image_url ?? null;
+            // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
+            if (empty($serviceArray['image_url']) || !str_starts_with($serviceArray['image_url'] ?? '', 'http')) {
+                $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceArray['image_url'] ?? null;
+            }
+            // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
             return $serviceArray;
         });
 

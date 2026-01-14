@@ -37,10 +37,14 @@ class ProductController extends Controller
             $products = $query->paginate($perPage);
 
             // Transform products to include consistent image URL
+            // Preserves existing valid URLs, only enhances if needed
             $transformedProducts = collect($products->items())->map(function ($product) {
                 $productArray = $product->toArray();
-                // Ensure image_url is set to the full URL for frontend
-                $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $product->image_url ?? null;
+                // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
+                if (empty($productArray['image_url']) || !str_starts_with($productArray['image_url'] ?? '', 'http')) {
+                    $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productArray['image_url'] ?? null;
+                }
+                // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
                 return $productArray;
             });
 
@@ -80,8 +84,11 @@ class ProductController extends Controller
             ->firstOrFail();
 
         $productData = $product->toArray();
-        // Ensure image_url is set to the full URL for frontend
-        $productData['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $product->image_url ?? null;
+        // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
+        if (empty($productData['image_url']) || !str_starts_with($productData['image_url'] ?? '', 'http')) {
+            $productData['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productData['image_url'] ?? null;
+        }
+        // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
 
         return response()->json([
             'success' => true,
@@ -104,10 +111,14 @@ class ProductController extends Controller
             ->get();
 
         // Transform products to include consistent image URL
+        // Preserves existing valid URLs, only enhances if needed
         $transformedProducts = $products->map(function ($product) {
             $productArray = $product->toArray();
-            // Ensure image_url is set to the full URL for frontend
-            $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $product->image_url ?? null;
+            // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
+            if (empty($productArray['image_url']) || !str_starts_with($productArray['image_url'] ?? '', 'http')) {
+                $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productArray['image_url'] ?? null;
+            }
+            // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
             return $productArray;
         });
 
