@@ -84,12 +84,15 @@
                                     $disk = config('filesystems.default');
                                     $awsUrl = config('filesystems.disks.s3.url');
                                     if ($disk === 's3' && $awsUrl && str_contains($awsUrl, 'supabase.co')) {
-                                        $baseUrl = rtrim($awsUrl, '/');
-                                        $imagePath = ltrim($product->image, '/');
-                                        $imageSource = "{$baseUrl}/{$imagePath}";
+                                        // Remove any trailing spaces and slashes from base URL
+                                        $baseUrl = rtrim(trim($awsUrl), '/');
+                                        // Remove any leading spaces and slashes from image path
+                                        $imagePath = ltrim(trim($product->image), '/');
+                                        // Ensure no spaces in final URL
+                                        $imageSource = trim($baseUrl) . '/' . trim($imagePath);
                                     } else {
                                         // Default: prepend /storage/ for local storage
-                                        $imageSource = '/storage/' . ltrim($product->image, '/');
+                                        $imageSource = '/storage/' . ltrim(trim($product->image), '/');
                                     }
                                 }
                             }

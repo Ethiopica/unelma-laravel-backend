@@ -52,9 +52,12 @@ class Product extends Model
                 $awsUrl = config('filesystems.disks.s3.url');
                 if ($awsUrl && str_contains($awsUrl, 'supabase.co')) {
                     // Generate Supabase URL format: https://[PROJECT].supabase.co/storage/v1/object/public/[BUCKET]/[PATH]
-                    $baseUrl = rtrim($awsUrl, '/');
-                    $imagePath = ltrim($this->image, '/');
-                    return "{$baseUrl}/{$imagePath}";
+                    // Remove any trailing spaces and slashes
+                    $baseUrl = rtrim(trim($awsUrl), '/');
+                    // Remove any leading spaces and slashes
+                    $imagePath = ltrim(trim($this->image), '/');
+                    // Ensure no spaces in final URL
+                    return trim($baseUrl) . '/' . trim($imagePath);
                 }
                 
                 return Storage::disk($disk)->url($this->image);
@@ -95,9 +98,12 @@ class Product extends Model
                 $awsUrl = config('filesystems.disks.s3.url');
                 if ($awsUrl && str_contains($awsUrl, 'supabase.co')) {
                     // Generate Supabase URL format: https://[PROJECT].supabase.co/storage/v1/object/public/[BUCKET]/[PATH]
-                    $baseUrl = rtrim($awsUrl, '/');
-                    $imagePath = ltrim($this->image, '/');
-                    return "{$baseUrl}/{$imagePath}";
+                    // Remove any trailing spaces and slashes
+                    $baseUrl = rtrim(trim($awsUrl), '/');
+                    // Remove any leading spaces and slashes
+                    $imagePath = ltrim(trim($this->image), '/');
+                    // Ensure no spaces in final URL
+                    return trim($baseUrl) . '/' . trim($imagePath);
                 }
                 
                 return Storage::disk($disk)->url($this->image);
