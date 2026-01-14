@@ -52,22 +52,33 @@
                             $imageSource = null;
                             
                             // Priority 1: Use full_image_url (handles Supabase URLs correctly)
-                            if (!empty($product->full_image_url)) {
-                                $imageSource = $product->full_image_url;
+                            // Force access to ensure appended attribute is computed
+                            try {
+                                $fullImageUrl = $product->getAttribute('full_image_url') ?? $product->full_image_url ?? null;
+                                if (!empty($fullImageUrl)) {
+                                    $imageSource = $fullImageUrl;
+                                }
+                            } catch (\Exception $e) {
+                                // Fall through to next option
                             }
+                            
                             // Priority 2: Use image_local_url accessor (most reliable)
-                            elseif (!empty($product->image_local_url)) {
-                                $imageSource = $product->image_local_url;
+                            if (empty($imageSource)) {
+                                try {
+                                    $localImageUrl = $product->getAttribute('image_local_url') ?? $product->image_local_url ?? null;
+                                    if (!empty($localImageUrl)) {
+                                        $imageSource = $localImageUrl;
+                                    }
+                                } catch (\Exception $e) {
+                                    // Fall through to next option
+                                }
                             }
-                            // Priority 3: Fallback to image field
-                            elseif (!empty($product->image)) {
+                            
+                            // Priority 3: Fallback to image field - construct Supabase URL
+                            if (empty($imageSource) && !empty($product->image)) {
                                 // Handle different image path formats
                                 if (str_starts_with($product->image, 'http://') || str_starts_with($product->image, 'https://')) {
                                     $imageSource = $product->image;
-                                } elseif (str_starts_with($product->image, '/storage/')) {
-                                    $imageSource = $product->image;
-                                } elseif (str_starts_with($product->image, 'storage/')) {
-                                    $imageSource = '/' . $product->image;
                                 } else {
                                     // For Supabase, construct full URL if image field exists
                                     $disk = config('filesystems.default');
@@ -82,20 +93,27 @@
                                     }
                                 }
                             }
+                            
                             // Priority 4: Last resort: image_url field
-                            elseif (!empty($product->image_url)) {
+                            if (empty($imageSource) && !empty($product->image_url)) {
                                 $imageSource = $product->image_url;
                             }
                         @endphp
 
-                        @if (!empty($imageSource))
-                            <div class="h-48 overflow-hidden bg-gray-200 relative">
-                                <img src="{{ $imageSource }}" alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover"
-                                    onerror="console.error('Image failed to load:', '{{ $imageSource }}'); this.onerror=null; this.parentElement.innerHTML='<div class=\'h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-xs p-2 text-center\'>Image not found<br/>Re-upload required</div>';">
+                        @if (!empty($imageSource) && $imageSource !== null && trim($imageSource) !== '')
+                            <div class="h-48 overflow-hidden bg-gray-200 relative group">
+                                <img src="{{ $imageSource }}" 
+                                     alt="{{ $product->name }}"
+                                     class="w-full h-full object-cover"
+                                     loading="lazy"
+                                     onerror="console.error('Image failed:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="hidden h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-xs p-2 text-center">
+                                    Image not found<br/>
+                                    <span class="text-[10px] break-all px-2">{{ $imageSource }}</span>
+                                </div>
                                 @if(config('app.debug'))
-                                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate" title="{{ $imageSource }}">
-                                        {{ Str::limit($imageSource, 50) }}
+                                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 break-all opacity-0 group-hover:opacity-100 transition" title="{{ $imageSource }}">
+                                        {{ \Illuminate\Support\Str::limit($imageSource, 60) }}
                                     </div>
                                 @endif
                             </div>

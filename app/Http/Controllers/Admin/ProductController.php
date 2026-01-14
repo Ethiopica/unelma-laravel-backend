@@ -62,7 +62,15 @@ class ProductController extends Controller
         // Handle image upload - use configurable disk (S3 for production)
         if ($request->hasFile('image')) {
             $disk = $this->getUploadDisk();
-            $validated['image'] = $request->file('image')->store('products', $disk);
+            $imagePath = $request->file('image')->store('products', $disk);
+            $validated['image'] = $imagePath;
+            
+            // Log upload for debugging
+            \Log::info('Product image uploaded', [
+                'disk' => $disk,
+                'path' => $imagePath,
+                'url' => Storage::disk($disk)->url($imagePath),
+            ]);
         }
 
         $validated['is_featured'] = $request->boolean('is_featured');
@@ -71,6 +79,12 @@ class ProductController extends Controller
 
 
         $product = Product::create($validated);
+        
+        // Refresh the model to ensure appended attributes are computed
+        $product->refresh();
+        
+        // Clear cache to ensure fresh data
+        \Cache::forget('products_list');
 
         return redirect()
             ->route('admin.products.index')
@@ -114,13 +128,28 @@ class ProductController extends Controller
             if ($product->image) {
                 Storage::disk($disk)->delete($product->image);
             }
-            $validated['image'] = $request->file('image')->store('products', $disk);
+            $imagePath = $request->file('image')->store('products', $disk);
+            $validated['image'] = $imagePath;
+            
+            // Log upload for debugging
+            \Log::info('Product image updated', [
+                'product_id' => $product->id,
+                'disk' => $disk,
+                'path' => $imagePath,
+                'url' => Storage::disk($disk)->url($imagePath),
+            ]);
         }
 
         $validated['is_featured'] = $request->boolean('is_featured');
         $validated['is_active'] = $request->boolean('is_active');
 
         $product->update($validated);
+        
+        // Refresh the model to ensure appended attributes are computed
+        $product->refresh();
+        
+        // Clear cache to ensure fresh data
+        \Cache::forget('products_list');
 
         return redirect()
             ->route('admin.products.index')
