@@ -46,23 +46,11 @@ class Service extends Model
                 return null;
             }
 
-            // Check which disk is being used
+            // Use Storage::url() - works correctly with Supabase when AWS_URL is configured
             $disk = config('filesystems.default');
             
-            // For S3, Supabase, or cloud storage, return full URL
+            // For cloud storage (S3, Supabase), use the configured disk
             if (in_array($disk, ['s3', 'supabase', 'cloudinary'])) {
-                // Check if using Supabase (by checking if AWS_URL contains supabase.co)
-                $awsUrl = config('filesystems.disks.s3.url');
-                if ($awsUrl && str_contains($awsUrl, 'supabase.co')) {
-                    // Generate Supabase URL format: https://[PROJECT].supabase.co/storage/v1/object/public/[BUCKET]/[PATH]
-                    // Remove any trailing spaces and slashes
-                    $baseUrl = rtrim(trim($awsUrl), '/');
-                    // Remove any leading spaces and slashes
-                    $imagePath = ltrim(trim($this->image), '/');
-                    // Ensure no spaces in final URL
-                    return trim($baseUrl) . '/' . trim($imagePath);
-                }
-                
                 return Storage::disk($disk)->url($this->image);
             }
 
@@ -91,20 +79,8 @@ class Service extends Model
         try {
             $disk = config('filesystems.default');
             
-            // For S3, Supabase, or cloud storage, return the full URL directly
+            // For cloud storage (S3, Supabase), Storage::url() returns full URL when AWS_URL is configured
             if (in_array($disk, ['s3', 'supabase', 'cloudinary'])) {
-                // Check if using Supabase (by checking if AWS_URL contains supabase.co)
-                $awsUrl = config('filesystems.disks.s3.url');
-                if ($awsUrl && str_contains($awsUrl, 'supabase.co')) {
-                    // Generate Supabase URL format: https://[PROJECT].supabase.co/storage/v1/object/public/[BUCKET]/[PATH]
-                    // Remove any trailing spaces and slashes
-                    $baseUrl = rtrim(trim($awsUrl), '/');
-                    // Remove any leading spaces and slashes
-                    $imagePath = ltrim(trim($this->image), '/');
-                    // Ensure no spaces in final URL
-                    return trim($baseUrl) . '/' . trim($imagePath);
-                }
-                
                 return Storage::disk($disk)->url($this->image);
             }
 

@@ -74,25 +74,19 @@
                                 }
                             }
                             
-                            // Priority 3: Fallback to image field - construct Supabase URL
+                            // Priority 3: Fallback to image field - use Storage::url()
                             if (empty($imageSource) && !empty($product->image)) {
                                 // Handle different image path formats
                                 if (str_starts_with($product->image, 'http://') || str_starts_with($product->image, 'https://')) {
                                     $imageSource = $product->image;
                                 } else {
-                                    // For Supabase, construct full URL if image field exists
+                                    // Use Storage::url() - works correctly with Supabase when AWS_URL is configured
                                     $disk = config('filesystems.default');
-                                    $awsUrl = config('filesystems.disks.s3.url');
-                                    if ($disk === 's3' && $awsUrl && str_contains($awsUrl, 'supabase.co')) {
-                                        // Remove any trailing spaces and slashes from base URL
-                                        $baseUrl = rtrim(trim($awsUrl), '/');
-                                        // Remove any leading spaces and slashes from image path
-                                        $imagePath = ltrim(trim($product->image), '/');
-                                        // Ensure no spaces in final URL
-                                        $imageSource = trim($baseUrl) . '/' . trim($imagePath);
+                                    if (in_array($disk, ['s3', 'supabase', 'cloudinary'])) {
+                                        $imageSource = \Storage::disk($disk)->url($product->image);
                                     } else {
                                         // Default: prepend /storage/ for local storage
-                                        $imageSource = '/storage/' . ltrim(trim($product->image), '/');
+                                        $imageSource = '/storage/' . ltrim($product->image, '/');
                                     }
                                 }
                             }
