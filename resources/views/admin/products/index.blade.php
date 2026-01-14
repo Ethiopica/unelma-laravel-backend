@@ -48,14 +48,18 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition duration-200">
                         <!-- Product Image -->
                         @php
-                            // Determine image source with priority: image_local_url > image > image_url
+                            // Determine image source with priority: full_image_url > image_local_url > image > image_url
                             $imageSource = null;
                             
-                            // Use image_local_url accessor (most reliable)
-                            if (!empty($product->image_local_url)) {
+                            // Priority 1: Use full_image_url (handles Supabase URLs correctly)
+                            if (!empty($product->full_image_url)) {
+                                $imageSource = $product->full_image_url;
+                            }
+                            // Priority 2: Use image_local_url accessor (most reliable)
+                            elseif (!empty($product->image_local_url)) {
                                 $imageSource = $product->image_local_url;
                             }
-                            // Fallback to image field
+                            // Priority 3: Fallback to image field
                             elseif (!empty($product->image)) {
                                 // Handle different image path formats
                                 if (str_starts_with($product->image, 'http://') || str_starts_with($product->image, 'https://')) {
@@ -65,11 +69,20 @@
                                 } elseif (str_starts_with($product->image, 'storage/')) {
                                     $imageSource = '/' . $product->image;
                                 } else {
-                                    // Default: prepend /storage/
-                                    $imageSource = '/storage/' . ltrim($product->image, '/');
+                                    // For Supabase, construct full URL if image field exists
+                                    $disk = config('filesystems.default');
+                                    $awsUrl = config('filesystems.disks.s3.url');
+                                    if ($disk === 's3' && $awsUrl && str_contains($awsUrl, 'supabase.co')) {
+                                        $baseUrl = rtrim($awsUrl, '/');
+                                        $imagePath = ltrim($product->image, '/');
+                                        $imageSource = "{$baseUrl}/{$imagePath}";
+                                    } else {
+                                        // Default: prepend /storage/ for local storage
+                                        $imageSource = '/storage/' . ltrim($product->image, '/');
+                                    }
                                 }
                             }
-                            // Last resort: image_url field
+                            // Priority 4: Last resort: image_url field
                             elseif (!empty($product->image_url)) {
                                 $imageSource = $product->image_url;
                             }
@@ -78,7 +91,8 @@
                         @if (!empty($imageSource))
                             <div class="h-48 overflow-hidden bg-gray-200">
                                 <img src="{{ $imageSource }}" alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover">
+                                    class="w-full h-full object-cover"
+                                    onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image failed to load</div>';">
                             </div>
                         @else
                             <div

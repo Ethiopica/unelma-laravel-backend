@@ -81,12 +81,13 @@ class TestSupabaseStorage extends Command
 
             // If Supabase, check URL format
             if ($isSupabase) {
-                $expectedPattern = '/supabase\.co\/storage\/v1\/object\/public\/';
+                $expectedPattern = 'supabase.co/storage/v1/object/public/';
                 if (str_contains($url, $expectedPattern)) {
                     $this->info("  ✅ URL format is correct for Supabase");
                 } else {
                     $this->warn("  ⚠️  URL format might be incorrect");
                     $this->line("     Expected: ...supabase.co/storage/v1/object/public/...");
+                    $this->line("     Got: {$url}");
                 }
             }
 
