@@ -89,10 +89,15 @@
                         @endphp
 
                         @if (!empty($imageSource))
-                            <div class="h-48 overflow-hidden bg-gray-200">
+                            <div class="h-48 overflow-hidden bg-gray-200 relative">
                                 <img src="{{ $imageSource }}" alt="{{ $product->name }}"
                                     class="w-full h-full object-cover"
-                                    onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-xs\'>Image failed to load</div>';">
+                                    onerror="console.error('Image failed to load:', '{{ $imageSource }}'); this.onerror=null; this.parentElement.innerHTML='<div class=\'h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-xs p-2 text-center\'>Image not found<br/>Re-upload required</div>';">
+                                @if(config('app.debug'))
+                                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate" title="{{ $imageSource }}">
+                                        {{ Str::limit($imageSource, 50) }}
+                                    </div>
+                                @endif
                             </div>
                         @else
                             <div
