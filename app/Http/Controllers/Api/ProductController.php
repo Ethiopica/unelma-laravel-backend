@@ -36,15 +36,14 @@ class ProductController extends Controller
             $perPage = $request->get('per_page', 10);
             $products = $query->paginate($perPage);
 
-            // Transform products to include consistent image URL
-            // Preserves existing valid URLs, only enhances if needed
+            // Transform products to ensure image_url always has a valid URL
+            // Priority: full_image_url > image_local_url > existing image_url > null
             $transformedProducts = collect($products->items())->map(function ($product) {
                 $productArray = $product->toArray();
-                // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
-                if (empty($productArray['image_url']) || !str_starts_with($productArray['image_url'] ?? '', 'http')) {
-                    $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productArray['image_url'] ?? null;
-                }
-                // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
+                // Use full_image_url first (generates correct Supabase URLs)
+                // Falls back to image_local_url if full_image_url is not available
+                // Falls back to existing image_url field as last resort
+                $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productArray['image_url'] ?? null;
                 return $productArray;
             });
 
@@ -84,11 +83,10 @@ class ProductController extends Controller
             ->firstOrFail();
 
         $productData = $product->toArray();
-        // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
-        if (empty($productData['image_url']) || !str_starts_with($productData['image_url'] ?? '', 'http')) {
-            $productData['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productData['image_url'] ?? null;
-        }
-        // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
+        // Use full_image_url first (generates correct Supabase URLs)
+        // Falls back to image_local_url if full_image_url is not available
+        // Falls back to existing image_url field as last resort
+        $productData['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productData['image_url'] ?? null;
 
         return response()->json([
             'success' => true,
@@ -110,15 +108,14 @@ class ProductController extends Controller
             ->limit($limit)
             ->get();
 
-        // Transform products to include consistent image URL
-        // Preserves existing valid URLs, only enhances if needed
+        // Transform products to ensure image_url always has a valid URL
+        // Priority: full_image_url > image_local_url > existing image_url > null
         $transformedProducts = $products->map(function ($product) {
             $productArray = $product->toArray();
-            // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
-            if (empty($productArray['image_url']) || !str_starts_with($productArray['image_url'] ?? '', 'http')) {
-                $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productArray['image_url'] ?? null;
-            }
-            // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
+            // Use full_image_url first (generates correct Supabase URLs)
+            // Falls back to image_local_url if full_image_url is not available
+            // Falls back to existing image_url field as last resort
+            $productArray['image_url'] = $product->full_image_url ?? $product->image_local_url ?? $productArray['image_url'] ?? null;
             return $productArray;
         });
 

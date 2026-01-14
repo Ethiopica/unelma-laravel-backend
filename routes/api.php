@@ -101,6 +101,27 @@ Route::get('/products', [ApiProductController::class, 'index']);
 Route::get('/products/{id}', [ApiProductController::class, 'show']);
 Route::get('/products/featured/list', [ApiProductController::class, 'featured']);
 
+// Debug endpoint to check image URLs (remove in production)
+Route::get('/products/{id}/debug-image', function ($id) {
+    $product = \App\Models\Product::findOrFail($id);
+    return response()->json([
+        'product_id' => $product->id,
+        'product_name' => $product->name,
+        'image_fields' => [
+            'image' => $product->image,
+            'image_url' => $product->image_url,
+            'image_local_url' => $product->image_local_url,
+            'full_image_url' => $product->full_image_url,
+        ],
+        'storage_config' => [
+            'default_disk' => config('filesystems.default'),
+            's3_url' => config('filesystems.disks.s3.url'),
+            's3_bucket' => config('filesystems.disks.s3.bucket'),
+            'is_supabase' => str_contains(config('filesystems.disks.s3.url', ''), 'supabase.co'),
+        ],
+    ]);
+});
+
 // Public Product Ratings (view ratings)
 Route::get('/products/{productId}/ratings', [ProductRatingController::class, 'index']);
 

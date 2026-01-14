@@ -41,15 +41,14 @@ class ServiceController extends Controller
             $perPage = $request->get('per_page', 10);
             $services = $query->paginate($perPage);
 
-            // Transform services to include consistent image URL
-            // Preserves existing valid URLs, only enhances if needed
+            // Transform services to ensure image_url always has a valid URL
+            // Priority: full_image_url > image_local_url > existing image_url > null
             $transformedServices = collect($services->items())->map(function ($service) {
                 $serviceArray = $service->toArray();
-                // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
-                if (empty($serviceArray['image_url']) || !str_starts_with($serviceArray['image_url'] ?? '', 'http')) {
-                    $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceArray['image_url'] ?? null;
-                }
-                // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
+                // Use full_image_url first (generates correct Supabase URLs)
+                // Falls back to image_local_url if full_image_url is not available
+                // Falls back to existing image_url field as last resort
+                $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceArray['image_url'] ?? null;
                 return $serviceArray;
             });
 
@@ -90,11 +89,10 @@ class ServiceController extends Controller
         $service = $serviceQuery->firstOrFail();
 
         $serviceData = $service->toArray();
-        // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
-        if (empty($serviceData['image_url']) || !str_starts_with($serviceData['image_url'] ?? '', 'http')) {
-            $serviceData['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceData['image_url'] ?? null;
-        }
-        // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
+        // Use full_image_url first (generates correct Supabase URLs)
+        // Falls back to image_local_url if full_image_url is not available
+        // Falls back to existing image_url field as last resort
+        $serviceData['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceData['image_url'] ?? null;
 
         return response()->json([
             'success' => true,
@@ -116,15 +114,14 @@ class ServiceController extends Controller
             ->limit($limit)
             ->get();
 
-        // Transform services to include consistent image URL
-        // Preserves existing valid URLs, only enhances if needed
+        // Transform services to ensure image_url always has a valid URL
+        // Priority: full_image_url > image_local_url > existing image_url > null
         $transformedServices = $services->map(function ($service) {
             $serviceArray = $service->toArray();
-            // Only enhance image_url if it's empty or not a full URL (preserve existing valid URLs)
-            if (empty($serviceArray['image_url']) || !str_starts_with($serviceArray['image_url'] ?? '', 'http')) {
-                $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceArray['image_url'] ?? null;
-            }
-            // All image fields (image_url, image_local_url, full_image_url) are already included via appended attributes
+            // Use full_image_url first (generates correct Supabase URLs)
+            // Falls back to image_local_url if full_image_url is not available
+            // Falls back to existing image_url field as last resort
+            $serviceArray['image_url'] = $service->full_image_url ?? $service->image_local_url ?? $serviceArray['image_url'] ?? null;
             return $serviceArray;
         });
 
